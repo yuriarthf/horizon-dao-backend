@@ -8,6 +8,8 @@ import type { Options } from "@utils/types";
 class PropertyService {
   // TODO: Implement DTO for propertyBody
   public async createProperty(propertyBody): Promise<Property> {
+    if (isEmpty(propertyBody)) throw new HttpException(400, "propertyBody is empty");
+
     return await propertyModel.create(propertyBody);
   }
 
