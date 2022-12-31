@@ -1,7 +1,6 @@
 import { prop, getModelForClass, modelOptions, plugin } from "@typegoose/typegoose";
-import paginationPlugin, { PaginateModel } from 'typegoose-cursor-pagination';
+import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate";
 
-@plugin(paginationPlugin)
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Attributes {
   @prop({ type: Number })
@@ -68,6 +67,7 @@ class Update {
   public date!: Date;
 }
 
+@plugin(typegoosePaginate)
 @modelOptions({ schemaOptions: { collection: "users", timestamps: true } })
 class Property {
   @prop({ type: Number })
@@ -120,8 +120,10 @@ class Property {
 
   @prop({ type: [Update] })
   public updates?: Update[];
+
+  static paginate: PaginateMethod<Property>;
 }
 
-const PropertyModel = getModelForClass(Property) as PaginateModel<Property, typeof Property>;
+const PropertyModel = getModelForClass(Property);
 
 export default PropertyModel;

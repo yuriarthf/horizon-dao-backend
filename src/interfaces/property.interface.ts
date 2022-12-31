@@ -27,7 +27,6 @@ export interface Update {
 }
 
 export interface Property {
-	_id: string;
 	iroId?: number;
 	realEstateNftId?: number;
 	name: string;
@@ -45,4 +44,14 @@ export interface Property {
 	financials?: Financials;
 	documentsUrl?: string;
 	updates?: Update[];
+}
+
+export interface PropertyExtended extends Property {
+	iroStatus?: string;
+	iroUnitPrice?: string;
+	iroCurrency?: string;
+	iroSoftCap?: string;
+	iroHardCap?: string;
+	iroStart?: string;
+	iroEnd?: string;
 }

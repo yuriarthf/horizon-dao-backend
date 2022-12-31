@@ -1,4 +1,3 @@
-import { IPaginateOptions } from "typegoose-cursor-pagination";
 import { SortOrder, Options } from "./types";
 
 // Default page size
@@ -28,16 +27,6 @@ export const isEmpty = (value: string | number | object): boolean => {
     return false;
   }
 };
-
-export const parseOptions = (options: Options): IPaginateOptions => {
-  const sortOption = options.sortBy?.split(":")?? [undefined, undefined];
-  return {
-    limit: options.limit?? DEFAULT_PAGE_SIZE,
-    sortField: sortOption[0],
-    sortAscending: translateSortOrderToBool(<SortOrder>sortOption[1]),
-    next: options.cursor
-  } as IPaginateOptions;
-}
 
 /**
  * Create an object composed of the picked object properties

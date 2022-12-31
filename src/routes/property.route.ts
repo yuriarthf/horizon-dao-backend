@@ -2,7 +2,7 @@ import { Router } from "express";
 import PropertyController from "@controllers/property.controller";
 //import { CreateUserDto } from "@dtos/users.dto";
 import { Routes } from "@interfaces/routes.interface";
-import authMiddleware from "@middlewares/auth.middleware";
+//import authMiddleware from "@middlewares/auth.middleware";
 //import validationMiddleware from "@middlewares/validation.middleware";
 //import { toStringNoFail } from "@typegoose/typegoose/lib/internal/utils";
 
