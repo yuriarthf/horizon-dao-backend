@@ -1,16 +1,19 @@
 // Exceptions
 import { HttpException } from "@exceptions/HttpException";
 
-// models
+// Models
 import propertyModel from "@models/property.model";
 import iroModel from "@models/iro.model";
 
-// interfaces
+// Interfaces
 import { Property, PropertyExtended } from "@interfaces/property.interface";
 import { IROReduced } from "@interfaces/iro.interface";
 import { FilterQuery, PaginateOptions } from 'mongoose';
 
-// utils
+// DTO
+import { CreatePropertyDto } from "@dtos/property.dto";
+
+// Utils
 import { isEmpty } from "@utils/util";
 import BigNumber from "bignumber.js";
 
@@ -38,13 +41,15 @@ interface GetPropertiesPaginatedResult {
 
 class PropertyService {
   // TODO: Implement DTO for propertyBody
-  public async createProperty(propertyBody): Promise<Property> {
-    if (isEmpty(propertyBody)) throw new HttpException(400, "propertyBody is empty");
+  public async createProperty(createPropertyBody: CreatePropertyDto) {
+    if (isEmpty(createPropertyBody)) throw new HttpException(400, "propertyBody is empty");
 
-    const findOne = await propertyModel.findOne({name: propertyBody.name });
+    const findOne = await propertyModel.findOne({name: createPropertyBody.name });
     if (findOne) throw new HttpException(409, "Property already exist (by name)");
 
-    return await propertyModel.create(propertyBody);
+    const createPropertyData = await propertyModel.create(createPropertyBody);
+
+    return createPropertyData;
   }
 
   public async getPropertiesPaginated(filter: FilterQuery<Property>, options: PaginateOptions): Promise<GetPropertiesPaginatedResult> {

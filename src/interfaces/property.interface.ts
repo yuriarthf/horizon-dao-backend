@@ -1,12 +1,12 @@
 export interface Attributes {
-	lotSizeSqm?: string;
+	lotSizeSqm?: number;
 	usableAreaSqm?: number;
 	bedrooms?: number;
 	bathrooms?: number;
 	parking?: number;
 	yearBuilt?: number;
-	latitude?: string;
-	longitude?: string;
+	latitude?: number;
+	longitude?: number;
 	laserShooter?: number;
 }
 

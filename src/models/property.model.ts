@@ -4,7 +4,7 @@ import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate"
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Attributes {
   @prop({ type: Number })
-  public lotSizeSqm?: string;
+  public lotSizeSqm?: number;
 
   @prop({ type: Number })
   public usableAreaSqm?: number;
@@ -21,11 +21,11 @@ class Attributes {
   @prop({ type: Number })
   public yearBuilt?: number;
 
-  @prop({ type: String })
-  public latitude?: string;
+  @prop({ type: Number })
+  public latitude?: number;
 
-  @prop({ type: String })
-  public longitude?: string;
+  @prop({ type: Number })
+  public longitude?: number;
 
   @prop({ type: Number })
   public laserShooter?: number;
@@ -73,7 +73,7 @@ class Property {
   @prop({ type: Number })
   public iroId?: number;
 
-  @prop({ type: Number})
+  @prop({ type: Number })
   public realEstateNftId?: number;
 
   @prop({ type: String, trim: true, required: true })
