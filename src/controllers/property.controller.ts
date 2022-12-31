@@ -42,19 +42,8 @@ class PropertyController {
 				'page',
 			]);
 			const options = pick(req.query, ["sortBy", "limit", "cursor"]);
-			const getAllUsersPagination = await this.propertyService.getPropertiesPaginated(filter, options);
-			res.status(200).json(
-				{ 
-					pagination: {
-						hasPrevious: getAllUsersPagination.hasPrevious,
-						hasNext: getAllUsersPagination.hasNext,
-						previousCursor: getAllUsersPagination.previous,
-						nextCursor: getAllUsersPagination.next,
-						totalDocs: getAllUsersPagination.totalDocs
-					}, 
-					data: getAllUsersPagination.docs
-				}	
-			);
+			const getAllUsersResult= await this.propertyService.getPropertiesPaginated(filter, options);
+			res.status(200).json({ data: getAllUsersResult });
 		} catch (error) {
 			next(error);
 		}
