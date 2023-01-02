@@ -1,13 +1,3 @@
-import { SortOrder, Options } from "./types";
-
-// Default page size
-const DEFAULT_PAGE_SIZE = 10;
-
-const translateSortOrderToBool = (sortOrder?: SortOrder): boolean => {
-  return sortOrder ? (sortOrder === "asc" ? true : false) : undefined;
-}
-
-
 /**
  * @method isEmpty
  * @param {String | Number | Object} value
@@ -43,4 +33,3 @@ export const pick = (object: object, keys: string[]): object => {
     return obj;
   }, {});
 };
-

@@ -5,3 +5,4 @@ sources:
         endpoint: https://api.studio.thegraph.com/query/39814/horizon-iro-test/v0.0.14
 documents:
   - ./src/get-iros.graphql
+  - ./src/get-iro.graphql

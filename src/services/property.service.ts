@@ -7,8 +7,8 @@ import iroModel from "@models/iro.model";
 
 // Interfaces
 import { Property, PropertyExtended } from "@interfaces/property.interface";
-import { IROReduced } from "@interfaces/iro.interface";
-import { FilterQuery, PaginateOptions } from 'mongoose';
+import { IROReduced, UserShare } from "@interfaces/iro.interface";
+import { FilterQuery, PaginateOptions } from "mongoose";
 
 // DTO
 import { CreatePropertyDto } from "@dtos/property.dto";
@@ -24,7 +24,7 @@ BigNumber.config({ DECIMAL_PLACES: 2 });
 const iro = new iroModel();
 
 interface GetPropertiesPaginatedResult {
-  docs: PropertyExtended[]
+  docs: PropertyExtended[];
   metadata: {
     totalDocs: number;
     limit: number;
@@ -36,7 +36,7 @@ interface GetPropertiesPaginatedResult {
     prevPage?: number | null | undefined;
     nextPage?: number | null | undefined;
     pagingCounter: number;
-  }
+  };
 }
 
 class PropertyService {
@@ -44,7 +44,7 @@ class PropertyService {
   public async createProperty(createPropertyBody: CreatePropertyDto) {
     if (isEmpty(createPropertyBody)) throw new HttpException(400, "propertyBody is empty");
 
-    const findOne = await propertyModel.findOne({name: createPropertyBody.name });
+    const findOne = await propertyModel.findOne({ name: createPropertyBody.name });
     if (findOne) throw new HttpException(409, "Property already exist (by name)");
 
     const createPropertyData = await propertyModel.create(createPropertyBody);
@@ -52,7 +52,10 @@ class PropertyService {
     return createPropertyData;
   }
 
-  public async getPropertiesPaginated(filter: FilterQuery<Property>, options: PaginateOptions): Promise<GetPropertiesPaginatedResult> {
+  public async getPropertiesPaginated(
+    filter: FilterQuery<Property>,
+    options: PaginateOptions,
+  ): Promise<GetPropertiesPaginatedResult> {
     const propertiesPagination = await propertyModel.paginate(filter, options);
 
     const iroIds: string[] = [];
@@ -68,37 +71,35 @@ class PropertyService {
         limit: propertiesPagination.limit,
         hasPrevPage: propertiesPagination.hasPrevPage,
         hasNextPage: propertiesPagination.hasNextPage,
-        page: propertiesPagination.page, 
+        page: propertiesPagination.page,
         totalPages: propertiesPagination.totalPages,
         offset: propertiesPagination.offset,
         prevPage: propertiesPagination.prevPage,
-        nextPage: propertiesPagination.nextPage, 
-        pagingCounter: propertiesPagination.pagingCounter
+        nextPage: propertiesPagination.nextPage,
+        pagingCounter: propertiesPagination.pagingCounter,
       },
-      docs: []
+      docs: [],
     };
     const iroQueryResult = await iro.getIros(iroIds);
-    const iros: {[iroId: string]: IROReduced } = {};
+    const iros: { [iroId: string]: IROReduced } = {};
     iroQueryResult.iros.forEach(iro => {
       iros[iro.iroId] = iro;
     });
 
     propertiesPagination.docs.forEach(doc => {
-      const property: PropertyExtended = {...doc};
+      const property: PropertyExtended = { ...doc };
       results.docs.push(property);
       if (doc.status === "crowdfunding") {
         const iro = iros[doc.iroId];
         const denominator = new BigNumber(iro.currencyDecimals);
         property.iroStatus = iro.status;
-        property.iroUnitPrice = (new BigNumber(iro.unitPrice))
-          .div(denominator).toString();
+        property.iroUnitPrice = new BigNumber(iro.unitPrice).div(denominator).toString();
         property.iroCurrency = iro.currency;
-        property.iroSoftCap = (new BigNumber(iro.softCap))
-          .div(denominator).toString();
-        property.iroHardCap = (new BigNumber(iro.hardCap))
-          .div(denominator).toString();
+        property.iroSoftCap = new BigNumber(iro.softCap).div(denominator).toString();
+        property.iroHardCap = new BigNumber(iro.hardCap).div(denominator).toString();
         property.iroStart = iro.start;
         property.iroEnd = iro.end;
+        property.iroTotalFunding = iro.totalFunding;
       }
     });
 
@@ -111,21 +112,25 @@ class PropertyService {
     const property = await propertyModel.findById(propertyId);
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
-    const result: PropertyExtended = {...property};
+    const result: PropertyExtended = { ...property };
     if (property.status === "crowdfunding") {
-      const iroQueryResult = (await iro.getIros([property.iroId.toString()]))
-        .iros[0];
+      const iroQueryResult = (await iro.getIro(property.iroId.toString())).iros;
       const denominator = new BigNumber(iroQueryResult.currencyDecimals);
       result.iroStatus = iroQueryResult.status;
-      result.iroUnitPrice = (new BigNumber(iroQueryResult.unitPrice))
-        .div(denominator).toString();
+      result.iroUnitPrice = new BigNumber(iroQueryResult.unitPrice).div(denominator).toString();
       result.iroCurrency = iroQueryResult.currency;
-      result.iroSoftCap = (new BigNumber(iroQueryResult.softCap))
-        .div(denominator).toString();
-      result.iroHardCap = (new BigNumber(iroQueryResult.hardCap))
-        .div(denominator).toString();
+      result.iroSoftCap = new BigNumber(iroQueryResult.softCap).div(denominator).toString();
+      result.iroHardCap = new BigNumber(iroQueryResult.hardCap).div(denominator).toString();
       result.iroStart = iroQueryResult.start;
       result.iroEnd = iroQueryResult.end;
+      result.iroTotalFunding = iroQueryResult.totalFunding;
+      result.iroFundsWithdrawn = iroQueryResult.fundsWithdrawn;
+      result.iroOwnerClaimed = iroQueryResult.ownerClaimed;
+      result.iroReservesFee = iroQueryResult.reservesFee;
+      result.iroTreasuryFee = iroQueryResult.treasuryFee;
+      result.iroListingOwner = iroQueryResult.listingOwner;
+      result.iroListingOwnerShare = iroQueryResult.listingOwnerShare;
+      result.iroShares = this.populateSharesArray(iroQueryResult.shares, denominator);
     }
 
     return result;
@@ -152,9 +157,9 @@ class PropertyService {
   public async setIroId(propertyId: string, iroId: string) {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(iroId)) throw new HttpException(400, "iroId is empty");
-    const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, { 
+    const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
       iroId,
-      stage: "crowdfunding"
+      stage: "crowdfunding",
     });
     return updatedProperty;
   }
@@ -162,9 +167,9 @@ class PropertyService {
   public async setRealEstateNftId(propertyId: string, realEstateNftId: string) {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(realEstateNftId)) throw new HttpException(400, "realEstateNftId is empty");
-    const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, { 
+    const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
       realEstateNftId,
-      stage: "trade"
+      stage: "trade",
     });
     return updatedProperty;
   }
@@ -173,6 +178,20 @@ class PropertyService {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     const removedProperty = propertyModel.findByIdAndRemove(propertyId);
     return removedProperty;
+  }
+
+  private populateSharesArray(shares: UserShare[], currencyDecimals: BigNumber) {
+    const sharesArray = [];
+    for (const share of shares) {
+      sharesArray.push({
+        address: share.address,
+        committedFunds: new BigNumber(share.commitedFunds).div(currencyDecimals).toString(),
+        purchasedAmount: share.amount,
+        iroShare: share.share,
+        claimed: share.claimed,
+      });
+    }
+    return sharesArray;
   }
 }
 

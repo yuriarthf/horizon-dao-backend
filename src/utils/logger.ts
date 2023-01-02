@@ -1,3 +1,6 @@
+/*global __dirname*/
+/*eslint no-undef: "error"*/
+
 import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import winston from "winston";

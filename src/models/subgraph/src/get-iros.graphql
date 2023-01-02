@@ -11,5 +11,6 @@ query getIros($iroIds: [BigInt!]) {
 		hardCap
 		start
 		end
+		totalFunding
 	}
 }

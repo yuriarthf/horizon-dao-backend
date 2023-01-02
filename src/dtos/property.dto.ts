@@ -1,4 +1,4 @@
-import { 
+import {
   IsString,
   IsNotEmpty,
   IsUrl,
@@ -9,15 +9,12 @@ import {
   IsOptional,
   IsObject,
   ValidateNested,
-  IsDateString
+  IsDateString,
 } from "class-validator";
 
-import {
-  Type
-} from "class-transformer";
+import { Type } from "class-transformer";
 
 class AttributesDto {
-
   @IsOptional()
   @IsNumber()
   public lotSizeSqm: number;
@@ -58,7 +55,6 @@ class AttributesDto {
 }
 
 class FinancialsDto {
-
   @IsNotEmpty()
   @IsString()
   public message: string;
@@ -69,49 +65,47 @@ class FinancialsDto {
 }
 
 export class CreatePropertyDto {
-	
   @IsNotEmpty()
-	@IsString()
-	public name: string;
-
-  @IsNotEmpty()
-	@IsString()
-	public type: string;
-
-	@IsEthereumAddress()
-	public creator: string;
-
-  @IsOptional()
-	@IsString()
-	public description: string;
-
-	@IsUrl()
-	public imageUrl: string
+  @IsString()
+  public name: string;
 
   @IsNotEmpty()
-	@IsString()
-	public status: string;
+  @IsString()
+  public type: string;
+
+  @IsEthereumAddress()
+  public creator: string;
 
   @IsOptional()
-	@IsString()
-	public country: string;
+  @IsString()
+  public description: string;
+
+  @IsUrl()
+  public imageUrl: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public status: string;
 
   @IsOptional()
-	@IsString()
-	public region: string;
+  @IsString()
+  public country: string;
 
   @IsOptional()
-	@IsString()
-	public city: string;
+  @IsString()
+  public region: string;
 
   @IsOptional()
-	@IsString()
-	public address: string;
+  @IsString()
+  public city: string;
 
   @IsOptional()
-	@IsString()
-	public highlights: string;
+  @IsString()
+  public address: string;
 
+  @IsOptional()
+  @IsString()
+  public highlights: string;
 
   @IsOptional()
   @IsObject()

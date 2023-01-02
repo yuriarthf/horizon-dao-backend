@@ -1,0 +1,29 @@
+query getIro($iroId: BigInt!) {
+	iros(where: {
+		iroId: $iroId
+	}) {
+		iroId,
+		status,
+		unitPrice
+		currency
+		currencyDecimals
+		softCap
+		hardCap
+		start
+		end
+		totalFunding
+		fundsWithdrawn
+		ownerClaimed
+    reservesFee
+    treasuryFee
+    listingOwner
+    listingOwnerShare
+		shares {
+			address
+			commitedFunds
+			amount
+			share
+			claimed
+		}
+	}
+}
