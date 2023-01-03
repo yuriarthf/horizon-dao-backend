@@ -1,7 +1,7 @@
 {
   "name": "horizon-backend",
   "version": "0.0.0",
-  "description": "TypeScript + Typegoose + MongoDB + Express API Server",
+  "description": "TypeScript + Typegoose + MongoDB + Express API Server + The Graph",
   "author": "",
   "license": "ISC",
   "scripts": {

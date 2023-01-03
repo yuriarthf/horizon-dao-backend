@@ -35,6 +35,8 @@ interface GetIroResult {
     listingOwnerShare: string;
     shares: {
       address: string;
+      // WARN: It's a typo on the subgraph version itself,
+      //    can be fixed after deploying a new instance of the subgraph
       commitedFunds: string;
       amount: string;
       share: string;
