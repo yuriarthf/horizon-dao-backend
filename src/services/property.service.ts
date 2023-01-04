@@ -84,12 +84,12 @@ class PropertyService {
     if (iroIds.length) {
       const iroQueryResult = await iro.getIros(iroIds);
       const iros: { [iroId: string]: IROReduced } = {};
-      iroQueryResult.iros.forEach(iro => {
+      iroQueryResult.forEach(iro => {
         iros[iro.iroId] = iro;
       });
 
-      propertiesPagination.docs.forEach(doc => {
-        const property: PropertyExtended = { ...doc };
+      propertiesPagination.docs.forEach((doc: any) => {
+        const property: PropertyExtended = { ...(doc.toJSON()) };
         results.docs.push(property);
         if (doc.status === "crowdfunding") {
           const iro = iros[doc.iroId];
@@ -114,12 +114,12 @@ class PropertyService {
   public async getPropertyById(propertyId: string): Promise<PropertyExtended> {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
 
-    const property = await propertyModel.findById(propertyId);
+    const property = (await propertyModel.findById(propertyId)).toJSON();
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
     const result: PropertyExtended = { ...property };
     if (property.status === "crowdfunding") {
-      const iroQueryResult = (await iro.getIro(property.iroId.toString())).iros;
+      const iroQueryResult = await iro.getIro(property.iroId.toString());
       const denominator = new BigNumber(iroQueryResult.currencyDecimals);
       result.iroStatus = iroQueryResult.status;
       result.iroUnitPrice = new BigNumber(iroQueryResult.unitPrice).div(denominator).toString();
@@ -144,8 +144,29 @@ class PropertyService {
   public async getPropertyByName(name: string): Promise<Property> {
     if (isEmpty(name)) throw new HttpException(400, "name is empty");
 
-    const property = await propertyModel.findOne({ name });
+    const property = (await propertyModel.findOne({ name })).toJSON();
     if (!property) throw new HttpException(409, "Property doesn't exist");
+
+    const result: PropertyExtended = { ...property };
+    if (property.status === "crowdfunding") {
+      const iroQueryResult = await iro.getIro(property.iroId.toString());
+      const denominator = new BigNumber(iroQueryResult.currencyDecimals);
+      result.iroStatus = iroQueryResult.status;
+      result.iroUnitPrice = new BigNumber(iroQueryResult.unitPrice).div(denominator).toString();
+      result.iroCurrency = iroQueryResult.currency;
+      result.iroSoftCap = new BigNumber(iroQueryResult.softCap).div(denominator).toString();
+      result.iroHardCap = new BigNumber(iroQueryResult.hardCap).div(denominator).toString();
+      result.iroStart = iroQueryResult.start;
+      result.iroEnd = iroQueryResult.end;
+      result.iroTotalFunding = iroQueryResult.totalFunding;
+      result.iroFundsWithdrawn = iroQueryResult.fundsWithdrawn;
+      result.iroOwnerClaimed = iroQueryResult.ownerClaimed;
+      result.iroReservesFee = iroQueryResult.reservesFee;
+      result.iroTreasuryFee = iroQueryResult.treasuryFee;
+      result.iroListingOwner = iroQueryResult.listingOwner;
+      result.iroListingOwnerShare = iroQueryResult.listingOwnerShare;
+      result.iroShares = this.populateSharesArray(iroQueryResult.shares, denominator);
+    }
 
     return property;
   }
@@ -187,7 +208,8 @@ class PropertyService {
 
   private populateSharesArray(shares: UserShare[], currencyDecimals: BigNumber) {
     const sharesArray = [];
-    for (const share of shares) {
+    for (let i = 0; i < shares.length; i++) {
+      const share = shares[i];
       sharesArray.push({
         address: share.address,
         committedFunds: new BigNumber(share.commitedFunds).div(currencyDecimals).toString(),
