@@ -93,15 +93,18 @@ class PropertyService {
         results.docs.push(property);
         if (doc.status === "crowdfunding") {
           const iro = iros[doc.iroId];
-          const denominator = new BigNumber(iro.currencyDecimals);
           property.iroStatus = iro.status;
-          property.iroUnitPrice = new BigNumber(iro.unitPrice).div(denominator).toString();
+          property.iroUnitPrice = this.adjustDecimals(
+            iro.unitPrice, iro.currencyDecimals).toString();
           property.iroCurrency = iro.currency;
-          property.iroSoftCap = new BigNumber(iro.softCap).div(denominator).toString();
-          property.iroHardCap = new BigNumber(iro.hardCap).div(denominator).toString();
+          property.iroSoftCap = this.adjustDecimals(
+            iro.softCap, iro.currencyDecimals).toString();
+          property.iroHardCap = this.adjustDecimals(
+            iro.hardCap, iro.currencyDecimals).toString();
           property.iroStart = iro.start;
           property.iroEnd = iro.end;
-          property.iroTotalFunding = iro.totalFunding;
+          property.iroTotalFunding = this.adjustDecimals(
+            iro.totalFunding, iro.currencyDecimals).toString();
         }
       });
     } else {
@@ -120,22 +123,25 @@ class PropertyService {
     const result: PropertyExtended = { ...property };
     if (property.status === "crowdfunding") {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
-      const denominator = new BigNumber(iroQueryResult.currencyDecimals);
       result.iroStatus = iroQueryResult.status;
-      result.iroUnitPrice = new BigNumber(iroQueryResult.unitPrice).div(denominator).toString();
+      result.iroUnitPrice = this.adjustDecimals(
+        iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iroCurrency = iroQueryResult.currency;
-      result.iroSoftCap = new BigNumber(iroQueryResult.softCap).div(denominator).toString();
-      result.iroHardCap = new BigNumber(iroQueryResult.hardCap).div(denominator).toString();
+      result.iroSoftCap = this.adjustDecimals(
+        iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
+      result.iroHardCap = this.adjustDecimals(
+        iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
       result.iroStart = iroQueryResult.start;
       result.iroEnd = iroQueryResult.end;
-      result.iroTotalFunding = iroQueryResult.totalFunding;
+      result.iroTotalFunding = this.adjustDecimals(
+        iroQueryResult.totalFunding, iroQueryResult.currencyDecimals).toString();
       result.iroFundsWithdrawn = iroQueryResult.fundsWithdrawn;
       result.iroOwnerClaimed = iroQueryResult.ownerClaimed;
       result.iroReservesFee = iroQueryResult.reservesFee;
       result.iroTreasuryFee = iroQueryResult.treasuryFee;
       result.iroListingOwner = iroQueryResult.listingOwner;
       result.iroListingOwnerShare = iroQueryResult.listingOwnerShare;
-      result.iroShares = this.populateSharesArray(iroQueryResult.shares, denominator);
+      result.iroShares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);;
     }
 
     return result;
@@ -150,22 +156,25 @@ class PropertyService {
     const result: PropertyExtended = { ...property };
     if (property.status === "crowdfunding") {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
-      const denominator = new BigNumber(iroQueryResult.currencyDecimals);
       result.iroStatus = iroQueryResult.status;
-      result.iroUnitPrice = new BigNumber(iroQueryResult.unitPrice).div(denominator).toString();
+      result.iroUnitPrice = this.adjustDecimals(
+        iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iroCurrency = iroQueryResult.currency;
-      result.iroSoftCap = new BigNumber(iroQueryResult.softCap).div(denominator).toString();
-      result.iroHardCap = new BigNumber(iroQueryResult.hardCap).div(denominator).toString();
+      result.iroSoftCap = this.adjustDecimals(
+        iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
+      result.iroHardCap = this.adjustDecimals(
+        iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
       result.iroStart = iroQueryResult.start;
       result.iroEnd = iroQueryResult.end;
-      result.iroTotalFunding = iroQueryResult.totalFunding;
+      result.iroTotalFunding = this.adjustDecimals(
+        iroQueryResult.totalFunding, iroQueryResult.currencyDecimals).toString();
       result.iroFundsWithdrawn = iroQueryResult.fundsWithdrawn;
       result.iroOwnerClaimed = iroQueryResult.ownerClaimed;
       result.iroReservesFee = iroQueryResult.reservesFee;
       result.iroTreasuryFee = iroQueryResult.treasuryFee;
       result.iroListingOwner = iroQueryResult.listingOwner;
       result.iroListingOwnerShare = iroQueryResult.listingOwnerShare;
-      result.iroShares = this.populateSharesArray(iroQueryResult.shares, denominator);
+      result.iroShares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
     }
 
     return property;
@@ -206,19 +215,24 @@ class PropertyService {
     return removedProperty;
   }
 
-  private populateSharesArray(shares: UserShare[], currencyDecimals: BigNumber) {
+  private populateSharesArray(shares: UserShare[], currencyDecimals: number | string) {
     const sharesArray = [];
     for (let i = 0; i < shares.length; i++) {
       const share = shares[i];
       sharesArray.push({
         address: share.address,
-        committedFunds: new BigNumber(share.commitedFunds).div(currencyDecimals).toString(),
+        committedFunds: this.adjustDecimals(share.commitedFunds, currencyDecimals).toString(),
         purchasedAmount: share.amount,
         iroShare: share.share,
         claimed: share.claimed,
       });
     }
     return sharesArray;
+  }
+
+  private adjustDecimals(amount: number | string, decimals: number | string): BigNumber {
+    const denominator = (new BigNumber("10").pow(new BigNumber(decimals)));
+    return (new BigNumber(amount)).div(denominator);
   }
 }
 
