@@ -25,7 +25,7 @@ const iro = new iroModel();
 
 interface GetPropertiesPaginatedResult {
   docs: PropertyExtended[];
-  metadata: {
+  paginationMetadata: {
     totalDocs: number;
     limit: number;
     hasPrevPage: boolean;
@@ -47,7 +47,7 @@ class PropertyService {
     const findOne = await propertyModel.findOne({ name: createPropertyBody.name });
     if (findOne) throw new HttpException(409, "Property already exist (by name)");
 
-    const createPropertyData = await propertyModel.create(createPropertyBody);
+    const createPropertyData = await propertyModel.create({status: "draft", ...createPropertyBody});
 
     return createPropertyData;
   }
@@ -58,15 +58,8 @@ class PropertyService {
   ): Promise<GetPropertiesPaginatedResult> {
     const propertiesPagination = await propertyModel.paginate(filter, options);
 
-    const iroIds: string[] = [];
-    propertiesPagination.docs.forEach(doc => {
-      if (doc.status === "crowdfunding") {
-        iroIds.push(doc.iroId.toString());
-      }
-    });
-
     const results: GetPropertiesPaginatedResult = {
-      metadata: {
+      paginationMetadata: {
         totalDocs: propertiesPagination.totalDocs,
         limit: propertiesPagination.limit,
         hasPrevPage: propertiesPagination.hasPrevPage,
@@ -80,28 +73,40 @@ class PropertyService {
       },
       docs: [],
     };
-    const iroQueryResult = await iro.getIros(iroIds);
-    const iros: { [iroId: string]: IROReduced } = {};
-    iroQueryResult.iros.forEach(iro => {
-      iros[iro.iroId] = iro;
-    });
 
+    const iroIds: string[] = [];
     propertiesPagination.docs.forEach(doc => {
-      const property: PropertyExtended = { ...doc };
-      results.docs.push(property);
       if (doc.status === "crowdfunding") {
-        const iro = iros[doc.iroId];
-        const denominator = new BigNumber(iro.currencyDecimals);
-        property.iroStatus = iro.status;
-        property.iroUnitPrice = new BigNumber(iro.unitPrice).div(denominator).toString();
-        property.iroCurrency = iro.currency;
-        property.iroSoftCap = new BigNumber(iro.softCap).div(denominator).toString();
-        property.iroHardCap = new BigNumber(iro.hardCap).div(denominator).toString();
-        property.iroStart = iro.start;
-        property.iroEnd = iro.end;
-        property.iroTotalFunding = iro.totalFunding;
+        iroIds.push(doc.iroId.toString());
       }
     });
+
+    if (iroIds.length) {
+      const iroQueryResult = await iro.getIros(iroIds);
+      const iros: { [iroId: string]: IROReduced } = {};
+      iroQueryResult.iros.forEach(iro => {
+        iros[iro.iroId] = iro;
+      });
+
+      propertiesPagination.docs.forEach(doc => {
+        const property: PropertyExtended = { ...doc };
+        results.docs.push(property);
+        if (doc.status === "crowdfunding") {
+          const iro = iros[doc.iroId];
+          const denominator = new BigNumber(iro.currencyDecimals);
+          property.iroStatus = iro.status;
+          property.iroUnitPrice = new BigNumber(iro.unitPrice).div(denominator).toString();
+          property.iroCurrency = iro.currency;
+          property.iroSoftCap = new BigNumber(iro.softCap).div(denominator).toString();
+          property.iroHardCap = new BigNumber(iro.hardCap).div(denominator).toString();
+          property.iroStart = iro.start;
+          property.iroEnd = iro.end;
+          property.iroTotalFunding = iro.totalFunding;
+        }
+      });
+    } else {
+      results.docs = propertiesPagination.docs;
+    }
 
     return results;
   }
@@ -159,7 +164,7 @@ class PropertyService {
     if (isEmpty(iroId)) throw new HttpException(400, "iroId is empty");
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
       iroId,
-      stage: "crowdfunding",
+      status: "crowdfunding",
     });
     return updatedProperty;
   }
@@ -169,7 +174,7 @@ class PropertyService {
     if (isEmpty(realEstateNftId)) throw new HttpException(400, "realEstateNftId is empty");
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
       realEstateNftId,
-      stage: "trade",
+      status: "trade",
     });
     return updatedProperty;
   }

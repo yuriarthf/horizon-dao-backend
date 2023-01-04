@@ -83,10 +83,6 @@ export class CreatePropertyDto {
   @IsUrl()
   public imageUrl: string;
 
-  @IsNotEmpty()
-  @IsString()
-  public status: string;
-
   @IsOptional()
   @IsString()
   public country: string;

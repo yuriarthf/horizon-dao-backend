@@ -8,7 +8,6 @@ class PropertyController {
   public propertyService = new propertyService();
 
   public addProperty = async (req: Request, res: Response, next: NextFunction) => {
-    req.body.stage = "draft";
     try {
       const newProperty = await this.propertyService.createProperty(req.body);
       res.status(201).json({ data: newProperty, message: "Property created" });
