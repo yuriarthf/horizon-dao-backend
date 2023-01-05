@@ -6,7 +6,7 @@ import propertyModel from "@models/property.model";
 import iroModel from "@models/iro.model";
 
 // Interfaces
-import { Property, PropertyExtended } from "@interfaces/property.interface";
+import { Property, PropertyExtended, GetPropertiesPaginatedResult } from "@interfaces/property.interface";
 import { IROReduced, UserShare } from "@interfaces/iro.interface";
 import { FilterQuery, PaginateOptions } from "mongoose";
 
@@ -23,22 +23,6 @@ BigNumber.config({ DECIMAL_PLACES: 2 });
 // instantiate models
 const iro = new iroModel();
 
-interface GetPropertiesPaginatedResult {
-  docs: PropertyExtended[];
-  paginationMetadata: {
-    totalDocs: number;
-    limit: number;
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    page?: number | undefined;
-    totalPages: number;
-    offset: number;
-    prevPage?: number | null | undefined;
-    nextPage?: number | null | undefined;
-    pagingCounter: number;
-  };
-}
-
 class PropertyService {
   // TODO: Implement DTO for propertyBody
   public async createProperty(createPropertyBody: CreatePropertyDto) {
@@ -47,7 +31,7 @@ class PropertyService {
     const findOne = await propertyModel.findOne({ name: createPropertyBody.name });
     if (findOne) throw new HttpException(409, "Property already exist (by name)");
 
-    const createPropertyData = await propertyModel.create({status: "draft", ...createPropertyBody});
+    const createPropertyData = await propertyModel.create(createPropertyBody);
 
     return createPropertyData;
   }
@@ -76,7 +60,7 @@ class PropertyService {
 
     const iroIds: string[] = [];
     propertiesPagination.docs.forEach(doc => {
-      if (doc.status === "crowdfunding") {
+      if (doc.iroId && !doc.realEstateNftId) {
         iroIds.push(doc.iroId.toString());
       }
     });
@@ -91,19 +75,19 @@ class PropertyService {
       propertiesPagination.docs.forEach((doc: any) => {
         const property: PropertyExtended = { ...(doc.toJSON()) };
         results.docs.push(property);
-        if (doc.status === "crowdfunding") {
+        if (doc.iroId && !doc.realEstateNftId) {
           const iro = iros[doc.iroId];
-          property.iroStatus = iro.status;
-          property.iroUnitPrice = this.adjustDecimals(
+          property.iro.status = iro.status;
+          property.iro.unitPrice = this.adjustDecimals(
             iro.unitPrice, iro.currencyDecimals).toString();
-          property.iroCurrency = iro.currency;
-          property.iroSoftCap = this.adjustDecimals(
+          property.iro.currency = iro.currency;
+          property.iro.softCap = this.adjustDecimals(
             iro.softCap, iro.currencyDecimals).toString();
-          property.iroHardCap = this.adjustDecimals(
+          property.iro.hardCap = this.adjustDecimals(
             iro.hardCap, iro.currencyDecimals).toString();
-          property.iroStart = iro.start;
-          property.iroEnd = iro.end;
-          property.iroTotalFunding = this.adjustDecimals(
+          property.iro.start = iro.start;
+          property.iro.end = iro.end;
+          property.iro.totalFunding = this.adjustDecimals(
             iro.totalFunding, iro.currencyDecimals).toString();
         }
       });
@@ -121,27 +105,27 @@ class PropertyService {
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
     const result: PropertyExtended = { ...property };
-    if (property.status === "crowdfunding") {
+    if (property.iroId && !property.realEstateNftId) {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
-      result.iroStatus = iroQueryResult.status;
-      result.iroUnitPrice = this.adjustDecimals(
+      result.iro.status = iroQueryResult.status;
+      result.iro.unitPrice = this.adjustDecimals(
         iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
-      result.iroCurrency = iroQueryResult.currency;
-      result.iroSoftCap = this.adjustDecimals(
+      result.iro.currency = iroQueryResult.currency;
+      result.iro.softCap = this.adjustDecimals(
         iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
-      result.iroHardCap = this.adjustDecimals(
+      result.iro.hardCap = this.adjustDecimals(
         iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
-      result.iroStart = iroQueryResult.start;
-      result.iroEnd = iroQueryResult.end;
-      result.iroTotalFunding = this.adjustDecimals(
+      result.iro.start = iroQueryResult.start;
+      result.iro.end = iroQueryResult.end;
+      result.iro.totalFunding = this.adjustDecimals(
         iroQueryResult.totalFunding, iroQueryResult.currencyDecimals).toString();
-      result.iroFundsWithdrawn = iroQueryResult.fundsWithdrawn;
-      result.iroOwnerClaimed = iroQueryResult.ownerClaimed;
-      result.iroReservesFee = iroQueryResult.reservesFee;
-      result.iroTreasuryFee = iroQueryResult.treasuryFee;
-      result.iroListingOwner = iroQueryResult.listingOwner;
-      result.iroListingOwnerShare = iroQueryResult.listingOwnerShare;
-      result.iroShares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);;
+      result.iro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
+      result.iro.ownerClaimed = iroQueryResult.ownerClaimed;
+      result.iro.reservesFee = iroQueryResult.reservesFee;
+      result.iro.treasuryFee = iroQueryResult.treasuryFee;
+      result.iro.listingOwner = iroQueryResult.listingOwner;
+      result.iro.listingOwnerShare = iroQueryResult.listingOwnerShare;
+      result.iro.shares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
     }
 
     return result;
@@ -154,27 +138,27 @@ class PropertyService {
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
     const result: PropertyExtended = { ...property };
-    if (property.status === "crowdfunding") {
+    if (property.iroId && !property.realEstateNftId) {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
-      result.iroStatus = iroQueryResult.status;
-      result.iroUnitPrice = this.adjustDecimals(
+      result.iro.status = iroQueryResult.status;
+      result.iro.unitPrice = this.adjustDecimals(
         iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
-      result.iroCurrency = iroQueryResult.currency;
-      result.iroSoftCap = this.adjustDecimals(
+      result.iro.currency = iroQueryResult.currency;
+      result.iro.softCap = this.adjustDecimals(
         iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
-      result.iroHardCap = this.adjustDecimals(
+      result.iro.hardCap = this.adjustDecimals(
         iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
-      result.iroStart = iroQueryResult.start;
-      result.iroEnd = iroQueryResult.end;
-      result.iroTotalFunding = this.adjustDecimals(
+      result.iro.start = iroQueryResult.start;
+      result.iro.end = iroQueryResult.end;
+      result.iro.totalFunding = this.adjustDecimals(
         iroQueryResult.totalFunding, iroQueryResult.currencyDecimals).toString();
-      result.iroFundsWithdrawn = iroQueryResult.fundsWithdrawn;
-      result.iroOwnerClaimed = iroQueryResult.ownerClaimed;
-      result.iroReservesFee = iroQueryResult.reservesFee;
-      result.iroTreasuryFee = iroQueryResult.treasuryFee;
-      result.iroListingOwner = iroQueryResult.listingOwner;
-      result.iroListingOwnerShare = iroQueryResult.listingOwnerShare;
-      result.iroShares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
+      result.iro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
+      result.iro.ownerClaimed = iroQueryResult.ownerClaimed;
+      result.iro.reservesFee = iroQueryResult.reservesFee;
+      result.iro.treasuryFee = iroQueryResult.treasuryFee;
+      result.iro.listingOwner = iroQueryResult.listingOwner;
+      result.iro.listingOwnerShare = iroQueryResult.listingOwnerShare;
+      result.iro.shares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
     }
 
     return property;
@@ -193,8 +177,7 @@ class PropertyService {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(iroId)) throw new HttpException(400, "iroId is empty");
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
-      iroId,
-      status: "crowdfunding",
+      iroId
     });
     return updatedProperty;
   }
@@ -203,8 +186,7 @@ class PropertyService {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(realEstateNftId)) throw new HttpException(400, "realEstateNftId is empty");
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
-      realEstateNftId,
-      status: "trade",
+      realEstateNftId
     });
     return updatedProperty;
   }

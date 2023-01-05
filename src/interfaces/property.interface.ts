@@ -34,7 +34,6 @@ export interface Property {
   creator: string;
   description?: string;
   imageUrl: string;
-  status: string;
   country?: string;
   region?: string;
   city?: string;
@@ -47,25 +46,43 @@ export interface Property {
 }
 
 export interface PropertyExtended extends Property {
-  iroStatus?: string;
-  iroUnitPrice?: string;
-  iroCurrency?: string;
-  iroSoftCap?: string;
-  iroHardCap?: string;
-  iroStart?: string;
-  iroEnd?: string;
-  iroTotalFunding?: string;
-  iroListingOwner?: string;
-  iroListingOwnerShare?: string;
-  iroTreasuryFee?: string;
-  iroReservesFee?: string;
-  iroFundsWithdrawn?: boolean;
-  iroOwnerClaimed?: boolean;
-  iroShares?: {
-    address: string;
-    committedFunds: string;
-    purchasedAmount: string;
-    iroShare: string;
-    claimed: string;
-  }[];
+  iro?: {
+    status: string;
+    unitPrice: string;
+    currency: string;
+    softCap: string;
+    hardCap: string;
+    start: string;
+    end: string;
+    totalFunding: string;
+    listingOwner: string;
+    listingOwnerShare: string;
+    treasuryFee: string;
+    reservesFee: string;
+    fundsWithdrawn: boolean;
+    ownerClaimed: boolean;
+    shares: {
+      address: string;
+      committedFunds: string;
+      purchasedAmount: string;
+      iroShare: string;
+      claimed: string;
+    }[];
+  }
+}
+
+export interface GetPropertiesPaginatedResult {
+  docs: PropertyExtended[];
+  paginationMetadata: {
+    totalDocs: number;
+    limit: number;
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
+    page?: number | undefined;
+    totalPages: number;
+    offset: number;
+    prevPage?: number | null | undefined;
+    nextPage?: number | null | undefined;
+    pagingCounter: number;
+  };
 }

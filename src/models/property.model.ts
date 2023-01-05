@@ -91,9 +91,6 @@ class Property {
   @prop({ type: String, trim: true, required: true })
   public imageUrl!: string;
 
-  @prop({ type: String, trim: true, required: true })
-  public status!: string;
-
   @prop({ type: String, trim: true })
   public country?: string;
 
