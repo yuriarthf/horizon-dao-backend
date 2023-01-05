@@ -78,11 +78,11 @@ export interface GetPropertiesPaginatedResult {
     limit: number;
     hasPrevPage: boolean;
     hasNextPage: boolean;
-    page?: number | undefined;
+    page?: number;
     totalPages: number;
     offset: number;
-    prevPage?: number | null | undefined;
-    nextPage?: number | null | undefined;
+    prevPage?: number | null;
+    nextPage?: number | null;
     pagingCounter: number;
   };
 }
