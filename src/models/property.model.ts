@@ -68,7 +68,7 @@ class Update {
 }
 
 @plugin(typegoosePaginate)
-@modelOptions({ schemaOptions: { collection: "users", timestamps: true } })
+@modelOptions({ schemaOptions: { collection: "Property", timestamps: true } })
 class Property {
   @prop({ type: Number })
   public iroId?: number;
