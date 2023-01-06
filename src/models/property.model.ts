@@ -58,7 +58,7 @@ class Financials {
   public commonFeePercentage?: number;
 }
 
-@modelOptions({ schemaOptions: { collection: "users", timestamps: true } })
+@modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Update {
   @prop({ type: String, trim: true, required: true })
   public message!: string;
