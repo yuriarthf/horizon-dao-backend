@@ -7,9 +7,6 @@ class Attributes {
   public lotSizeSqm?: number;
 
   @prop({ type: Number })
-  public usableAreaSqm?: number;
-
-  @prop({ type: Number })
   public bedrooms?: number;
 
   @prop({ type: Number })
@@ -26,9 +23,6 @@ class Attributes {
 
   @prop({ type: Number })
   public longitude?: number;
-
-  @prop({ type: Number })
-  public laserShooter?: number;
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
