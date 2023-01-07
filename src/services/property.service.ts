@@ -25,7 +25,7 @@ const iro = new iroModel();
 
 class PropertyService {
   public async createProperty(createPropertyBody: CreatePropertyDto) {
-    if (isEmpty(createPropertyBody)) throw new HttpException(400, "propertyBody is empty");
+    if (isEmpty(createPropertyBody)) throw new HttpException(400, "createPropertyBody is empty");
 
     const findOne = await propertyModel.findOne({ name: createPropertyBody.name });
     if (findOne) throw new HttpException(409, "Property already exist (by name)");

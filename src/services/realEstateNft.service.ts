@@ -17,7 +17,7 @@ import BigNumber from "bignumber.js";
 // configure BigNumber constructor
 BigNumber.config({ DECIMAL_PLACES: 2 });
 
-class PropertyService {
+class RealEstateNftService {
   public async createRealEstateNft(createRealEstateNftBody: CreateRealEstateNftDto) {
     if (isEmpty(createRealEstateNftBody)) throw new HttpException(400, "createRealEstateNftBody is empty");
 
@@ -40,4 +40,4 @@ class PropertyService {
   }
 }
 
-export default PropertyService;
+export default RealEstateNftService;
