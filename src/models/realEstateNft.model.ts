@@ -15,6 +15,9 @@ class RealEstateNFT {
   @prop({ type: Number, required: true })
   public _id!: number;
 
+  @prop({ type: String })
+  public name?: string;
+
   @prop({ type: String, trim: true })
   public description?: string;
 
