@@ -4,13 +4,8 @@ import {
   IsArray,
   IsUrl,
   IsNumber,
-  IsEthereumAddress,
-  IsLatitude,
-  IsLongitude,
   IsOptional,
-  IsObject,
   ValidateNested,
-  IsDateString,
 } from "class-validator";
 
 import { Type } from "class-transformer";
