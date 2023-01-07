@@ -1,12 +1,9 @@
 import { Router } from "express";
 import PropertyController from "@controllers/property.controller";
-//import { CreateUserDto } from "@dtos/users.dto";
 import { Routes } from "@interfaces/routes.interface";
-//import authMiddleware from "@middlewares/auth.middleware";
-//import validationMiddleware from "@middlewares/validation.middleware";
-//import { toStringNoFail } from "@typegoose/typegoose/lib/internal/utils";
-
+console.log('property.routes 1')
 class PropertyRoute implements Routes {
+ 
   public path = "/property";
   public router = Router();
   public propertyController = new PropertyController();
@@ -16,6 +13,7 @@ class PropertyRoute implements Routes {
   }
 
   private initializeRoutes() {
+
     this.router.route(`${this.path}/add`).post(/*authMiddleware, */ this.propertyController.addProperty);
     this.router.route(`${this.path}/`).get(this.propertyController.getProperties);
     this.router.route(`${this.path}/:propertyId`).get(this.propertyController.getProperty);
