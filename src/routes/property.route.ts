@@ -1,7 +1,6 @@
 import { Router } from "express";
 import PropertyController from "@controllers/property.controller";
 import { Routes } from "@interfaces/routes.interface";
-console.log('property.routes 1')
 class PropertyRoute implements Routes {
  
   public path = "/property";
