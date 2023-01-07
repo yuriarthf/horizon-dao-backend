@@ -27,6 +27,9 @@ class AttributesDto {
 }
 
 export class CreateRealEstateNftDto {
+  @IsNumber()
+  public id: number;
+
   @IsString()
   public name: string;
 
