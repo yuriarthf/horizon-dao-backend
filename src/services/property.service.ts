@@ -24,7 +24,6 @@ BigNumber.config({ DECIMAL_PLACES: 2 });
 const iro = new iroModel();
 
 class PropertyService {
-  // TODO: Implement DTO for propertyBody
   public async createProperty(createPropertyBody: CreatePropertyDto) {
     if (isEmpty(createPropertyBody)) throw new HttpException(400, "propertyBody is empty");
 
