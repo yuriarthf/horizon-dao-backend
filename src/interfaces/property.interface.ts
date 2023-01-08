@@ -1,13 +1,11 @@
 export interface Attributes {
   lotSizeSqm?: number;
-  usableAreaSqm?: number;
   bedrooms?: number;
   bathrooms?: number;
   parking?: number;
   yearBuilt?: number;
   latitude?: number;
   longitude?: number;
-  laserShooter?: number;
 }
 
 export interface Financials {
@@ -68,7 +66,7 @@ export interface PropertyExtended extends Property {
       iroShare: string;
       claimed: string;
     }[];
-  }
+  };
 }
 
 export interface GetPropertiesPaginatedResult {

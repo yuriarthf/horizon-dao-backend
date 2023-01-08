@@ -1,22 +1,8 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsArray,
-  IsUrl,
-  IsNumber,
-  IsEthereumAddress,
-  IsLatitude,
-  IsLongitude,
-  IsOptional,
-  IsObject,
-  ValidateNested,
-  IsDateString,
-} from "class-validator";
+import { IsString, IsNotEmpty, IsArray, IsUrl, IsNumber, IsOptional, ValidateNested } from "class-validator";
 
 import { Type } from "class-transformer";
 
 class AttributesDto {
-
   @IsNotEmpty()
   @IsString()
   public value: string;
@@ -27,6 +13,9 @@ class AttributesDto {
 }
 
 export class CreateRealEstateNftDto {
+  @IsNumber()
+  public id: number;
+
   @IsString()
   public name: string;
 

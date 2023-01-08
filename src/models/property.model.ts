@@ -4,7 +4,7 @@ import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate"
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Attributes {
   @prop({ type: Number })
-  public lotSizeSqm?: number;
+  public area?: number;
 
   @prop({ type: Number })
   public bedrooms?: number;
@@ -50,15 +50,22 @@ class Financials {
 
   @prop({ type: Number })
   public commonFeePercentage?: number;
+
+  @prop({ type: {} })
+  public extra?: { [x: string]: string };
 }
 
+
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
-class Update {
+class Chat {
   @prop({ type: String, trim: true, required: true })
   public message!: string;
 
   @prop({ type: Date, required: true })
   public date!: Date;
+
+  @prop({ type: String, required: true })
+  public creator: string;
 }
 
 @plugin(typegoosePaginate)
@@ -100,17 +107,25 @@ class Property {
   @prop({ type: String, trim: true })
   public highlights?: string;
 
+  @prop({ type: String, trim: true })
+  public market?: string;
+
   @prop({ type: Attributes })
   public attributes?: Attributes;
 
+ 
+
   @prop({ type: Financials })
   public financials?: Financials;
-
+  
   @prop({ type: String, trim: true })
   public documentsUrl?: string;
 
-  @prop({ type: [Update] })
-  public updates?: Update[];
+  @prop({ type: [Chat] })
+  public discussions?: Chat[];
+
+  @prop({ type: [Chat] })
+  public updates?: Chat[];
 
   static paginate: PaginateMethod<Property>;
 }
