@@ -1,4 +1,4 @@
-import { getIrosDocument, getIroDocument, execute } from "./subgraph/.graphclient";
+import { getIrosDocument, getIroDocument, execute } from "./subgraph/graphclient";
 
 interface GetIrosResult {
   iroId: string;
