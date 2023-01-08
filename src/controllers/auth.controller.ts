@@ -23,6 +23,7 @@ class AuthController {
       const userData: CreateUserDto = req.body;
       const { cookie, findUser } = await this.authService.login(userData);
       findUser.password = undefined;
+      findUser.nonce = undefined;
       delete findUser.password;
 
       res.setHeader("Set-Cookie", [cookie]);
