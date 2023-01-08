@@ -195,7 +195,7 @@ class PropertyService {
       description: updatedProperty.description,
       image: updatedProperty.imageUrl,
       attributes: this.formatAttributes(updatedProperty.attributes),
-      external_url: `horizon-dao.io/asset/${propertyId}`,
+      external_url: `https://horizon-dao.io/asset/${propertyId}`,
     });
     return realEstateNft;
   }
