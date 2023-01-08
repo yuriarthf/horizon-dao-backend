@@ -1,6 +1,5 @@
 import { Router } from "express";
 import RealEstateNftController from "@controllers/realEstateNft.controller";
-//import { CreateUserDto } from "@dtos/users.dto";
 import { Routes } from "@interfaces/routes.interface";
 //import authMiddleware from "@middlewares/auth.middleware";
 //import validationMiddleware from "@middlewares/validation.middleware";

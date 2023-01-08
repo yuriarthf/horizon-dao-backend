@@ -11,7 +11,7 @@ class RealEstateNftController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
 
 export default RealEstateNftController;

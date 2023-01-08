@@ -13,7 +13,7 @@ const app = new App([
   new UsersRoute(),
   new AuthRoute(),
   new PropertyRoute(),
-  new RealEstateNftRoute()
+  new RealEstateNftRoute(),
 ]);
 
 app.listen();

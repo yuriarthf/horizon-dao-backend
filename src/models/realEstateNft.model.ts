@@ -1,6 +1,5 @@
 import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose";
 
-
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Attribute {
   @prop({ type: String, required: true })

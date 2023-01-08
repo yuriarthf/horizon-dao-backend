@@ -3,10 +3,11 @@ import { HttpException } from "@exceptions/HttpException";
 
 // Models
 import propertyModel from "@models/property.model";
+import RealEstateNFTModel from "@models/realEstateNft.model";
 import iroModel from "@models/iro.model";
 
 // Interfaces
-import { Property, PropertyExtended, GetPropertiesPaginatedResult } from "@interfaces/property.interface";
+import { Property, PropertyExtended, GetPropertiesPaginatedResult, Attributes } from "@interfaces/property.interface";
 import { IROReduced, UserShare } from "@interfaces/iro.interface";
 import { FilterQuery, PaginateOptions } from "mongoose";
 
@@ -72,22 +73,18 @@ class PropertyService {
       });
 
       propertiesPagination.docs.forEach((doc: any) => {
-        const property: PropertyExtended = { ...(doc.toJSON()) };
+        const property: PropertyExtended = { ...doc.toJSON() };
         results.docs.push(property);
         if (doc.iroId && !doc.realEstateNftId) {
           const iro = iros[doc.iroId];
           property.iro.status = iro.status;
-          property.iro.unitPrice = this.adjustDecimals(
-            iro.unitPrice, iro.currencyDecimals).toString();
+          property.iro.unitPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toString();
           property.iro.currency = iro.currency;
-          property.iro.softCap = this.adjustDecimals(
-            iro.softCap, iro.currencyDecimals).toString();
-          property.iro.hardCap = this.adjustDecimals(
-            iro.hardCap, iro.currencyDecimals).toString();
+          property.iro.softCap = this.adjustDecimals(iro.softCap, iro.currencyDecimals).toString();
+          property.iro.hardCap = this.adjustDecimals(iro.hardCap, iro.currencyDecimals).toString();
           property.iro.start = iro.start;
           property.iro.end = iro.end;
-          property.iro.totalFunding = this.adjustDecimals(
-            iro.totalFunding, iro.currencyDecimals).toString();
+          property.iro.totalFunding = this.adjustDecimals(iro.totalFunding, iro.currencyDecimals).toString();
         }
       });
     } else {
@@ -107,17 +104,16 @@ class PropertyService {
     if (property.iroId && !property.realEstateNftId) {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
-      result.iro.unitPrice = this.adjustDecimals(
-        iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
+      result.iro.unitPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iro.currency = iroQueryResult.currency;
-      result.iro.softCap = this.adjustDecimals(
-        iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
-      result.iro.hardCap = this.adjustDecimals(
-        iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
+      result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
+      result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
       result.iro.start = iroQueryResult.start;
       result.iro.end = iroQueryResult.end;
       result.iro.totalFunding = this.adjustDecimals(
-        iroQueryResult.totalFunding, iroQueryResult.currencyDecimals).toString();
+        iroQueryResult.totalFunding,
+        iroQueryResult.currencyDecimals,
+      ).toString();
       result.iro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
       result.iro.ownerClaimed = iroQueryResult.ownerClaimed;
       result.iro.reservesFee = iroQueryResult.reservesFee;
@@ -140,17 +136,16 @@ class PropertyService {
     if (property.iroId && !property.realEstateNftId) {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
-      result.iro.unitPrice = this.adjustDecimals(
-        iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
+      result.iro.unitPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iro.currency = iroQueryResult.currency;
-      result.iro.softCap = this.adjustDecimals(
-        iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
-      result.iro.hardCap = this.adjustDecimals(
-        iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
+      result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
+      result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
       result.iro.start = iroQueryResult.start;
       result.iro.end = iroQueryResult.end;
       result.iro.totalFunding = this.adjustDecimals(
-        iroQueryResult.totalFunding, iroQueryResult.currencyDecimals).toString();
+        iroQueryResult.totalFunding,
+        iroQueryResult.currencyDecimals,
+      ).toString();
       result.iro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
       result.iro.ownerClaimed = iroQueryResult.ownerClaimed;
       result.iro.reservesFee = iroQueryResult.reservesFee;
@@ -176,7 +171,7 @@ class PropertyService {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(iroId)) throw new HttpException(400, "iroId is empty");
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
-      iroId
+      iroId,
     });
     return updatedProperty;
   }
@@ -184,10 +179,25 @@ class PropertyService {
   public async setRealEstateNftId(propertyId: string, realEstateNftId: string) {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(realEstateNftId)) throw new HttpException(400, "realEstateNftId is empty");
+
+    const property = await propertyModel.findById(propertyId);
+    if (!property) throw new HttpException(409, "Property doesn't exist");
+
+    if (property.realEstateNftId) throw new HttpException(400, "Real Estate NFT ID already set");
+
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
-      realEstateNftId
+      realEstateNftId,
     });
-    return updatedProperty;
+
+    const realEstateNft = await RealEstateNFTModel.create({
+      _id: realEstateNftId,
+      name: updatedProperty.name,
+      description: updatedProperty.description,
+      image: updatedProperty.imageUrl,
+      attributes: this.formatAttributes(updatedProperty.attributes),
+      external_url: `horizon-dao.io/asset/${property}`,
+    });
+    return realEstateNft;
   }
 
   public async deletePropertyById(propertyId: string): Promise<Property> {
@@ -212,8 +222,19 @@ class PropertyService {
   }
 
   private adjustDecimals(amount: number | string, decimals: number | string): BigNumber {
-    const denominator = (new BigNumber("10").pow(new BigNumber(decimals)));
-    return (new BigNumber(amount)).div(denominator);
+    const denominator = new BigNumber("10").pow(new BigNumber(decimals));
+    return new BigNumber(amount).div(denominator);
+  }
+
+  private formatAttributes(propertyAttributes: Attributes) {
+    const nftAttributes = [];
+    for (const attibute of Object.entries(propertyAttributes)) {
+      nftAttributes.push({
+        trait_type: attibute[0],
+        value: attibute[1].toString(),
+      });
+    }
+    return nftAttributes;
   }
 }
 
