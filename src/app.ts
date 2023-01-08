@@ -49,6 +49,9 @@ class App {
       set("debug", true);
     }
 
+    set("strictQuery", false);
+
+
     await connect(dbConnection);
   }
 
