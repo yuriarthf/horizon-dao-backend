@@ -22,9 +22,8 @@ class AuthController {
     try {
       const userData: CreateUserDto = req.body;
       const { cookie, findUser } = await this.authService.login(userData);
-      findUser.password = undefined;
-      findUser.nonce = undefined;
       delete findUser.password;
+      delete findUser.nonce;
 
       res.setHeader("Set-Cookie", [cookie]);
 
@@ -46,21 +45,10 @@ class AuthController {
     }
   };
 
-  public generateNonce = () => {
-    return Math.random();
-  };
-
   public walletNonce = async (req: RequestWithUser, res: Response) => {
     const address = req.query.address;
     const user = await this.authService.walletNonce(address);
     res.status(201).json({ data: user, message: "Wallet nonce created successfully" });
-  };
-
-  public toHex = (stringToConvert: string) => {
-    return stringToConvert
-      .split("")
-      .map(c => c.charCodeAt(0).toString(16).padStart(2, "0"))
-      .join("");
   };
 
   public verifyWallet = async (req, res) => {

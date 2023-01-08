@@ -9,16 +9,16 @@ class User {
   public password: string;
 
   @prop({ type: String, required: false })
-  public nonce: string;
+  public nonce: string; // wallet nonce
 
   @prop({ type: String, required: false })
   public address: string;
 
   @prop({ type: String, required: false })
-  public type: string;
+  public type: string; // wallet, email
 
   @prop({ type: String, required: false })
-  public role: string;
+  public role: string; // admin, user
 
   public createdAt?: Date;
 
