@@ -46,16 +46,19 @@ class AuthController {
   };
 
   public walletNonce = async (req: RequestWithUser, res: Response) => {
-    const address = req.query.address;
+    const address = req.body.address;
     const user = await this.authService.walletNonce(address);
     res.status(201).json({ data: user, message: "Wallet nonce created successfully" });
   };
 
   public verifyWallet = async (req, res) => {
-    const address = req.query.address;
-    const signature = req.query.signature;
+    const address = req.body.address;
+    const signature = req.body.signature;
 
     const { cookie, userUpdated } = await this.authService.verifyWallet(address, signature);
+
+    delete userUpdated.password;
+    delete userUpdated.nonce;
 
     res.setHeader("Set-Cookie", [cookie]);
     res.status(201).json({ data: userUpdated, message: "Wallet verified successfully" });

@@ -73,7 +73,8 @@ class AuthService {
 
     if (address) {
       const findUser: User = await userModel.findOne({ address });
-      if (!findUser || !findUser.nonce) {
+
+      if (!findUser || !findUser._id) {
         const user = await userModel.create({
           address: address,
           nonce: nonce,
@@ -89,9 +90,10 @@ class AuthService {
       }
     } else throw new HttpException(400, "address is empty");
   }
+
   public async verifyWallet(address: string, signature: string) {
     if (address) {
-      const findUser: User = await userModel.findOne({ address });
+      const findUser: User = await userModel.findOne({ address }).to;
       const nonce = findUser.nonce;
 
       const recovered_address = recoverPersonalSignature({
@@ -100,7 +102,9 @@ class AuthService {
       }).toLowerCase();
 
       if (recovered_address === address.toLowerCase()) {
-        const userUpdated: User = await userModel.findByIdAndUpdate(findUser._id, { nonce: this.generateNonce() });
+        const userUpdated: User = await userModel
+          .findByIdAndUpdate(findUser._id, { nonce: this.generateNonce() })
+          .toJSON();
         const tokenData = this.createToken(userUpdated);
         const cookie = this.createCookie(tokenData);
 

@@ -2,16 +2,16 @@ import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose";
 
 @modelOptions({ schemaOptions: { collection: "users", timestamps: true } })
 class User {
-  @prop({ type: String, required: true, unique: true })
+  @prop({ type: String, required: false, unique: true })
   public email: string;
 
-  @prop({ type: String, required: true })
+  @prop({ type: String, required: false })
   public password: string;
 
   @prop({ type: String, required: false })
   public nonce: string; // wallet nonce
 
-  @prop({ type: String, required: false })
+  @prop({ type: String, required: false, unique: true })
   public address: string;
 
   @prop({ type: String, required: false })
