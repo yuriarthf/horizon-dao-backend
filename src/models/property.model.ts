@@ -4,7 +4,7 @@ import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate"
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Attributes {
   @prop({ type: Number })
-  public lotSizeSqm?: number;
+  public area?: number;
 
   @prop({ type: Number })
   public bedrooms?: number;
@@ -50,6 +50,9 @@ class Financials {
 
   @prop({ type: Number })
   public commonFeePercentage?: number;
+
+  @prop({ type: {} })
+  public extra?: { [x: string]: string };
 }
 
 
@@ -110,15 +113,11 @@ class Property {
   @prop({ type: Attributes })
   public attributes?: Attributes;
 
-  @prop({ type: {}  })
-  public attributesExtra?: {[x: string]: string};
+ 
 
   @prop({ type: Financials })
   public financials?: Financials;
-
-  @prop({ type: {} }) 
-  public financialsExtra?: {[x: string]: string};
-
+  
   @prop({ type: String, trim: true })
   public documentsUrl?: string;
 
