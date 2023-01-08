@@ -25,7 +25,7 @@ class AuthService {
     if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
     const findUser: User = (await userModel.findOne({ email: userData.email })).toJSON();
-    if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+    if (!findUser?._id) throw new HttpException(409, `This email ${userData.email} was not found`);
 
     const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
     if (!isPasswordMatching) throw new HttpException(409, "Password is not matching");
@@ -58,7 +58,7 @@ class AuthService {
   }
 
   public generateNonce = () => {
-    return Math.random();
+    return Math.floor(Math.random() * 1000000).toString();
   };
 
   public toHex = (stringToConvert: string) => {
