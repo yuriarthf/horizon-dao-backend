@@ -55,7 +55,6 @@ class Financials {
   public extra?: { [x: string]: string };
 }
 
-
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Chat {
   @prop({ type: String, trim: true, required: true })
@@ -113,11 +112,9 @@ class Property {
   @prop({ type: Attributes })
   public attributes?: Attributes;
 
- 
-
   @prop({ type: Financials })
   public financials?: Financials;
-  
+
   @prop({ type: String, trim: true })
   public documentsUrl?: string;
 
@@ -126,6 +123,12 @@ class Property {
 
   @prop({ type: [Chat] })
   public updates?: Chat[];
+
+  @prop({ required: true, default: () => Date.now() })
+  public createdAt: number;
+
+  @prop({ required: true, default: () => Date.now() })
+  public updatedAt: number;
 
   static paginate: PaginateMethod<Property>;
 }

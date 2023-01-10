@@ -1,16 +1,14 @@
 query getIros($iroIds: [BigInt!]) {
-	iros(where: {
-		iroId_in: $iroIds,
-	}) {
-		iroId,
-		status,
-		unitPrice
-		currency
-		currencyDecimals
-		softCap
-		hardCap
-		start
-		end
-		totalFunding
-	}
+  iros(where: { iroId_in: $iroIds }) {
+    iroId
+    status
+    unitPrice
+    currency
+    currencyDecimals
+    softCap
+    hardCap
+    start
+    end
+    totalFunding
+  }
 }

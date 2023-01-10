@@ -41,6 +41,8 @@ export interface Property {
   financials?: Financials;
   documentsUrl?: string;
   updates?: Update[];
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface PropertyExtended extends Property {

@@ -162,6 +162,7 @@ class PropertyService {
   public async updatePropertyById(propertyId: string, updateBody): Promise<Property> {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(updateBody)) throw new HttpException(400, "updateBody is empty");
+    updateBody.updatedAt = Date.now();
     const updatedProperty = propertyModel.findByIdAndUpdate(propertyId, updateBody);
 
     return updatedProperty;
@@ -172,6 +173,7 @@ class PropertyService {
     if (isEmpty(iroId)) throw new HttpException(400, "iroId is empty");
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
       iroId,
+      updatedAt: Date.now(),
     });
     return updatedProperty;
   }
@@ -187,6 +189,7 @@ class PropertyService {
 
     const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
       realEstateNftId,
+      updatedAt: Date.now(),
     });
 
     const realEstateNft = await RealEstateNFTModel.create({

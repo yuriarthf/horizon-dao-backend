@@ -8,8 +8,8 @@ class User {
   @prop({ type: String, required: false })
   public password: string;
 
-  @prop({ type: String, required: false })
-  public nonce: string; // wallet nonce
+  @prop({ type: Number, required: false })
+  public nonce: number; // wallet nonce
 
   @prop({ type: String, required: false, unique: true })
   public address: string;
@@ -20,9 +20,11 @@ class User {
   @prop({ type: String, required: false })
   public role: string; // admin, user
 
-  public createdAt?: Date;
+  @prop({ required: true, default: () => Date.now() })
+  public createdAt: number;
 
-  public updatedAt?: Date;
+  @prop({ required: true, default: () => Date.now() })
+  public updatedAt: number;
 }
 
 const UserModel = getModelForClass(User);
