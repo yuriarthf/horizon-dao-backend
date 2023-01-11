@@ -28,9 +28,6 @@ class Attributes {
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Financials {
   @prop({ type: Number })
-  public assetPrice?: number;
-
-  @prop({ type: Number })
   public annualCashflow?: number;
 
   @prop({ type: Number })
