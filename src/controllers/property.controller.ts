@@ -48,6 +48,15 @@ class PropertyController {
     }
   };
 
+  public getUserIROProperties = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userIROProperties = await this.propertyService.getUserIROProperties(req.body.userAddress);
+      res.status(200).json({ data: userIROProperties });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getProperty = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const property = await this.propertyService.getPropertyById(req.params.propertyId);
