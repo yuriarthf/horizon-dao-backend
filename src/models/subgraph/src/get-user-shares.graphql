@@ -1,0 +1,10 @@
+query getUserShares($user: Bytes!) {
+  usershares(where: { address: $user }) {
+    address
+    committedFunds
+    amount
+    share
+    claimed
+    iro
+  }
+}
