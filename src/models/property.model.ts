@@ -47,9 +47,6 @@ class Financials {
 
   @prop({ type: Number })
   public commonFeePercentage?: number;
-
-  @prop({ type: {} })
-  public extra?: { [x: string]: string };
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
