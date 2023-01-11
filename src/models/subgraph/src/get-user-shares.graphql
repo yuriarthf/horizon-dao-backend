@@ -1,10 +1,21 @@
 query getUserShares($user: Bytes!) {
-  usershares(where: { address: $user }) {
+  userShares(where: { address: $user }) {
     address
     committedFunds
     amount
     share
     claimed
-    iro
+    iro {
+      iroId
+      status
+      unitPrice
+      currency
+      currencyDecimals
+      softCap
+      hardCap
+      start
+      end
+      totalFunding
+    }
   }
 }

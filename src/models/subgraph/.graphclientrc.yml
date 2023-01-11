@@ -6,3 +6,4 @@ sources:
 documents:
   - ./src/get-iros.graphql
   - ./src/get-iro.graphql
+  - ./src/get-user-shares.graphql

@@ -871,6 +871,12 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetIrosDocument);
         },
         location: 'GetIrosDocument.graphql'
+      },{
+        document: GetUserSharesDocument,
+        get rawSDL() {
+          return printWithCache(GetUserSharesDocument);
+        },
+        location: 'GetUserSharesDocument.graphql'
       }
     ];
     },
@@ -926,6 +932,16 @@ export type getIrosQueryVariables = Exact<{
 
 export type getIrosQuery = { iros: Array<Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'softCap' | 'hardCap' | 'start' | 'end' | 'totalFunding'>> };
 
+export type getUserSharesQueryVariables = Exact<{
+  user: Scalars['Bytes'];
+}>;
+
+
+export type getUserSharesQuery = { userShares: Array<(
+    Pick<UserShare, 'address' | 'committedFunds' | 'amount' | 'share' | 'claimed'>
+    & { iro: Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'softCap' | 'hardCap' | 'start' | 'end' | 'totalFunding'> }
+  )> };
+
 
 export const getIroDocument = gql`
     query getIro($iroId: BigInt!) {
@@ -972,6 +988,30 @@ export const getIrosDocument = gql`
   }
 }
     ` as unknown as DocumentNode<getIrosQuery, getIrosQueryVariables>;
+export const getUserSharesDocument = gql`
+    query getUserShares($user: Bytes!) {
+  userShares(where: {address: $user}) {
+    address
+    committedFunds
+    amount
+    share
+    claimed
+    iro {
+      iroId
+      status
+      unitPrice
+      currency
+      currencyDecimals
+      softCap
+      hardCap
+      start
+      end
+      totalFunding
+    }
+  }
+}
+    ` as unknown as DocumentNode<getUserSharesQuery, getUserSharesQueryVariables>;
+
 
 
 
@@ -983,6 +1023,9 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     getIros(variables?: getIrosQueryVariables, options?: C): Promise<getIrosQuery> {
       return requester<getIrosQuery, getIrosQueryVariables>(getIrosDocument, variables, options) as Promise<getIrosQuery>;
+    },
+    getUserShares(variables: getUserSharesQueryVariables, options?: C): Promise<getUserSharesQuery> {
+      return requester<getUserSharesQuery, getUserSharesQueryVariables>(getUserSharesDocument, variables, options) as Promise<getUserSharesQuery>;
     }
   };
 }
