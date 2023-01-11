@@ -4,7 +4,7 @@ import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate"
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Attributes {
   @prop({ type: Number })
-  public lotSizeSqm?: number;
+  public area?: number;
 
   @prop({ type: Number })
   public bedrooms?: number;
@@ -28,9 +28,6 @@ class Attributes {
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Financials {
   @prop({ type: Number })
-  public assetPrice?: number;
-
-  @prop({ type: Number })
   public annualCashflow?: number;
 
   @prop({ type: Number })
@@ -53,12 +50,15 @@ class Financials {
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
-class Update {
+class Chat {
   @prop({ type: String, trim: true, required: true })
   public message!: string;
 
   @prop({ type: Date, required: true })
   public date!: Date;
+
+  @prop({ type: String, required: true })
+  public creator: string;
 }
 
 @plugin(typegoosePaginate)
@@ -100,6 +100,9 @@ class Property {
   @prop({ type: String, trim: true })
   public highlights?: string;
 
+  @prop({ type: String, trim: true })
+  public market?: string;
+
   @prop({ type: Attributes })
   public attributes?: Attributes;
 
@@ -109,8 +112,17 @@ class Property {
   @prop({ type: String, trim: true })
   public documentsUrl?: string;
 
-  @prop({ type: [Update] })
-  public updates?: Update[];
+  @prop({ type: [Chat] })
+  public discussions?: Chat[];
+
+  @prop({ type: [Chat] })
+  public updates?: Chat[];
+
+  @prop({ required: true, default: () => Date.now() })
+  public createdAt: number;
+
+  @prop({ required: true, default: () => Date.now() })
+  public updatedAt: number;
 
   static paginate: PaginateMethod<Property>;
 }

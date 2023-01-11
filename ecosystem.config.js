@@ -10,7 +10,7 @@
       name: 'prod', // pm2 start App name
       script: 'dist/server.js',
       exec_mode: 'cluster', // 'cluster' or 'fork'
-      instance_var: 'INSTANCE_ID', // instance variable
+      instance_var: 'i-0d7702618add947e8', // instance variable
       instances: 2, // pm2 instance count
       autorestart: true, // auto restart if process crash
       watch: false, // files change automatic restart
@@ -29,7 +29,7 @@
       script: 'ts-node', // ts-node
       args: '-r tsconfig-paths/register --transpile-only src/server.ts', // ts-node args
       exec_mode: 'cluster', // 'cluster' or 'fork'
-      instance_var: 'INSTANCE_ID', // instance variable
+      instance_var: 'i-0d7702618add947e8', // instance variable
       instances: 2, // pm2 instance count
       autorestart: true, // auto restart if process crash
       watch: false, // files change automatic restart
@@ -51,7 +51,7 @@
       ref: 'origin/master',
       repo: 'git@github.com:repo.git',
       path: 'dist/server.js',
-      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --only prod',
+      'post-deploy': 'yarn && yarn build && pm2 reload ecosystem.config.js --only prod',
     },
   },
 };

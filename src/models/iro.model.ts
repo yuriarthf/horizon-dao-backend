@@ -1,4 +1,4 @@
-import { getIrosDocument, getIroDocument, execute } from "./subgraph/.graphclient";
+import { getIrosDocument, getIroDocument, getUserSharesDocument, execute } from "./subgraph/graphclient";
 
 interface GetIrosResult {
   iroId: string;
@@ -32,9 +32,7 @@ interface GetIroResult {
   listingOwnerShare: string;
   shares: {
     address: string;
-    // WARN: It's a typo on the subgraph version itself,
-    //    can be fixed after deploying a new instance of the subgraph
-    commitedFunds: string;
+    committedFunds: string;
     amount: string;
     share: string;
     claimed: boolean;
@@ -44,10 +42,12 @@ interface GetIroResult {
 class IRO {
   public getIrosQuery: typeof getIrosDocument;
   public getIroQuery: typeof getIroDocument;
+  public getUserSharesQuery: typeof getUserSharesDocument;
 
   constructor() {
     this.getIrosQuery = getIrosDocument;
     this.getIroQuery = getIroDocument;
+    this.getUserSharesQuery = getUserSharesDocument;
   }
 
   public async getIros(iroIds: string[]): Promise<GetIrosResult[]> {
@@ -58,6 +58,11 @@ class IRO {
   public async getIro(iroId: string): Promise<GetIroResult> {
     const result = await execute(this.getIroQuery, { iroId });
     return result?.data.iros[0];
+  }
+
+  public async getUserShare(user: string) {
+    const result = await execute(this.getUserSharesQuery, { user });
+    return result?.data.userShares;
   }
 }
 

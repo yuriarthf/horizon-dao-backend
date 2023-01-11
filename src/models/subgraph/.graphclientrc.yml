@@ -2,7 +2,8 @@ sources:
   - name: horizon-iro
     handler:
       graphql:
-        endpoint: https://api.studio.thegraph.com/query/39814/horizon-iro-test/v0.0.14
+        endpoint: https://api.studio.thegraph.com/query/39814/horizon-iro-test/v0.0.15
 documents:
   - ./src/get-iros.graphql
   - ./src/get-iro.graphql
+  - ./src/get-user-shares.graphql

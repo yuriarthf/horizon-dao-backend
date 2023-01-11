@@ -49,6 +49,9 @@ class App {
       set("debug", true);
     }
 
+    set("strictQuery", false);
+
+
     await connect(dbConnection);
   }
 
@@ -75,7 +78,7 @@ class App {
         info: {
           title: "REST API",
           version: "1.0.0",
-          description: "Example docs",
+          description: "HorizonDAO REST API",
         },
       },
       apis: ["swagger.yaml"],

@@ -1,5 +1,8 @@
 {
   "compileOnSave": false,
+  "ts-node": {
+    "esm": true
+  },
   "compilerOptions": {
     "target": "es2017",
     "lib": ["es2017", "esnext.asynciterable"],
@@ -9,7 +12,6 @@
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "module": "commonjs",
     "pretty": true,
     "sourceMap": true,
     "declaration": true,
