@@ -2,6 +2,24 @@ import { prop, getModelForClass, modelOptions, plugin } from "@typegoose/typegoo
 import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate";
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
+class IROProposal {
+  @prop({ type: Number, required: true })
+  public unitPrice!: number;
+
+  @prop({ type: Number, required: true })
+  public duration!: number;
+
+  @prop({ type: Number, required: true })
+  public totalSupply!: number;
+
+  @prop({ type: Number })
+  public reservesFee?: number;
+
+  @prop({ type: Number })
+  public treasuryFee?: number;
+}
+
+@modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Attributes {
   @prop({ type: Number })
   public area?: number;
@@ -51,14 +69,26 @@ class Financials {
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class Chat {
+  @prop({ type: String, required: true })
+  public creator: string;
+
   @prop({ type: String, trim: true, required: true })
   public message!: string;
 
-  @prop({ type: Date, required: true })
-  public date!: Date;
+  @prop({ required: true, default: () => Date.now() })
+  public createdAt: number;
+}
 
-  @prop({ type: String, required: true })
-  public creator: string;
+@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+class Update {
+  @prop({ type: String, trim: true, required: true })
+  public title!: string;
+
+  @prop({ type: String, trim: true, required: true })
+  public description!: string;
+
+  @prop({ required: true, default: () => Date.now() })
+  public createdAt: number;
 }
 
 @plugin(typegoosePaginate)
@@ -115,8 +145,11 @@ class Property {
   @prop({ type: [Chat] })
   public discussions?: Chat[];
 
-  @prop({ type: [Chat] })
-  public updates?: Chat[];
+  @prop({ type: [Update] })
+  public updates?: Update[];
+
+  @prop({ type: IROProposal, required: true })
+  public iroProposal!: IROProposal;
 
   @prop({ required: true, default: () => Date.now() })
   public createdAt: number;
