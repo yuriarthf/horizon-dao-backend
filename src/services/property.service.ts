@@ -126,6 +126,54 @@ class PropertyService {
     return result;
   }
 
+  public async getUserIROProperties(userAddress: string) {
+    if (isEmpty(userAddress)) throw new HttpException(400, "userAddress is empty");
+
+    const iroProperties = await propertyModel.find({ iroId: { $exists: true } });
+    if (!iroProperties) throw new HttpException(409, "No properties found");
+
+    const iroIdToPropertyMap = {};
+    for (const iroProperty of iroProperties) {
+      const item = iroProperty.toJSON();
+      iroIdToPropertyMap[item.iroId.toString()] = item;
+    }
+
+    const userShares = await iro.getUserShare(userAddress);
+
+    const results = [];
+    for (const userShare of userShares) {
+      if (!(userShare.iro.iroId.toString() in iroIdToPropertyMap)) continue;
+      const property = iroIdToPropertyMap[userShare.iro.iroId.toString()];
+      const currencyDecimals = userShare.iro.currencyDecimals;
+      results.push({
+        name: property.name,
+        type: property.type,
+        country: property.country,
+        city: property.city,
+        region: property.region,
+        address: property.address,
+        imageUrl: property.imageUrl,
+        attributes: property.attributes,
+        iro: {
+          status: userShare.iro.status,
+          userAmount: userShare.amount,
+          userShare: userShare.share,
+          userClaimed: userShare.claimed,
+          currency: userShare.iro.currency,
+          unitPrice: this.adjustDecimals(userShare.iro.unitPrice, currencyDecimals),
+          softCap: this.adjustDecimals(userShare.iro.softCap, currencyDecimals),
+          hardCap: this.adjustDecimals(userShare.iro.hardCap, currencyDecimals),
+          start: userShare.iro.start,
+          end: userShare.iro.end,
+          totalFunding: this.adjustDecimals(userShare.iro.totalFunding, currencyDecimals),
+          currentSupply: new BigNumber(userShare.iro.totalFunding).div(new BigNumber(userShare.iro.unitPrice)),
+        },
+      });
+    }
+
+    return results;
+  }
+
   public async getPropertyByName(name: string): Promise<Property> {
     if (isEmpty(name)) throw new HttpException(400, "name is empty");
 
@@ -215,7 +263,7 @@ class PropertyService {
       const share = shares[i];
       sharesArray.push({
         address: share.address,
-        committedFunds: this.adjustDecimals(share.commitedFunds, currencyDecimals).toString(),
+        committedFunds: this.adjustDecimals(share.committedFunds, currencyDecimals).toString(),
         purchasedAmount: share.amount,
         iroShare: share.share,
         claimed: share.claimed,
