@@ -86,10 +86,7 @@ class PropertyController {
 
   public reportRealEstateNFT = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const updatedProperty = await this.propertyService.setRealEstateNftId(
-        req.params.propertyId,
-        req.body.realEstateNftId,
-      );
+      const updatedProperty = await this.propertyService.setRealEstateNftId(req.body.iroId, req.body.realEstateNftId);
       res.status(200).json({ data: updatedProperty, message: "RealEstateNFT created" });
     } catch (error) {
       next(error);

@@ -226,16 +226,16 @@ class PropertyService {
     return updatedProperty;
   }
 
-  public async setRealEstateNftId(propertyId: string, realEstateNftId: string) {
-    if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
+  public async setRealEstateNftId(iroId: string, realEstateNftId: string) {
+    if (isEmpty(iroId)) throw new HttpException(400, "iroId is empty");
     if (isEmpty(realEstateNftId)) throw new HttpException(400, "realEstateNftId is empty");
 
-    const property = await propertyModel.findById(propertyId);
+    const property = await propertyModel.findOne({ iroId });
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
     if (property.realEstateNftId) throw new HttpException(400, "Real Estate NFT ID already set");
 
-    const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
+    const updatedProperty = await propertyModel.findByIdAndUpdate(property.id, {
       realEstateNftId,
       updatedAt: Date.now(),
     });
@@ -246,7 +246,7 @@ class PropertyService {
       description: updatedProperty.description,
       image: updatedProperty.imageUrl,
       attributes: this.formatAttributes(updatedProperty.attributes),
-      external_url: `https://horizon-dao.io/asset/${propertyId}`,
+      external_url: `https://horizon-dao.io/asset/${property.id}`,
     });
     return realEstateNft;
   }
