@@ -1,3 +1,23 @@
+export interface IROProposal {
+  unitPrice: number;
+  duration: number;
+  totalSupply: number;
+  reservesFee?: number;
+  treasuryFee?: number;
+}
+
+export interface Chat {
+  creator: string;
+  message: string;
+  createdAt: number;
+}
+
+export interface Update {
+  title: string;
+  description: string;
+  createdAt: number;
+}
+
 export interface Attributes {
   lotSizeSqm?: number;
   bedrooms?: number;
@@ -19,11 +39,6 @@ export interface Financials {
   commonFeePercentage?: number;
 }
 
-export interface Update {
-  message: string;
-  date: Date;
-}
-
 export interface Property {
   iroId?: number;
   realEstateNftId?: number;
@@ -37,10 +52,13 @@ export interface Property {
   city?: string;
   address?: string;
   highlights?: string;
+  market?: string;
   attributes?: Attributes;
   financials?: Financials;
   documentsUrl?: string;
+  discussions?: Chat[];
   updates?: Update[];
+  iroProposal?: IROProposal;
   createdAt: number;
   updatedAt: number;
 }
