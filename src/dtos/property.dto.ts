@@ -9,7 +9,8 @@ import {
   IsOptional,
   IsObject,
   ValidateNested,
-  IsDateString,
+  Min,
+  Max,
 } from "class-validator";
 
 import { Type } from "class-transformer";
@@ -17,11 +18,7 @@ import { Type } from "class-transformer";
 class AttributesDto {
   @IsOptional()
   @IsNumber()
-  public lotSizeSqm: number;
-
-  @IsOptional()
-  @IsNumber()
-  public usableAreaSqm: number;
+  public area: number;
 
   @IsOptional()
   @IsNumber()
@@ -48,40 +45,57 @@ class AttributesDto {
   @IsNumber()
   @IsLongitude()
   public longitude: number;
-
-  @IsOptional()
-  @IsNumber()
-  public laserShooter: number;
 }
 
 class FinancialsDto {
-  @IsNotEmpty()
-  @IsString()
-  public message: string;
+  @IsNumber()
+  public tokenPrice: number;
 
-  @IsNotEmpty()
-  @IsDateString()
-  public date: Date;
+  @IsNumber()
+  public assetPrice: number;
+
+  @IsNumber()
+  public annualCashflow: number;
+
+  @IsNumber()
+  public monthlyCashflow: number;
+
+  @IsNumber()
+  public closingCosts: number;
+
+  @IsNumber()
+  public insurancePremium: number;
+
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  public propertyTaxPercentage: number;
+
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  public managementFeePercentage: number;
+
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  public commonFeePercentage: number;
 }
 
 export class CreatePropertyDto {
+  @IsEthereumAddress()
+  public creator: string;
+
   @IsNotEmpty()
   @IsString()
   public name: string;
 
-  @IsNotEmpty()
-  @IsString()
-  public type: string;
-
-  @IsEthereumAddress()
-  public creator: string;
-
-  @IsOptional()
-  @IsString()
-  public description: string;
-
   @IsUrl()
   public imageUrl: string;
+
+  @IsUrl()
+  @IsOptional()
+  public documentsUrl: string;
 
   @IsOptional()
   @IsString()
@@ -99,9 +113,9 @@ export class CreatePropertyDto {
   @IsString()
   public address: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  public highlights: string;
+  public type: string;
 
   @IsOptional()
   @IsObject()
@@ -114,4 +128,12 @@ export class CreatePropertyDto {
   @ValidateNested()
   @Type(() => FinancialsDto)
   public financials: FinancialsDto;
+
+  @IsOptional()
+  @IsString()
+  public highlights: string;
+
+  @IsOptional()
+  @IsString()
+  public market: string;
 }
