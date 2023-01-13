@@ -4,19 +4,19 @@ import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate"
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class IROProposal {
   @prop({ type: Number, required: true })
-  public unitPrice!: number;
+  public tokenPrice!: number;
 
   @prop({ type: Number, required: true })
   public duration!: number;
 
   @prop({ type: Number, required: true })
-  public totalSupply!: number;
+  public tokenSupply!: number;
 
   @prop({ type: Number })
-  public reservesFee?: number;
+  public reservesFeePercentage?: number;
 
   @prop({ type: Number })
-  public treasuryFee?: number;
+  public treasuryFeePercentage?: number;
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
@@ -44,27 +44,72 @@ class Attributes {
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
-class Financials {
+class TotalInvestmentValue {
   @prop({ type: Number })
-  public annualCashflow?: number;
+  public total!: number;
 
   @prop({ type: Number })
-  public monthlyCashflow?: number;
+  public assetPrice!: number;
 
   @prop({ type: Number })
   public closingCosts?: number;
 
   @prop({ type: Number })
-  public insurancePremium?: number;
+  public transferTaxes!: number;
 
   @prop({ type: Number })
-  public propertyTaxPercentage?: number;
+  public vacancyReserves!: number;
 
   @prop({ type: Number })
-  public managementFeePercentage?: number;
+  public renovationReserves!: number;
 
   @prop({ type: Number })
-  public commonFeePercentage?: number;
+  public upfrontSpvFees!: number;
+
+  @prop({ type: Number })
+  public tokenizationFees!: number;
+}
+
+@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+class TotalReturns {
+  @prop({ type: Number })
+  public projectedAppreciationPercentage!: number;
+
+  @prop({ type: Number })
+  public cashOnCashReturnPercentage!: number;
+}
+
+@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+class AnnualGrossRents {
+  @prop({ type: Number })
+  public propertyTaxes!: number;
+
+  @prop({ type: Number })
+  public insurance!: number;
+
+  @prop({ type: Number })
+  public propertyManagement!: number;
+
+  @prop({ type: Number })
+  public annualSpvFeelingFees!: number;
+
+  @prop({ type: Number })
+  public annualCashflow!: number;
+
+  @prop({ type: Number })
+  public monthlyCashflow!: number;
+}
+
+@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+class Financials {
+  @prop({ type: TotalInvestmentValue })
+  public totalInvestmentValue!: TotalInvestmentValue;
+
+  @prop({ type: TotalReturns })
+  public totalReturns!: TotalReturns;
+
+  @prop({ type: AnnualGrossRents })
+  public annualGrossRents!: AnnualGrossRents;
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
@@ -103,14 +148,14 @@ class Property {
   @prop({ type: String, trim: true, required: true })
   public name!: string;
 
+  @prop({ type: String, trim: true })
+  public description?: string;
+
   @prop({ type: String, trim: true, required: true })
   public type!: string;
 
   @prop({ type: String, trim: true, required: true })
   public creator!: string;
-
-  @prop({ type: String, trim: true })
-  public description?: string;
 
   @prop({ type: String, trim: true, required: true })
   public imageUrl!: string;
@@ -128,28 +173,31 @@ class Property {
   public address?: string;
 
   @prop({ type: String, trim: true })
-  public highlights?: string;
+  public zip?: string;
 
   @prop({ type: String, trim: true })
   public market?: string;
 
-  @prop({ type: Attributes })
-  public attributes?: Attributes;
-
-  @prop({ type: Financials })
-  public financials?: Financials;
+  @prop({ type: String, trim: true })
+  public highlights?: string;
 
   @prop({ type: String, trim: true })
   public documentsUrl?: string;
+
+  @prop({ type: IROProposal, required: true })
+  public iroProposal!: IROProposal;
+
+  @prop({ type: Attributes })
+  public attributes!: Attributes;
+
+  @prop({ type: Financials })
+  public financials!: Financials;
 
   @prop({ type: [Chat] })
   public discussions?: Chat[];
 
   @prop({ type: [Update] })
   public updates?: Update[];
-
-  @prop({ type: IROProposal, required: true })
-  public iroProposal!: IROProposal;
 
   @prop({ required: true, default: () => Date.now() })
   public createdAt: number;
