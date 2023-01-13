@@ -1,9 +1,9 @@
 export interface IROProposal {
-  unitPrice: number;
+  tokenPrice: number;
   duration: number;
-  totalSupply: number;
-  reservesFee?: number;
-  treasuryFee?: number;
+  tokenSupply: number;
+  reservesFeePercentage?: number;
+  treasuryFeePercentage?: number;
 }
 
 export interface Chat {
@@ -28,15 +28,37 @@ export interface Attributes {
   longitude?: number;
 }
 
-export interface Financials {
-  assetPrice?: number;
-  annualCashflow?: number;
-  monthlyCashflow?: number;
+export interface TotalInvestmentValue {
+  total: number;
+  assetPrice: number;
   closingCosts?: number;
-  insurancePremium?: number;
-  propertyTaxPercentage?: number;
-  managementFeePercentage?: number;
-  commonFeePercentage?: number;
+  transferTaxes: number;
+  vacancyReserves: number;
+  renovationReserves: number;
+  upfrontSpvFees: number;
+  tokenizationFees: number;
+}
+
+export interface TotalReturns {
+  totalPercentage: number;
+  projectedAppreciationPercentage?: number;
+  cashOnCashReturnPercentage: number;
+}
+
+export interface AnnualGrossRents {
+  total: number;
+  propertyTaxes: number;
+  insurance: number;
+  propertyManagement: number;
+  spvFeelingFees: number;
+  annualCashflow: number;
+  monthlyCashflow: number;
+}
+
+export interface Financials {
+  totalInvestmentValue: TotalInvestmentValue;
+  totalReturns: TotalReturns;
+  annualGrossRents: AnnualGrossRents;
 }
 
 export interface Property {
@@ -66,7 +88,7 @@ export interface Property {
 export interface PropertyExtended extends Property {
   iro?: {
     status: string;
-    unitPrice: string;
+    tokenPrice: string;
     currency: string;
     softCap: string;
     hardCap: string;

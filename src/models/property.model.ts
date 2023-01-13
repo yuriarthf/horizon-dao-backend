@@ -73,7 +73,10 @@ class TotalInvestmentValue {
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class TotalReturns {
   @prop({ type: Number })
-  public projectedAppreciationPercentage!: number;
+  public totalPercentage!: number;
+
+  @prop({ type: Number })
+  public projectedAppreciationPercentage?: number;
 
   @prop({ type: Number })
   public cashOnCashReturnPercentage!: number;
@@ -81,6 +84,9 @@ class TotalReturns {
 
 @modelOptions({ schemaOptions: { timestamps: false, id: false } })
 class AnnualGrossRents {
+  @prop({ type: Number })
+  public total!: number;
+
   @prop({ type: Number })
   public propertyTaxes!: number;
 

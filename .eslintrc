@@ -10,5 +10,5 @@
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "_", "varsIgnorePattern": "_"}],
     "@typescript-eslint/no-explicit-any": "off"
   },
-  "ignorePatterns": ["src/tests/**/*.ts"]
+  "ignorePatterns": ["src/tests/**/*.ts", "src/models/subgraph/graphclient/**/*.ts"]
 }

@@ -12,11 +12,14 @@ import { IROReduced, UserShare } from "@interfaces/iro.interface";
 import { FilterQuery, PaginateOptions } from "mongoose";
 
 // DTO
-import { CreatePropertyDto } from "@dtos/property.dto";
+import { CreatePropertyDto, FinancialsInputDto } from "@dtos/property.dto";
 
 // Utils
 import { isEmpty } from "@utils/util";
 import BigNumber from "bignumber.js";
+
+// Type extensions
+import "./type-extensions/number.extensions";
 
 // configure BigNumber constructor
 BigNumber.config({ DECIMAL_PLACES: 2 });
@@ -25,13 +28,27 @@ BigNumber.config({ DECIMAL_PLACES: 2 });
 const iro = new iroModel();
 
 class PropertyService {
+  // IRO constants
+  static TREASURY_TAXES_PERCENT = 3;
+  static VACANCY_FEE_PERCENT = 2;
+  static RENOVATION_RESERVES_PERCENT = 2;
+  static TREASURY_FEE_PERCENT = 5;
+  static UPFRONT_SPV_FEES = 2000; // 2000 USD
+  static IRO_DURATION = 15 * 86400; // 15 days
+
+  // Annual Gross Rents constants
+  static PROPERTY_TAXES_PERCENT = 0.2;
+  static INSURANCE_PERCENT = 0.5;
+  static PROPERTY_MANAGEMENT_FEE_PERCENT = 8;
+  static SPV_FEELING_FEES = 2000; // 2000 USD
+
   public async createProperty(createPropertyBody: CreatePropertyDto) {
     if (isEmpty(createPropertyBody)) throw new HttpException(400, "createPropertyBody is empty");
 
     const findOne = await propertyModel.findOne({ name: createPropertyBody.name });
     if (findOne) throw new HttpException(409, "Property already exist (by name)");
 
-    const createPropertyData = await propertyModel.create(createPropertyBody);
+    const createPropertyData = await propertyModel.create(this.createPropertyBodyToPropertyStorage(createPropertyBody));
 
     return createPropertyData;
   }
@@ -78,7 +95,7 @@ class PropertyService {
         if (doc.iroId && !doc.realEstateNftId) {
           const iro = iros[doc.iroId];
           property.iro.status = iro.status;
-          property.iro.unitPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toString();
+          property.iro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toString();
           property.iro.currency = iro.currency;
           property.iro.softCap = this.adjustDecimals(iro.softCap, iro.currencyDecimals).toString();
           property.iro.hardCap = this.adjustDecimals(iro.hardCap, iro.currencyDecimals).toString();
@@ -104,7 +121,7 @@ class PropertyService {
     if (property.iroId && !property.realEstateNftId) {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
-      result.iro.unitPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
+      result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iro.currency = iroQueryResult.currency;
       result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
       result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
@@ -184,7 +201,7 @@ class PropertyService {
     if (property.iroId && !property.realEstateNftId) {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
-      result.iro.unitPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
+      result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iro.currency = iroQueryResult.currency;
       result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
       result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
@@ -253,8 +270,141 @@ class PropertyService {
 
   public async deletePropertyById(propertyId: string): Promise<Property> {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
-    const removedProperty = propertyModel.findByIdAndRemove(propertyId);
+    const removedProperty = <Property>(await propertyModel.findByIdAndRemove(propertyId)).toJSON();
     return removedProperty;
+  }
+
+  private createPropertyBodyToPropertyStorage(createPropertyBody: CreatePropertyDto) {
+    const fees = this.calculateFeesFromAssetPrice(createPropertyBody.financialInput.assetPrice);
+    const totalInvestmentValue = this.assembleTotalInvestmentValue(createPropertyBody.financialInput, fees);
+    const annualGrossRents = this.assembleAnnualGrossRents(createPropertyBody.financialInput);
+    const totalReturns = this.assembleTotalReturns(annualGrossRents.annualCashflow, totalInvestmentValue.total);
+    return {
+      name: createPropertyBody.name,
+      description: this.assembleDescription(createPropertyBody),
+      type: createPropertyBody.type,
+      creator: createPropertyBody.creator,
+      imageUrl: createPropertyBody.imageUrl,
+      country: createPropertyBody.country,
+      region: createPropertyBody.region,
+      city: createPropertyBody.city,
+      address: createPropertyBody.address,
+      zip: createPropertyBody.zip,
+      highlights: createPropertyBody.highlights,
+      market: createPropertyBody.market,
+      documentsUrl: createPropertyBody.documentsUrl,
+      iroProposal: this.assembleIroProposal(createPropertyBody.financialInput, fees),
+      attributes: createPropertyBody.attributes,
+      financials: {
+        totalInvestmentValue,
+        totalReturns,
+        annualGrossRents,
+      },
+    };
+  }
+
+  private assembleAnnualGrossRents(financialsInput: FinancialsInputDto) {
+    const annualCashflow = this.getAnnualCashflow(financialsInput.monthlyCashflow);
+    const annualGrossRents: any = {
+      propertyTaxes: PropertyService.PROPERTY_TAXES_PERCENT.percentOf(annualCashflow),
+      insurance: PropertyService.INSURANCE_PERCENT.percentOf(financialsInput.assetPrice),
+      propertyManagement: PropertyService.PROPERTY_MANAGEMENT_FEE_PERCENT.percentOf(annualCashflow),
+      spvFeelingFees: PropertyService.SPV_FEELING_FEES,
+    };
+
+    annualGrossRents.total =
+      annualCashflow - Object.values(annualCashflow).reduce((prev: number, next: number) => prev + next);
+    Object.assign(annualCashflow, {
+      monthlyCashflow: financialsInput.monthlyCashflow,
+      annualCashflow,
+    });
+
+    return annualGrossRents;
+  }
+
+  private assembleTotalReturns(annualCashflow: number, totalInvestmentValue: number) {
+    const totalReturns: any = {
+      /* projectedAppreciationPercentage */
+      cashOnCashReturnPercentage: +((annualCashflow / totalInvestmentValue) * 100).toFixed(2),
+    };
+
+    totalReturns.totalPercentage = Object.values(totalReturns).reduce((prev: number, next: number) => prev + next);
+    return totalReturns;
+  }
+
+  private assembleTotalInvestmentValue(financialsInput: FinancialsInputDto, fees) {
+    const totalInvestmentValue = {
+      assetPrice: financialsInput.assetPrice,
+      ...fees,
+    };
+    totalInvestmentValue.total = Object.values(totalInvestmentValue).reduce(
+      (prev: number, next: number) => prev + next,
+    );
+
+    return totalInvestmentValue;
+  }
+
+  private assembleDescription(createPropertyBody: CreatePropertyDto) {
+    return (
+      `Discover the future of real estate with this ${createPropertyBody.type} ` +
+      `located at ${createPropertyBody.address}, ${createPropertyBody.city}, ` +
+      `${createPropertyBody.region}, ${createPropertyBody.country} ` +
+      `${createPropertyBody.zip}. With ${createPropertyBody.attributes.area} sq.m of area, ` +
+      "this property offers a versatile investment opportunity. It's situated at the coordinates " +
+      `${createPropertyBody.attributes.latitude}, ${createPropertyBody.attributes.longitude}.`
+    );
+  }
+
+  private assembleIroProposal(financialsInput: FinancialsInputDto, fees) {
+    return {
+      ...this.getTokenPriceAndTotalSupply(financialsInput),
+      duration: PropertyService.IRO_DURATION,
+      reservesFee: this.getReservesFee(fees),
+      treasuryFee: PropertyService.TREASURY_FEE_PERCENT,
+    };
+  }
+
+  private getTokenPriceAndTotalSupply(financialsInput: FinancialsInputDto) {
+    if (!financialsInput.tokenPrice) {
+      const tokenPrice = +(financialsInput.assetPrice / financialsInput.tokenSupply).toFixed(2);
+      if (tokenPrice * financialsInput.tokenSupply !== financialsInput.assetPrice) {
+        throw new HttpException(400, "assetPrice and tokenSupply division should have at most 2 decimals places");
+      }
+      return {
+        tokenPrice,
+        tokenSupply: financialsInput.tokenSupply,
+      };
+    }
+    if (+financialsInput.tokenPrice.toFixed(2) === financialsInput.tokenPrice) {
+      throw new HttpException(400, "tokenPrice should have at most 2 decimals places");
+    }
+    if (financialsInput.assetPrice % financialsInput.tokenPrice === 0) {
+      throw new HttpException(400, "assetPrice should be a multiple of tokenPrice");
+    }
+    const tokenSupply = financialsInput.assetPrice / financialsInput.tokenPrice;
+    return {
+      tokenPrice: financialsInput.tokenPrice,
+      tokenSupply,
+    };
+  }
+
+  private getAnnualCashflow(monthlyCashflow: number) {
+    return monthlyCashflow * 12; // 12 months cashflow
+  }
+
+  private calculateFeesFromAssetPrice(assetPrice: number) {
+    return {
+      /* closingCosts */
+      transferTaxes: PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice),
+      vacancyReserves: PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice),
+      renovationReserves: PropertyService.RENOVATION_RESERVES_PERCENT.percentOf(assetPrice),
+      tokenizationFees: PropertyService.TREASURY_FEE_PERCENT.percentOf(assetPrice),
+      upfrontSvpFees: PropertyService.UPFRONT_SPV_FEES,
+    };
+  }
+
+  private getReservesFee(fees) {
+    return Object.values(fees).reduce((prev: number, next: number) => prev + next);
   }
 
   private populateSharesArray(shares: UserShare[], currencyDecimals: number | string) {
@@ -286,6 +436,10 @@ class PropertyService {
       });
     }
     return nftAttributes;
+  }
+
+  private static valueToUSDCeil(value: number) {
+    return Math.ceil(value * 100) / 100;
   }
 }
 

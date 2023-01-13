@@ -51,7 +51,6 @@ class App {
 
     set("strictQuery", false);
 
-
     await connect(dbConnection);
   }
 

@@ -9,8 +9,7 @@ import {
   IsOptional,
   IsObject,
   ValidateNested,
-  Min,
-  Max,
+  ValidateIf,
 } from "class-validator";
 
 import { Type } from "class-transformer";
@@ -47,39 +46,20 @@ class AttributesDto {
   public longitude: number;
 }
 
-class FinancialsDto {
-  @IsNumber()
-  public tokenPrice: number;
-
+export class FinancialsInputDto {
   @IsNumber()
   public assetPrice: number;
 
   @IsNumber()
-  public annualCashflow: number;
+  @ValidateIf(obj => !obj.tokenSupply || obj.tokenPrice)
+  public tokenPrice: number;
+
+  @IsNumber()
+  @ValidateIf(obj => !obj.tokenPrice || obj.tokenSupply)
+  public tokenSupply: number;
 
   @IsNumber()
   public monthlyCashflow: number;
-
-  @IsNumber()
-  public closingCosts: number;
-
-  @IsNumber()
-  public insurancePremium: number;
-
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  public propertyTaxPercentage: number;
-
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  public managementFeePercentage: number;
-
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  public commonFeePercentage: number;
 }
 
 export class CreatePropertyDto {
@@ -113,6 +93,10 @@ export class CreatePropertyDto {
   @IsString()
   public address: string;
 
+  @IsOptional()
+  @IsString()
+  public zip: string;
+
   @IsNotEmpty()
   @IsString()
   public type: string;
@@ -123,11 +107,10 @@ export class CreatePropertyDto {
   @Type(() => AttributesDto)
   public attributes: AttributesDto;
 
-  @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => FinancialsDto)
-  public financials: FinancialsDto;
+  @Type(() => FinancialsInputDto)
+  public financialInput: FinancialsInputDto;
 
   @IsOptional()
   @IsString()

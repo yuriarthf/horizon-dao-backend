@@ -15,7 +15,6 @@ class AuthRoute implements Routes {
   }
 
   private initializeRoutes() {
-    console.log("init login routes");
     this.router.post(`${this.path}signup`, validationMiddleware(CreateUserDto, "body"), this.authController.signUp);
     this.router.post(`${this.path}wallet-nonce`, this.authController.walletNonce);
     this.router.post(`${this.path}verify-wallet`, this.authController.verifyWallet);
