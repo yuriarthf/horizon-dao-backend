@@ -97,7 +97,7 @@ class AnnualGrossRents {
   public propertyManagement!: number;
 
   @prop({ type: Number })
-  public annualSpvFeelingFees!: number;
+  public spvFeelingFees!: number;
 
   @prop({ type: Number })
   public annualCashflow!: number;

@@ -64,6 +64,7 @@ export interface Financials {
 export interface Property {
   iroId?: number;
   realEstateNftId?: number;
+  status?: string;
   name: string;
   type: string;
   creator: string;

@@ -76,8 +76,9 @@ class PropertyService {
     };
 
     const iroIds: string[] = [];
-    propertiesPagination.docs.forEach(doc => {
-      if (doc.iroId && !doc.realEstateNftId) {
+    propertiesPagination.docs.forEach((doc: Property) => {
+      doc.status = this.getPropertyStatus(doc);
+      if (doc.status === "FUNDING") {
         iroIds.push(doc.iroId.toString());
       }
     });
@@ -92,9 +93,10 @@ class PropertyService {
       propertiesPagination.docs.forEach((doc: any) => {
         const property: PropertyExtended = { ...doc.toJSON() };
         results.docs.push(property);
-        if (doc.iroId && !doc.realEstateNftId) {
+        if (doc.status === "FUNDING") {
           const iro = iros[doc.iroId];
           property.iro.status = iro.status;
+          iro.status !== "ONGOING" && (property.status = iro.status);
           property.iro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toString();
           property.iro.currency = iro.currency;
           property.iro.softCap = this.adjustDecimals(iro.softCap, iro.currencyDecimals).toString();
@@ -118,9 +120,11 @@ class PropertyService {
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
     const result: PropertyExtended = { ...property };
-    if (property.iroId && !property.realEstateNftId) {
+    result.status = this.getPropertyStatus(result);
+    if (result.status === "FUNDING") {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
+      iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
       result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iro.currency = iroQueryResult.currency;
       result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
@@ -165,6 +169,7 @@ class PropertyService {
       results.push({
         name: property.name,
         type: property.type,
+        status: userShare.iro.status === "ONGOING" ? "FUNDING" : userShare.iro.status,
         country: property.country,
         city: property.city,
         region: property.region,
@@ -198,9 +203,11 @@ class PropertyService {
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
     const result: PropertyExtended = { ...property };
-    if (property.iroId && !property.realEstateNftId) {
+    result.status = this.getPropertyStatus(result);
+    if (result.status === "FUNDING") {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
+      iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
       result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
       result.iro.currency = iroQueryResult.currency;
       result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
@@ -438,8 +445,14 @@ class PropertyService {
     return nftAttributes;
   }
 
-  private static valueToUSDCeil(value: number) {
-    return Math.ceil(value * 100) / 100;
+  private getPropertyStatus(property: Property) {
+    if (!property.iroId) {
+      return "DUE_DILIGENCE";
+    }
+    if (!property.realEstateNftId) {
+      return "FUNDING";
+    }
+    return "TRADE";
   }
 }
 
