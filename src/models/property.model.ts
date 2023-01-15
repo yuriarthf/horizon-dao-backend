@@ -1,7 +1,7 @@
 import { prop, getModelForClass, modelOptions, plugin } from "@typegoose/typegoose";
 import { typegoosePaginate, PaginateMethod } from "./plugins/typegoose-paginate";
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class IROProposal {
   @prop({ type: Number, required: true })
   public tokenPrice!: number;
@@ -19,7 +19,7 @@ class IROProposal {
   public treasuryFeePercentage?: number;
 }
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class Attributes {
   @prop({ type: Number })
   public area?: number;
@@ -43,7 +43,7 @@ class Attributes {
   public longitude?: number;
 }
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class TotalInvestmentValue {
   @prop({ type: Number })
   public total!: number;
@@ -70,7 +70,7 @@ class TotalInvestmentValue {
   public tokenizationFees!: number;
 }
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class TotalReturns {
   @prop({ type: Number })
   public totalPercentage!: number;
@@ -82,7 +82,7 @@ class TotalReturns {
   public cashOnCashReturnPercentage!: number;
 }
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class AnnualGrossRents {
   @prop({ type: Number })
   public total!: number;
@@ -106,7 +106,7 @@ class AnnualGrossRents {
   public monthlyCashflow!: number;
 }
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class Financials {
   @prop({ type: TotalInvestmentValue })
   public totalInvestmentValue!: TotalInvestmentValue;
@@ -118,7 +118,7 @@ class Financials {
   public annualGrossRents!: AnnualGrossRents;
 }
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class Chat {
   @prop({ type: String, required: true })
   public creator: string;
@@ -130,7 +130,7 @@ class Chat {
   public createdAt: number;
 }
 
-@modelOptions({ schemaOptions: { timestamps: false, id: false } })
+@modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class Update {
   @prop({ type: String, trim: true, required: true })
   public title!: string;
