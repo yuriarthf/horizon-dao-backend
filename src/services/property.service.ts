@@ -262,15 +262,16 @@ class PropertyService {
     if (!property) throw new HttpException(409, "Property doesn't exist");
 
     if (property.realEstateNftId) throw new HttpException(400, "Real Estate NFT ID already set");
-
-    const updatedProperty = await propertyModel.findByIdAndUpdate(
-      property.id,
-      {
-        realEstateNftId,
-        updatedAt: Date.now(),
-      },
-      { new: true },
-    );
+    const updatedProperty = (
+      await propertyModel.findByIdAndUpdate(
+        property.id,
+        {
+          realEstateNftId,
+          updatedAt: Date.now(),
+        },
+        { new: true },
+      )
+    ).toJSON();
 
     const realEstateNft = await RealEstateNFTModel.create({
       _id: realEstateNftId,
