@@ -448,7 +448,7 @@ class PropertyService {
     for (const attibute of Object.entries(propertyAttributes)) {
       nftAttributes.push({
         trait_type: attibute[0],
-        value: attibute[1].toString(),
+        value: attibute[0] !== "area" ? attibute[1].toString() : attibute[1].toString() + "m2",
       });
     }
     return nftAttributes;
