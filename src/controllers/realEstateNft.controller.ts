@@ -6,7 +6,7 @@ class RealEstateNftController {
 
   public getRealEstateNFt = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const realEstateNft = await this.realEstateNftService.getRealEstateNftById(req.params.realEstateNft);
+      const realEstateNft = await this.realEstateNftService.getRealEstateNftById(req.params.realEstateNftId);
       res.status(200).json({ data: realEstateNft });
     } catch (error) {
       next(error);
