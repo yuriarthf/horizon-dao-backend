@@ -9,7 +9,7 @@ class Attribute {
   public trait_type!: string;
 }
 
-@modelOptions({ schemaOptions: { collection: "RealEstateNFT", timestamps: false } })
+@modelOptions({ schemaOptions: { collection: "RealEstateNFT", timestamps: false, versionKey: false } })
 class RealEstateNFT {
   @prop({ type: Number, required: true })
   public _id!: number;

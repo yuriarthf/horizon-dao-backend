@@ -1,6 +1,6 @@
 import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose";
 
-@modelOptions({ schemaOptions: { collection: "users", timestamps: true } })
+@modelOptions({ schemaOptions: { collection: "users", timestamps: true, versionKey: false } })
 class User {
   @prop({ type: String, required: false, unique: true })
   public email: string;
