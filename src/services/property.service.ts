@@ -415,7 +415,7 @@ class PropertyService {
       vacancyReserves: PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice),
       renovationReserves: PropertyService.RENOVATION_RESERVES_PERCENT.percentOf(assetPrice),
       tokenizationFees: PropertyService.TREASURY_FEE_PERCENT.percentOf(assetPrice),
-      upfrontSvpFees: PropertyService.UPFRONT_SPV_FEES,
+      upfrontSpvFees: PropertyService.UPFRONT_SPV_FEES,
     };
   }
 
