@@ -280,6 +280,7 @@ class PropertyService {
       attributes: this.formatAttributes(updatedProperty.attributes),
       external_url: `https://horizon-dao.io/asset/${property.id}`,
     });
+
     return realEstateNft;
   }
 
@@ -454,10 +455,10 @@ class PropertyService {
   }
 
   private getPropertyStatus(property: Property) {
-    if (!property.iroId) {
+    if (property.iroId === undefined) {
       return "DUE_DILIGENCE";
     }
-    if (!property.realEstateNftId) {
+    if (property.realEstateNftId === undefined) {
       return "FUNDING";
     }
     return "TRADE";
