@@ -329,8 +329,8 @@ class PropertyService {
     };
 
     annualGrossRents.total =
-      annualCashflow - Object.values(annualCashflow).reduce((prev: number, next: number) => prev + next);
-    Object.assign(annualCashflow, {
+      annualCashflow - <number>Object.values(annualGrossRents).reduce((prev: number, next: number) => prev + next);
+    Object.assign(annualGrossRents, {
       monthlyCashflow: financialsInput.monthlyCashflow,
       annualCashflow,
     });
@@ -343,7 +343,6 @@ class PropertyService {
       /* projectedAppreciationPercentage */
       cashOnCashReturnPercentage: +((annualCashflow / totalInvestmentValue) * 100).toFixed(2),
     };
-
     totalReturns.totalPercentage = Object.values(totalReturns).reduce((prev: number, next: number) => prev + next);
     return totalReturns;
   }
@@ -391,10 +390,10 @@ class PropertyService {
         tokenSupply: financialsInput.tokenSupply,
       };
     }
-    if (+financialsInput.tokenPrice.toFixed(2) === financialsInput.tokenPrice) {
+    if (+financialsInput.tokenPrice.toFixed(2) !== financialsInput.tokenPrice) {
       throw new HttpException(400, "tokenPrice should have at most 2 decimals places");
     }
-    if (financialsInput.assetPrice % financialsInput.tokenPrice === 0) {
+    if (financialsInput.assetPrice % financialsInput.tokenPrice !== 0) {
       throw new HttpException(400, "assetPrice should be a multiple of tokenPrice");
     }
     const tokenSupply = financialsInput.assetPrice / financialsInput.tokenPrice;
