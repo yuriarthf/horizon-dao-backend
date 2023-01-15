@@ -50,12 +50,12 @@ export class FinancialsInputDto {
   @IsNumber()
   public assetPrice: number;
 
-  @IsNumber()
   @ValidateIf(obj => !obj.tokenSupply || obj.tokenPrice)
+  @IsNumber()
   public tokenPrice: number;
 
-  @IsNumber()
   @ValidateIf(obj => !obj.tokenPrice || obj.tokenSupply)
+  @IsNumber()
   public tokenSupply: number;
 
   @IsNumber()
