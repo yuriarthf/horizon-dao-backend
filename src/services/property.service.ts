@@ -447,7 +447,7 @@ class PropertyService {
     const nftAttributes = [];
     for (const attibute of Object.entries(propertyAttributes)) {
       nftAttributes.push({
-        trait_type: attibute[0],
+        trait_type: this.formatTraitType(attibute[0]),
         value: attibute[0] !== "area" ? attibute[1].toString() : attibute[1].toString() + "m2",
       });
     }
@@ -462,6 +462,11 @@ class PropertyService {
       return "FUNDING";
     }
     return "TRADE";
+  }
+
+  private formatTraitType(attributeName: string) {
+    const capitalizedAttributeName = attributeName.charAt(0).toUpperCase() + attributeName.slice(1);
+    return capitalizedAttributeName.split(/(?=[A-Z])/).join(" ");
   }
 }
 
