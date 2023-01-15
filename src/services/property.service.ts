@@ -235,7 +235,7 @@ class PropertyService {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(updateBody)) throw new HttpException(400, "updateBody is empty");
     updateBody.updatedAt = Date.now();
-    const updatedProperty = propertyModel.findByIdAndUpdate(propertyId, updateBody);
+    const updatedProperty = propertyModel.findByIdAndUpdate(propertyId, updateBody, { new: true });
 
     return updatedProperty;
   }
@@ -243,10 +243,14 @@ class PropertyService {
   public async setIroId(propertyId: string, iroId: string) {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     if (isEmpty(iroId)) throw new HttpException(400, "iroId is empty");
-    const updatedProperty = await propertyModel.findByIdAndUpdate(propertyId, {
-      iroId,
-      updatedAt: Date.now(),
-    });
+    const updatedProperty = await propertyModel.findByIdAndUpdate(
+      propertyId,
+      {
+        iroId,
+        updatedAt: Date.now(),
+      },
+      { new: true },
+    );
     return updatedProperty;
   }
 
@@ -259,10 +263,14 @@ class PropertyService {
 
     if (property.realEstateNftId) throw new HttpException(400, "Real Estate NFT ID already set");
 
-    const updatedProperty = await propertyModel.findByIdAndUpdate(property.id, {
-      realEstateNftId,
-      updatedAt: Date.now(),
-    });
+    const updatedProperty = await propertyModel.findByIdAndUpdate(
+      property.id,
+      {
+        realEstateNftId,
+        updatedAt: Date.now(),
+      },
+      { new: true },
+    );
 
     const realEstateNft = await RealEstateNFTModel.create({
       _id: realEstateNftId,
