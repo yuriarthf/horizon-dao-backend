@@ -391,8 +391,11 @@ class PropertyService {
         tokenSupply: financialsInput.tokenSupply,
       };
     }
-    if (+financialsInput.tokenPrice.toFixed(2) !== financialsInput.tokenPrice) {
+
+    {
+      /* if (+parseFloat(financialsInput.tokenPrice).toFixed(2) !== financialsInput.tokenPrice) {
       throw new HttpException(400, "tokenPrice should have at most 2 decimals places");
+    } */
     }
     if (financialsInput.assetPrice % financialsInput.tokenPrice !== 0) {
       throw new HttpException(400, "assetPrice should be a multiple of tokenPrice");
