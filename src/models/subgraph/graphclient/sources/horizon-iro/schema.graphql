@@ -59,6 +59,10 @@ type IROSet {
 input IROSet_filter {
   id: Bytes
   id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
   id_in: [Bytes!]
   id_not_in: [Bytes!]
   id_contains: Bytes
@@ -88,6 +92,10 @@ enum IROSet_orderBy {
 input IRO_filter {
   id: Bytes
   id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
   id_in: [Bytes!]
   id_not_in: [Bytes!]
   id_contains: Bytes
@@ -106,6 +114,10 @@ input IRO_filter {
   status_not_in: [Status!]
   listingOwner: Bytes
   listingOwner_not: Bytes
+  listingOwner_gt: Bytes
+  listingOwner_lt: Bytes
+  listingOwner_gte: Bytes
+  listingOwner_lte: Bytes
   listingOwner_in: [Bytes!]
   listingOwner_not_in: [Bytes!]
   listingOwner_contains: Bytes
@@ -144,6 +156,10 @@ input IRO_filter {
   reservesFee_not_in: [BigDecimal!]
   currency: Bytes
   currency_not: Bytes
+  currency_gt: Bytes
+  currency_lt: Bytes
+  currency_gte: Bytes
+  currency_lte: Bytes
   currency_in: [Bytes!]
   currency_not_in: [Bytes!]
   currency_contains: Bytes
@@ -437,12 +453,20 @@ type UserShare {
 input UserShare_filter {
   id: Bytes
   id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
   id_in: [Bytes!]
   id_not_in: [Bytes!]
   id_contains: Bytes
   id_not_contains: Bytes
   address: Bytes
   address_not: Bytes
+  address_gt: Bytes
+  address_lt: Bytes
+  address_gte: Bytes
+  address_lte: Bytes
   address_in: [Bytes!]
   address_not_in: [Bytes!]
   address_contains: Bytes

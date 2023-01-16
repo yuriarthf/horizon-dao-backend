@@ -29,7 +29,6 @@ const iro = new iroModel();
 
 class PropertyService {
   // IRO constants
-  static TREASURY_TAXES_PERCENT = 3;
   static VACANCY_FEE_PERCENT = 2;
   static RENOVATION_RESERVES_PERCENT = 2;
   static TREASURY_FEE_PERCENT = 5;

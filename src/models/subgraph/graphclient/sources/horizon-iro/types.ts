@@ -71,6 +71,10 @@ export type IROSet = {
 export type IROSet_filter = {
   id?: InputMaybe<Scalars['Bytes']>;
   id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
   id_in?: InputMaybe<Array<Scalars['Bytes']>>;
   id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   id_contains?: InputMaybe<Scalars['Bytes']>;
@@ -99,6 +103,10 @@ export type IROSet_orderBy =
 export type IRO_filter = {
   id?: InputMaybe<Scalars['Bytes']>;
   id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
   id_in?: InputMaybe<Array<Scalars['Bytes']>>;
   id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   id_contains?: InputMaybe<Scalars['Bytes']>;
@@ -117,6 +125,10 @@ export type IRO_filter = {
   status_not_in?: InputMaybe<Array<Status>>;
   listingOwner?: InputMaybe<Scalars['Bytes']>;
   listingOwner_not?: InputMaybe<Scalars['Bytes']>;
+  listingOwner_gt?: InputMaybe<Scalars['Bytes']>;
+  listingOwner_lt?: InputMaybe<Scalars['Bytes']>;
+  listingOwner_gte?: InputMaybe<Scalars['Bytes']>;
+  listingOwner_lte?: InputMaybe<Scalars['Bytes']>;
   listingOwner_in?: InputMaybe<Array<Scalars['Bytes']>>;
   listingOwner_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   listingOwner_contains?: InputMaybe<Scalars['Bytes']>;
@@ -155,6 +167,10 @@ export type IRO_filter = {
   reservesFee_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   currency?: InputMaybe<Scalars['Bytes']>;
   currency_not?: InputMaybe<Scalars['Bytes']>;
+  currency_gt?: InputMaybe<Scalars['Bytes']>;
+  currency_lt?: InputMaybe<Scalars['Bytes']>;
+  currency_gte?: InputMaybe<Scalars['Bytes']>;
+  currency_lte?: InputMaybe<Scalars['Bytes']>;
   currency_in?: InputMaybe<Array<Scalars['Bytes']>>;
   currency_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   currency_contains?: InputMaybe<Scalars['Bytes']>;
@@ -419,12 +435,20 @@ export type UserShare = {
 export type UserShare_filter = {
   id?: InputMaybe<Scalars['Bytes']>;
   id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
   id_in?: InputMaybe<Array<Scalars['Bytes']>>;
   id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   id_contains?: InputMaybe<Scalars['Bytes']>;
   id_not_contains?: InputMaybe<Scalars['Bytes']>;
   address?: InputMaybe<Scalars['Bytes']>;
   address_not?: InputMaybe<Scalars['Bytes']>;
+  address_gt?: InputMaybe<Scalars['Bytes']>;
+  address_lt?: InputMaybe<Scalars['Bytes']>;
+  address_gte?: InputMaybe<Scalars['Bytes']>;
+  address_lte?: InputMaybe<Scalars['Bytes']>;
   address_in?: InputMaybe<Array<Scalars['Bytes']>>;
   address_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   address_contains?: InputMaybe<Scalars['Bytes']>;
