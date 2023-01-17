@@ -38,7 +38,8 @@ class PropertyController {
         "bathroomMin",
         "bathroomMax",
       ]);
-      const options = pick(req.query, ["sort", "limit", "offset", "page"]);
+      const options = pick(req.params, ["page"]);
+      Object.assign(options, pick(req.query, ["sort", "limit", "offset", "page"]));
       const getAllUsersResult = await this.propertyService.getPropertiesPaginated(filter, options);
       res.status(200).json({ data: getAllUsersResult });
     } catch (error) {
