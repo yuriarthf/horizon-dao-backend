@@ -18,7 +18,7 @@ class PropertyController {
 
   public getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const filter = pick(req.query, [
+      const filter = pick(req.body, [
         "status",
         "type",
         "country",
@@ -37,10 +37,8 @@ class PropertyController {
         "bedroomMax",
         "bathroomMin",
         "bathroomMax",
-        "limit",
-        "page",
       ]);
-      const options = pick(req.query, ["sortBy", "limit", "cursor"]);
+      const options = pick(req.query, ["sort", "limit", "offset", "page"]);
       const getAllUsersResult = await this.propertyService.getPropertiesPaginated(filter, options);
       res.status(200).json({ data: getAllUsersResult });
     } catch (error) {
