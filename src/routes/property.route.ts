@@ -13,7 +13,7 @@ class PropertyRoute implements Routes {
   private initializeRoutes() {
     this.router.route(`${this.path}/add`).post(/*authMiddleware, */ this.propertyController.addProperty);
     this.router.route(`${this.path}/delete/:propertyId`).delete(this.propertyController.deleteProperty);
-    this.router.route(`${this.path}/:page`).get(this.propertyController.getProperties);
+    this.router.route(`${this.path}/paginated/:page`).get(this.propertyController.getProperties);
     this.router.route(`${this.path}/:propertyId`).get(this.propertyController.getProperty);
     this.router
       .route(`${this.path}/update/:propertyId`)
