@@ -45,65 +45,65 @@ class Attributes {
 
 @modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class TotalInvestmentValue {
-  @prop({ type: Number })
-  public total!: number;
+  @prop({ type: String })
+  public total!: string;
 
-  @prop({ type: Number })
-  public assetPrice!: number;
+  @prop({ type: String })
+  public assetPrice!: string;
 
-  @prop({ type: Number })
-  public closingCosts?: number;
+  @prop({ type: String })
+  public closingCosts?: string;
 
-  @prop({ type: Number })
-  public transferTaxes!: number;
+  @prop({ type: String })
+  public transferTaxes!: string;
 
-  @prop({ type: Number })
-  public vacancyReserves!: number;
+  @prop({ type: String })
+  public vacancyReserves!: string;
 
-  @prop({ type: Number })
-  public renovationReserves!: number;
+  @prop({ type: String })
+  public renovationReserves!: string;
 
-  @prop({ type: Number })
-  public upfrontSpvFees!: number;
+  @prop({ type: String })
+  public upfrontSpvFees!: string;
 
-  @prop({ type: Number })
-  public tokenizationFees!: number;
+  @prop({ type: String })
+  public tokenizationFees!: string;
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class TotalReturns {
-  @prop({ type: Number })
-  public totalPercentage!: number;
+  @prop({ type: String })
+  public totalPercentage!: string;
 
-  @prop({ type: Number })
-  public projectedAppreciationPercentage?: number;
+  @prop({ type: String })
+  public projectedAppreciationPercentage?: string;
 
-  @prop({ type: Number })
-  public cashOnCashReturnPercentage!: number;
+  @prop({ type: String })
+  public cashOnCashReturnPercentage!: string;
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, _id: false } })
 class AnnualGrossRents {
-  @prop({ type: Number })
-  public total!: number;
+  @prop({ type: String })
+  public total!: string;
 
-  @prop({ type: Number })
-  public propertyTaxes!: number;
+  @prop({ type: String })
+  public propertyTaxes!: string;
 
-  @prop({ type: Number })
-  public insurance!: number;
+  @prop({ type: String })
+  public insurance!: string;
 
-  @prop({ type: Number })
-  public propertyManagement!: number;
+  @prop({ type: String })
+  public propertyManagement!: string;
 
-  @prop({ type: Number })
-  public spvFeelingFees!: number;
+  @prop({ type: String })
+  public spvFeelingFees!: string;
 
-  @prop({ type: Number })
-  public annualCashflow!: number;
+  @prop({ type: String })
+  public annualCashflow!: string;
 
-  @prop({ type: Number })
-  public monthlyCashflow!: number;
+  @prop({ type: String })
+  public monthlyCashflow!: string;
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, _id: false } })

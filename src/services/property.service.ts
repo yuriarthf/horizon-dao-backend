@@ -20,6 +20,7 @@ import BigNumber from "bignumber.js";
 
 // Type extensions
 import "./type-extensions/number.extensions";
+import "./type-extensions/string.extensions";
 
 // configure BigNumber constructor
 BigNumber.config({ DECIMAL_PLACES: 2 });
@@ -50,6 +51,14 @@ class PropertyService {
     const createPropertyData = await propertyModel.create(this.createPropertyBodyToPropertyStorage(createPropertyBody));
 
     return createPropertyData;
+  }
+
+  public async deleteProperty(propertyId: string) {
+    if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
+
+    const deletedData = await propertyModel.findByIdAndRemove(propertyId);
+
+    return deletedData;
   }
 
   public async getPropertiesPaginated(
@@ -322,39 +331,44 @@ class PropertyService {
   private assembleAnnualGrossRents(financialsInput: FinancialsInputDto) {
     const annualCashflow = this.getAnnualCashflow(financialsInput.monthlyCashflow);
     const annualGrossRents: any = {
-      propertyTaxes: this.roundCeil(PropertyService.PROPERTY_TAXES_PERCENT.percentOf(financialsInput.assetPrice)),
-      insurance: this.roundCeil(PropertyService.INSURANCE_PERCENT.percentOf(financialsInput.assetPrice)),
-      propertyManagement: this.roundCeil(PropertyService.PROPERTY_MANAGEMENT_FEE_PERCENT.percentOf(annualCashflow)),
-      spvFeelingFees: PropertyService.SPV_FEELING_FEES,
+      propertyTaxes: PropertyService.PROPERTY_TAXES_PERCENT.percentOf(financialsInput.assetPrice).toFixedCeil(2),
+      insurance: PropertyService.INSURANCE_PERCENT.percentOf(financialsInput.assetPrice).toFixedCeil(2),
+      propertyManagement: PropertyService.PROPERTY_MANAGEMENT_FEE_PERCENT.percentOf(
+        parseFloat(annualCashflow),
+      ).toFixedCeil(2),
+      spvFeelingFees: PropertyService.SPV_FEELING_FEES.toString(),
     };
 
-    annualGrossRents.total =
-      annualCashflow - <number>Object.values(annualGrossRents).reduce((prev: number, next: number) => prev + next);
+    annualGrossRents.total = annualCashflow.minus(
+      <string>Object.values(annualGrossRents).reduce((prev: string, next: string) => prev.add(next)),
+    );
     Object.assign(annualGrossRents, {
-      monthlyCashflow: this.roundCeil(financialsInput.monthlyCashflow),
+      monthlyCashflow: financialsInput.monthlyCashflow.toFixedCeil(2),
       annualCashflow,
     });
 
     return annualGrossRents;
   }
 
-  private assembleTotalReturns(annualCashflow: number, totalInvestmentValue: number) {
+  private assembleTotalReturns(annualCashflow: string, totalInvestmentValue: string) {
     const totalReturns: any = {
       /* projectedAppreciationPercentage */
-      cashOnCashReturnPercentage: this.roundCeil(annualCashflow / totalInvestmentValue),
+      cashOnCashReturnPercentage: annualCashflow.mul("100").div(totalInvestmentValue).numberToFixed(2),
     };
-    totalReturns.totalPercentage = Object.values(totalReturns).reduce((prev: number, next: number) => prev + next);
+    totalReturns.totalPercentage = Object.values(totalReturns).reduce((prev: string, next: string): string =>
+      prev.add(next),
+    );
     return totalReturns;
   }
 
   private assembleTotalInvestmentValue(financialsInput: FinancialsInputDto, fees) {
-    const totalInvestmentValue = {
-      assetPrice: financialsInput.assetPrice,
+    const totalInvestmentValue: { [field: string]: string } = {
+      assetPrice: financialsInput.assetPrice.toFixedCeil(2),
       ...fees,
     };
-    totalInvestmentValue.total = Object.values(totalInvestmentValue).reduce(
-      (prev: number, next: number) => prev + next,
-    );
+    totalInvestmentValue.total = Object.values(totalInvestmentValue)
+      .reduce((prev: string, next: string) => prev.add(next))
+      .numberToFixed(2);
 
     return totalInvestmentValue;
   }
@@ -381,17 +395,17 @@ class PropertyService {
 
   private getTokenPriceAndTotalSupply(financialsInput: FinancialsInputDto) {
     if (!financialsInput.tokenPrice) {
-      const tokenPrice = this.roundCeil(financialsInput.assetPrice / financialsInput.tokenSupply);
+      const tokenPrice = (financialsInput.assetPrice / financialsInput.tokenSupply).roundCeil(2);
       if (tokenPrice * financialsInput.tokenSupply !== financialsInput.assetPrice) {
         throw new HttpException(400, "assetPrice and tokenSupply division should have at most 2 decimals places");
       }
       return {
-        tokenPrice,
+        tokenPrice: tokenPrice.toFixedCeil(2),
         tokenSupply: financialsInput.tokenSupply,
       };
     }
 
-    if (this.roundCeil(financialsInput.tokenPrice) !== financialsInput.tokenPrice) {
+    if (financialsInput.tokenPrice.roundCeil(2) !== financialsInput.tokenPrice) {
       throw new HttpException(400, "tokenPrice should have at most 2 decimals places");
     }
 
@@ -400,33 +414,33 @@ class PropertyService {
     }
 
     const tokenSupply = financialsInput.assetPrice / financialsInput.tokenPrice;
-    if (this.roundCeil(tokenSupply, 0) !== tokenSupply) {
+    if (tokenSupply.roundCeil(2) !== tokenSupply) {
       throw new HttpException(400, "tokenSupply shoul be an integer");
     }
 
     return {
-      tokenPrice: financialsInput.tokenPrice,
-      tokenSupply,
+      tokenPrice: financialsInput.tokenPrice.toFixed(2),
+      tokenSupply: tokenSupply.toFixed(2),
     };
   }
 
   private getAnnualCashflow(monthlyCashflow: number) {
-    return this.roundCeil(monthlyCashflow * 12); // 12 months cashflow
+    return (monthlyCashflow * 12).toFixedCeil(2); // 12 months cashflow
   }
 
   private calculateFeesFromAssetPrice(assetPrice: number) {
     return {
       /* closingCosts */
-      transferTaxes: this.roundCeil(PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice)),
-      vacancyReserves: this.roundCeil(PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice)),
-      renovationReserves: this.roundCeil(PropertyService.RENOVATION_RESERVES_PERCENT.percentOf(assetPrice)),
-      tokenizationFees: this.roundCeil(PropertyService.TREASURY_FEE_PERCENT.percentOf(assetPrice)),
-      upfrontSpvFees: PropertyService.UPFRONT_SPV_FEES,
+      transferTaxes: PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice).toFixedCeil(2),
+      vacancyReserves: PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice).toFixedCeil(2),
+      renovationReserves: PropertyService.RENOVATION_RESERVES_PERCENT.percentOf(assetPrice).toFixedCeil(2),
+      tokenizationFees: PropertyService.TREASURY_FEE_PERCENT.percentOf(assetPrice).toFixedCeil(2),
+      upfrontSpvFees: PropertyService.UPFRONT_SPV_FEES.toFixedCeil(2),
     };
   }
 
   private getReservesFee(fees) {
-    return Object.values(fees).reduce((prev: number, next: number) => prev + next);
+    return Object.values(fees).reduce((prev: string, next: string) => prev + next);
   }
 
   private populateSharesArray(shares: UserShare[], currencyDecimals: number | string) {
@@ -473,11 +487,6 @@ class PropertyService {
   private formatTraitType(attributeName: string) {
     const capitalizedAttributeName = attributeName.charAt(0).toUpperCase() + attributeName.slice(1);
     return capitalizedAttributeName.split(/(?=[A-Z])/).join(" ");
-  }
-
-  private roundCeil(value: number, decimals = 2) {
-    const decimalMultiplier = 10 ** decimals;
-    return Math.ceil(value * decimalMultiplier) / decimalMultiplier;
   }
 }
 

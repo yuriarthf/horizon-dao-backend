@@ -29,30 +29,30 @@ export interface Attributes {
 }
 
 export interface TotalInvestmentValue {
-  total: number;
-  assetPrice: number;
-  closingCosts?: number;
-  transferTaxes: number;
-  vacancyReserves: number;
-  renovationReserves: number;
-  upfrontSpvFees: number;
-  tokenizationFees: number;
+  total: string;
+  assetPrice: string;
+  closingCosts?: string;
+  transferTaxes: string;
+  vacancyReserves: string;
+  renovationReserves: string;
+  upfrontSpvFees: string;
+  tokenizationFees: string;
 }
 
 export interface TotalReturns {
-  totalPercentage: number;
-  projectedAppreciationPercentage?: number;
-  cashOnCashReturnPercentage: number;
+  totalPercentage: string;
+  projectedAppreciationPercentage?: string;
+  cashOnCashReturnPercentage: string;
 }
 
 export interface AnnualGrossRents {
-  total: number;
-  propertyTaxes: number;
-  insurance: number;
-  propertyManagement: number;
-  spvFeelingFees: number;
-  annualCashflow: number;
-  monthlyCashflow: number;
+  total: string;
+  propertyTaxes: string;
+  insurance: string;
+  propertyManagement: string;
+  spvFeelingFees: string;
+  annualCashflow: string;
+  monthlyCashflow: string;
 }
 
 export interface Financials {

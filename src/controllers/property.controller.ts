@@ -16,6 +16,15 @@ class PropertyController {
     }
   };
 
+  public deleteProperty = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const deletedProperty = await this.propertyService.deleteProperty(req.params.propertyId);
+      res.status(201).json({ data: deletedProperty, message: "Property deleted" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const filter = pick(req.body, [
