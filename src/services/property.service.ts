@@ -102,16 +102,18 @@ class PropertyService {
         const property: PropertyExtended = { ...doc.toJSON() };
         results.docs.push(property);
         if (doc.status === "FUNDING") {
+          const propertyIro: any = {};
           const iro = iros[doc.iroId];
-          property.iro.status = iro.status;
+          propertyIro.status = iro.status;
           iro.status !== "ONGOING" && (property.status = iro.status);
-          property.iro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toString();
-          property.iro.currency = iro.currency;
-          property.iro.softCap = this.adjustDecimals(iro.softCap, iro.currencyDecimals).toString();
-          property.iro.hardCap = this.adjustDecimals(iro.hardCap, iro.currencyDecimals).toString();
-          property.iro.start = iro.start;
-          property.iro.end = iro.end;
-          property.iro.totalFunding = this.adjustDecimals(iro.totalFunding, iro.currencyDecimals).toString();
+          propertyIro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toString();
+          propertyIro.currency = iro.currency;
+          propertyIro.softCap = this.adjustDecimals(iro.softCap, iro.currencyDecimals).toString();
+          propertyIro.hardCap = this.adjustDecimals(iro.hardCap, iro.currencyDecimals).toString();
+          propertyIro.start = iro.start;
+          propertyIro.end = iro.end;
+          propertyIro.totalFunding = this.adjustDecimals(iro.totalFunding, iro.currencyDecimals).toString();
+          property.iro = propertyIro;
         }
       });
     } else {
@@ -130,26 +132,28 @@ class PropertyService {
     const result: PropertyExtended = { ...property };
     result.status = this.getPropertyStatus(result);
     if (result.status === "FUNDING") {
+      const resultIro: any = {};
       const iroQueryResult = await iro.getIro(property.iroId.toString());
-      result.iro.status = iroQueryResult.status;
+      resultIro.status = iroQueryResult.status;
       iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
-      result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
-      result.iro.currency = iroQueryResult.currency;
-      result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toFixed(2);
-      result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toFixed(2);
-      result.iro.start = iroQueryResult.start;
-      result.iro.end = iroQueryResult.end;
-      result.iro.totalFunding = this.adjustDecimals(
+      resultIro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
+      resultIro.currency = iroQueryResult.currency;
+      resultIro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toFixed(2);
+      resultIro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toFixed(2);
+      resultIro.start = iroQueryResult.start;
+      resultIro.end = iroQueryResult.end;
+      resultIro.totalFunding = this.adjustDecimals(
         iroQueryResult.totalFunding,
         iroQueryResult.currencyDecimals,
       ).toFixed(2);
-      result.iro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
-      result.iro.ownerClaimed = iroQueryResult.ownerClaimed;
-      result.iro.reservesFee = iroQueryResult.reservesFee;
-      result.iro.treasuryFee = iroQueryResult.treasuryFee;
-      result.iro.listingOwner = iroQueryResult.listingOwner;
-      result.iro.listingOwnerShare = iroQueryResult.listingOwnerShare;
-      result.iro.shares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
+      resultIro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
+      resultIro.ownerClaimed = iroQueryResult.ownerClaimed;
+      resultIro.reservesFee = iroQueryResult.reservesFee;
+      resultIro.treasuryFee = iroQueryResult.treasuryFee;
+      resultIro.listingOwner = iroQueryResult.listingOwner;
+      resultIro.listingOwnerShare = iroQueryResult.listingOwnerShare;
+      resultIro.shares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
+      result.iro = resultIro;
     }
 
     return result;
