@@ -36,7 +36,7 @@ class PropertyService {
   static IRO_DURATION = 15 * 86400; // 15 days
 
   // Annual Gross Rents constants
-  static PROPERTY_TAXES_PERCENT = 0.2;
+  static PROPERTY_TAXES_PERCENT = 0.1;
   static INSURANCE_PERCENT = 0.5;
   static PROPERTY_MANAGEMENT_FEE_PERCENT = 8;
   static SPV_FEELING_FEES = 2000; // 2000 USD
@@ -124,16 +124,16 @@ class PropertyService {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
       iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
-      result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
+      result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
       result.iro.currency = iroQueryResult.currency;
-      result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
-      result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
+      result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toFixed(2);
+      result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toFixed(2);
       result.iro.start = iroQueryResult.start;
       result.iro.end = iroQueryResult.end;
       result.iro.totalFunding = this.adjustDecimals(
         iroQueryResult.totalFunding,
         iroQueryResult.currencyDecimals,
-      ).toString();
+      ).toFixed(2);
       result.iro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
       result.iro.ownerClaimed = iroQueryResult.ownerClaimed;
       result.iro.reservesFee = iroQueryResult.reservesFee;
@@ -322,16 +322,16 @@ class PropertyService {
   private assembleAnnualGrossRents(financialsInput: FinancialsInputDto) {
     const annualCashflow = this.getAnnualCashflow(financialsInput.monthlyCashflow);
     const annualGrossRents: any = {
-      propertyTaxes: PropertyService.PROPERTY_TAXES_PERCENT.percentOf(annualCashflow),
-      insurance: PropertyService.INSURANCE_PERCENT.percentOf(financialsInput.assetPrice),
-      propertyManagement: PropertyService.PROPERTY_MANAGEMENT_FEE_PERCENT.percentOf(annualCashflow),
+      propertyTaxes: this.roundCeil(PropertyService.PROPERTY_TAXES_PERCENT.percentOf(financialsInput.assetPrice)),
+      insurance: this.roundCeil(PropertyService.INSURANCE_PERCENT.percentOf(financialsInput.assetPrice)),
+      propertyManagement: this.roundCeil(PropertyService.PROPERTY_MANAGEMENT_FEE_PERCENT.percentOf(annualCashflow)),
       spvFeelingFees: PropertyService.SPV_FEELING_FEES,
     };
 
     annualGrossRents.total =
       annualCashflow - <number>Object.values(annualGrossRents).reduce((prev: number, next: number) => prev + next);
     Object.assign(annualGrossRents, {
-      monthlyCashflow: financialsInput.monthlyCashflow,
+      monthlyCashflow: this.roundCeil(financialsInput.monthlyCashflow),
       annualCashflow,
     });
 
@@ -341,7 +341,7 @@ class PropertyService {
   private assembleTotalReturns(annualCashflow: number, totalInvestmentValue: number) {
     const totalReturns: any = {
       /* projectedAppreciationPercentage */
-      cashOnCashReturnPercentage: +((annualCashflow / totalInvestmentValue) * 100).toFixed(2),
+      cashOnCashReturnPercentage: this.roundCeil(annualCashflow / totalInvestmentValue),
     };
     totalReturns.totalPercentage = Object.values(totalReturns).reduce((prev: number, next: number) => prev + next);
     return totalReturns;
@@ -381,7 +381,7 @@ class PropertyService {
 
   private getTokenPriceAndTotalSupply(financialsInput: FinancialsInputDto) {
     if (!financialsInput.tokenPrice) {
-      const tokenPrice = +(financialsInput.assetPrice / financialsInput.tokenSupply).toFixed(2);
+      const tokenPrice = this.roundCeil(financialsInput.assetPrice / financialsInput.tokenSupply);
       if (tokenPrice * financialsInput.tokenSupply !== financialsInput.assetPrice) {
         throw new HttpException(400, "assetPrice and tokenSupply division should have at most 2 decimals places");
       }
@@ -391,15 +391,19 @@ class PropertyService {
       };
     }
 
-    {
-      /* if (+parseFloat(financialsInput.tokenPrice).toFixed(2) !== financialsInput.tokenPrice) {
+    if (this.roundCeil(financialsInput.tokenPrice) !== financialsInput.tokenPrice) {
       throw new HttpException(400, "tokenPrice should have at most 2 decimals places");
-    } */
     }
+
     if (financialsInput.assetPrice % financialsInput.tokenPrice !== 0) {
       throw new HttpException(400, "assetPrice should be a multiple of tokenPrice");
     }
+
     const tokenSupply = financialsInput.assetPrice / financialsInput.tokenPrice;
+    if (this.roundCeil(tokenSupply, 0) !== tokenSupply) {
+      throw new HttpException(400, "tokenSupply shoul be an integer");
+    }
+
     return {
       tokenPrice: financialsInput.tokenPrice,
       tokenSupply,
@@ -407,16 +411,16 @@ class PropertyService {
   }
 
   private getAnnualCashflow(monthlyCashflow: number) {
-    return monthlyCashflow * 12; // 12 months cashflow
+    return this.roundCeil(monthlyCashflow * 12); // 12 months cashflow
   }
 
   private calculateFeesFromAssetPrice(assetPrice: number) {
     return {
       /* closingCosts */
-      transferTaxes: PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice),
-      vacancyReserves: PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice),
-      renovationReserves: PropertyService.RENOVATION_RESERVES_PERCENT.percentOf(assetPrice),
-      tokenizationFees: PropertyService.TREASURY_FEE_PERCENT.percentOf(assetPrice),
+      transferTaxes: this.roundCeil(PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice)),
+      vacancyReserves: this.roundCeil(PropertyService.VACANCY_FEE_PERCENT.percentOf(assetPrice)),
+      renovationReserves: this.roundCeil(PropertyService.RENOVATION_RESERVES_PERCENT.percentOf(assetPrice)),
+      tokenizationFees: this.roundCeil(PropertyService.TREASURY_FEE_PERCENT.percentOf(assetPrice)),
       upfrontSpvFees: PropertyService.UPFRONT_SPV_FEES,
     };
   }
@@ -431,7 +435,7 @@ class PropertyService {
       const share = shares[i];
       sharesArray.push({
         address: share.address,
-        committedFunds: this.adjustDecimals(share.committedFunds, currencyDecimals).toString(),
+        committedFunds: this.adjustDecimals(share.committedFunds, currencyDecimals).toFixed(2),
         purchasedAmount: share.amount,
         iroShare: share.share,
         claimed: share.claimed,
@@ -469,6 +473,11 @@ class PropertyService {
   private formatTraitType(attributeName: string) {
     const capitalizedAttributeName = attributeName.charAt(0).toUpperCase() + attributeName.slice(1);
     return capitalizedAttributeName.split(/(?=[A-Z])/).join(" ");
+  }
+
+  private roundCeil(value: number, decimals = 2) {
+    const decimalMultiplier = 10 ** decimals;
+    return Math.ceil(value * decimalMultiplier) / decimalMultiplier;
   }
 }
 

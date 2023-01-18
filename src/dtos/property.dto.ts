@@ -10,29 +10,30 @@ import {
   IsObject,
   ValidateNested,
   ValidateIf,
+  IsInt,
 } from "class-validator";
 
 import { Type } from "class-transformer";
 
 class AttributesDto {
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   public area: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   public bedrooms: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   public bathrooms: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   public parking: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   public yearBuilt: number;
 
   @IsOptional()
@@ -47,18 +48,18 @@ class AttributesDto {
 }
 
 export class FinancialsInputDto {
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   public assetPrice: number;
 
   @ValidateIf(obj => !obj.tokenSupply || obj.tokenPrice)
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   public tokenPrice: number;
 
   @ValidateIf(obj => !obj.tokenPrice || obj.tokenSupply)
-  @IsNumber()
+  @IsInt()
   public tokenSupply: number;
 
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   public monthlyCashflow: number;
 }
 
