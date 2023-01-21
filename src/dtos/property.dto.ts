@@ -11,7 +11,10 @@ import {
   ValidateNested,
   ValidateIf,
   IsInt,
+  IsDivisibleBy,
 } from "class-validator";
+
+import { IsMultipleOf } from "./custom";
 
 import { Type } from "class-transformer";
 
@@ -49,6 +52,7 @@ class AttributesDto {
 
 export class FinancialsInputDto {
   @IsNumber({ maxDecimalPlaces: 2 })
+  @IsMultipleOf("tokenPrice", { message: "assetPrice should be a multiple of tokenPrice" })
   public assetPrice: number;
 
   @ValidateIf(obj => !obj.tokenSupply || obj.tokenPrice)
