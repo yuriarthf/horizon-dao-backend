@@ -11,7 +11,6 @@ import {
   ValidateNested,
   ValidateIf,
   IsInt,
-  IsDivisibleBy,
 } from "class-validator";
 
 import { IsMultipleOf } from "./custom";
