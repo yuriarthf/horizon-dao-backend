@@ -3,7 +3,7 @@
 import { InContextSdkMethod } from '@graphql-mesh/types';
 import { MeshContext } from '@graphql-mesh/runtime';
 
-export namespace HorizonIroTypes {
+export namespace HorizonRealEstateTestTypes {
   export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -20,6 +20,51 @@ export type Scalars = {
   BigInt: any;
   Bytes: any;
 };
+
+export type Balance = {
+  id: Scalars['Bytes'];
+  tokenId: Scalars['BigInt'];
+  amount: Scalars['BigInt'];
+  account: RealEstateAccount;
+};
+
+export type Balance_filter = {
+  id?: InputMaybe<Scalars['Bytes']>;
+  id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']>;
+  tokenId?: InputMaybe<Scalars['BigInt']>;
+  tokenId_not?: InputMaybe<Scalars['BigInt']>;
+  tokenId_gt?: InputMaybe<Scalars['BigInt']>;
+  tokenId_lt?: InputMaybe<Scalars['BigInt']>;
+  tokenId_gte?: InputMaybe<Scalars['BigInt']>;
+  tokenId_lte?: InputMaybe<Scalars['BigInt']>;
+  tokenId_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokenId_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  account_?: InputMaybe<RealEstateAccount_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+};
+
+export type Balance_orderBy =
+  | 'id'
+  | 'tokenId'
+  | 'amount'
+  | 'account';
 
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
@@ -283,6 +328,10 @@ export type Query = {
   userShares: Array<UserShare>;
   iro?: Maybe<IRO>;
   iros: Array<IRO>;
+  balance?: Maybe<Balance>;
+  balances: Array<Balance>;
+  realEstateAccount?: Maybe<RealEstateAccount>;
+  realEstateAccounts: Array<RealEstateAccount>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -342,9 +391,97 @@ export type QueryirosArgs = {
 };
 
 
+export type QuerybalanceArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerybalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Balance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Balance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrealEstateAccountArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrealEstateAccountsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RealEstateAccount_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RealEstateAccount_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
+
+export type RealEstateAccount = {
+  id: Scalars['Bytes'];
+  address: Scalars['Bytes'];
+  balances?: Maybe<Array<Balance>>;
+};
+
+
+export type RealEstateAccountbalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Balance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Balance_filter>;
+};
+
+export type RealEstateAccount_filter = {
+  id?: InputMaybe<Scalars['Bytes']>;
+  id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']>;
+  address?: InputMaybe<Scalars['Bytes']>;
+  address_not?: InputMaybe<Scalars['Bytes']>;
+  address_gt?: InputMaybe<Scalars['Bytes']>;
+  address_lt?: InputMaybe<Scalars['Bytes']>;
+  address_gte?: InputMaybe<Scalars['Bytes']>;
+  address_lte?: InputMaybe<Scalars['Bytes']>;
+  address_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  address_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  address_contains?: InputMaybe<Scalars['Bytes']>;
+  address_not_contains?: InputMaybe<Scalars['Bytes']>;
+  balances?: InputMaybe<Array<Scalars['String']>>;
+  balances_not?: InputMaybe<Array<Scalars['String']>>;
+  balances_contains?: InputMaybe<Array<Scalars['String']>>;
+  balances_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  balances_not_contains?: InputMaybe<Array<Scalars['String']>>;
+  balances_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  balances_?: InputMaybe<Balance_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+};
+
+export type RealEstateAccount_orderBy =
+  | 'id'
+  | 'address'
+  | 'balances';
 
 export type Status =
   | 'PENDING'
@@ -359,6 +496,10 @@ export type Subscription = {
   userShares: Array<UserShare>;
   iro?: Maybe<IRO>;
   iros: Array<IRO>;
+  balance?: Maybe<Balance>;
+  balances: Array<Balance>;
+  realEstateAccount?: Maybe<RealEstateAccount>;
+  realEstateAccounts: Array<RealEstateAccount>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -413,6 +554,42 @@ export type SubscriptionirosArgs = {
   orderBy?: InputMaybe<IRO_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<IRO_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionbalanceArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionbalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Balance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Balance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrealEstateAccountArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrealEstateAccountsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RealEstateAccount_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RealEstateAccount_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -539,6 +716,14 @@ export type _SubgraphErrorPolicy_ =
   iro: InContextSdkMethod<Query['iro'], QueryiroArgs, MeshContext>,
   /** null **/
   iros: InContextSdkMethod<Query['iros'], QueryirosArgs, MeshContext>,
+  /** null **/
+  balance: InContextSdkMethod<Query['balance'], QuerybalanceArgs, MeshContext>,
+  /** null **/
+  balances: InContextSdkMethod<Query['balances'], QuerybalancesArgs, MeshContext>,
+  /** null **/
+  realEstateAccount: InContextSdkMethod<Query['realEstateAccount'], QueryrealEstateAccountArgs, MeshContext>,
+  /** null **/
+  realEstateAccounts: InContextSdkMethod<Query['realEstateAccounts'], QueryrealEstateAccountsArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Query['_meta'], Query_metaArgs, MeshContext>
   };
@@ -560,12 +745,20 @@ export type _SubgraphErrorPolicy_ =
   iro: InContextSdkMethod<Subscription['iro'], SubscriptioniroArgs, MeshContext>,
   /** null **/
   iros: InContextSdkMethod<Subscription['iros'], SubscriptionirosArgs, MeshContext>,
+  /** null **/
+  balance: InContextSdkMethod<Subscription['balance'], SubscriptionbalanceArgs, MeshContext>,
+  /** null **/
+  balances: InContextSdkMethod<Subscription['balances'], SubscriptionbalancesArgs, MeshContext>,
+  /** null **/
+  realEstateAccount: InContextSdkMethod<Subscription['realEstateAccount'], SubscriptionrealEstateAccountArgs, MeshContext>,
+  /** null **/
+  realEstateAccounts: InContextSdkMethod<Subscription['realEstateAccounts'], SubscriptionrealEstateAccountsArgs, MeshContext>,
   /** Access to subgraph metadata **/
   _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
   };
 
   export type Context = {
-      ["horizon-iro"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
+      ["horizon-real-estate-test"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
       
     };
 }

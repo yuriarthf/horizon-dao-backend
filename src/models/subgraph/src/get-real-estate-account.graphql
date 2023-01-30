@@ -1,0 +1,9 @@
+query getRealEstateAccount($account: Bytes!) {
+  realEstateAccounts(where: { address: $account }) {
+    address
+    balances {
+      tokenId
+      amount
+    }
+  }
+}

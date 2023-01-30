@@ -20,7 +20,7 @@ import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
-import type { HorizonIroTypes } from './sources/horizon-iro/types';
+import type { HorizonRealEstateTestTypes } from './sources/horizon-real-estate-test/types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -41,6 +41,51 @@ export type Scalars = {
   BigInt: any;
   Bytes: any;
 };
+
+export type Balance = {
+  id: Scalars['Bytes'];
+  tokenId: Scalars['BigInt'];
+  amount: Scalars['BigInt'];
+  account: RealEstateAccount;
+};
+
+export type Balance_filter = {
+  id?: InputMaybe<Scalars['Bytes']>;
+  id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']>;
+  tokenId?: InputMaybe<Scalars['BigInt']>;
+  tokenId_not?: InputMaybe<Scalars['BigInt']>;
+  tokenId_gt?: InputMaybe<Scalars['BigInt']>;
+  tokenId_lt?: InputMaybe<Scalars['BigInt']>;
+  tokenId_gte?: InputMaybe<Scalars['BigInt']>;
+  tokenId_lte?: InputMaybe<Scalars['BigInt']>;
+  tokenId_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokenId_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  account_?: InputMaybe<RealEstateAccount_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+};
+
+export type Balance_orderBy =
+  | 'id'
+  | 'tokenId'
+  | 'amount'
+  | 'account';
 
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
@@ -304,6 +349,10 @@ export type Query = {
   userShares: Array<UserShare>;
   iro?: Maybe<IRO>;
   iros: Array<IRO>;
+  balance?: Maybe<Balance>;
+  balances: Array<Balance>;
+  realEstateAccount?: Maybe<RealEstateAccount>;
+  realEstateAccounts: Array<RealEstateAccount>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -363,9 +412,97 @@ export type QueryirosArgs = {
 };
 
 
+export type QuerybalanceArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerybalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Balance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Balance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrealEstateAccountArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrealEstateAccountsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RealEstateAccount_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RealEstateAccount_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
+
+export type RealEstateAccount = {
+  id: Scalars['Bytes'];
+  address: Scalars['Bytes'];
+  balances?: Maybe<Array<Balance>>;
+};
+
+
+export type RealEstateAccountbalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Balance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Balance_filter>;
+};
+
+export type RealEstateAccount_filter = {
+  id?: InputMaybe<Scalars['Bytes']>;
+  id_not?: InputMaybe<Scalars['Bytes']>;
+  id_gt?: InputMaybe<Scalars['Bytes']>;
+  id_lt?: InputMaybe<Scalars['Bytes']>;
+  id_gte?: InputMaybe<Scalars['Bytes']>;
+  id_lte?: InputMaybe<Scalars['Bytes']>;
+  id_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id_contains?: InputMaybe<Scalars['Bytes']>;
+  id_not_contains?: InputMaybe<Scalars['Bytes']>;
+  address?: InputMaybe<Scalars['Bytes']>;
+  address_not?: InputMaybe<Scalars['Bytes']>;
+  address_gt?: InputMaybe<Scalars['Bytes']>;
+  address_lt?: InputMaybe<Scalars['Bytes']>;
+  address_gte?: InputMaybe<Scalars['Bytes']>;
+  address_lte?: InputMaybe<Scalars['Bytes']>;
+  address_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  address_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  address_contains?: InputMaybe<Scalars['Bytes']>;
+  address_not_contains?: InputMaybe<Scalars['Bytes']>;
+  balances?: InputMaybe<Array<Scalars['String']>>;
+  balances_not?: InputMaybe<Array<Scalars['String']>>;
+  balances_contains?: InputMaybe<Array<Scalars['String']>>;
+  balances_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  balances_not_contains?: InputMaybe<Array<Scalars['String']>>;
+  balances_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  balances_?: InputMaybe<Balance_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+};
+
+export type RealEstateAccount_orderBy =
+  | 'id'
+  | 'address'
+  | 'balances';
 
 export type Status =
   | 'PENDING'
@@ -380,6 +517,10 @@ export type Subscription = {
   userShares: Array<UserShare>;
   iro?: Maybe<IRO>;
   iros: Array<IRO>;
+  balance?: Maybe<Balance>;
+  balances: Array<Balance>;
+  realEstateAccount?: Maybe<RealEstateAccount>;
+  realEstateAccounts: Array<RealEstateAccount>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -434,6 +575,42 @@ export type SubscriptionirosArgs = {
   orderBy?: InputMaybe<IRO_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<IRO_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionbalanceArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionbalancesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Balance_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Balance_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrealEstateAccountArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrealEstateAccountsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RealEstateAccount_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RealEstateAccount_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -631,6 +808,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  Balance: ResolverTypeWrapper<Balance>;
+  Balance_filter: Balance_filter;
+  Balance_orderBy: Balance_orderBy;
   BigDecimal: ResolverTypeWrapper<Scalars['BigDecimal']>;
   BigInt: ResolverTypeWrapper<Scalars['BigInt']>;
   BlockChangedFilter: BlockChangedFilter;
@@ -648,6 +828,9 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']>;
   OrderDirection: OrderDirection;
   Query: ResolverTypeWrapper<{}>;
+  RealEstateAccount: ResolverTypeWrapper<RealEstateAccount>;
+  RealEstateAccount_filter: RealEstateAccount_filter;
+  RealEstateAccount_orderBy: RealEstateAccount_orderBy;
   Status: Status;
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -661,6 +844,8 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  Balance: Balance;
+  Balance_filter: Balance_filter;
   BigDecimal: Scalars['BigDecimal'];
   BigInt: Scalars['BigInt'];
   BlockChangedFilter: BlockChangedFilter;
@@ -675,6 +860,8 @@ export type ResolversParentTypes = ResolversObject<{
   IRO_filter: IRO_filter;
   Int: Scalars['Int'];
   Query: {};
+  RealEstateAccount: RealEstateAccount;
+  RealEstateAccount_filter: RealEstateAccount_filter;
   String: Scalars['String'];
   Subscription: {};
   UserShare: UserShare;
@@ -698,6 +885,14 @@ export type derivedFromDirectiveArgs = {
 };
 
 export type derivedFromDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = derivedFromDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type BalanceResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Balance'] = ResolversParentTypes['Balance']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  tokenId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  account?: Resolver<ResolversTypes['RealEstateAccount'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export interface BigDecimalScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigDecimal'], any> {
   name: 'BigDecimal';
@@ -748,7 +943,18 @@ export type QueryResolvers<ContextType = MeshContext, ParentType extends Resolve
   userShares?: Resolver<Array<ResolversTypes['UserShare']>, ParentType, ContextType, RequireFields<QueryuserSharesArgs, 'skip' | 'first' | 'subgraphError'>>;
   iro?: Resolver<Maybe<ResolversTypes['IRO']>, ParentType, ContextType, RequireFields<QueryiroArgs, 'id' | 'subgraphError'>>;
   iros?: Resolver<Array<ResolversTypes['IRO']>, ParentType, ContextType, RequireFields<QueryirosArgs, 'skip' | 'first' | 'subgraphError'>>;
+  balance?: Resolver<Maybe<ResolversTypes['Balance']>, ParentType, ContextType, RequireFields<QuerybalanceArgs, 'id' | 'subgraphError'>>;
+  balances?: Resolver<Array<ResolversTypes['Balance']>, ParentType, ContextType, RequireFields<QuerybalancesArgs, 'skip' | 'first' | 'subgraphError'>>;
+  realEstateAccount?: Resolver<Maybe<ResolversTypes['RealEstateAccount']>, ParentType, ContextType, RequireFields<QueryrealEstateAccountArgs, 'id' | 'subgraphError'>>;
+  realEstateAccounts?: Resolver<Array<ResolversTypes['RealEstateAccount']>, ParentType, ContextType, RequireFields<QueryrealEstateAccountsArgs, 'skip' | 'first' | 'subgraphError'>>;
   _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
+}>;
+
+export type RealEstateAccountResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['RealEstateAccount'] = ResolversParentTypes['RealEstateAccount']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  address?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  balances?: Resolver<Maybe<Array<ResolversTypes['Balance']>>, ParentType, ContextType, RequireFields<RealEstateAccountbalancesArgs, 'skip' | 'first'>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
@@ -758,6 +964,10 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
   userShares?: SubscriptionResolver<Array<ResolversTypes['UserShare']>, "userShares", ParentType, ContextType, RequireFields<SubscriptionuserSharesArgs, 'skip' | 'first' | 'subgraphError'>>;
   iro?: SubscriptionResolver<Maybe<ResolversTypes['IRO']>, "iro", ParentType, ContextType, RequireFields<SubscriptioniroArgs, 'id' | 'subgraphError'>>;
   iros?: SubscriptionResolver<Array<ResolversTypes['IRO']>, "iros", ParentType, ContextType, RequireFields<SubscriptionirosArgs, 'skip' | 'first' | 'subgraphError'>>;
+  balance?: SubscriptionResolver<Maybe<ResolversTypes['Balance']>, "balance", ParentType, ContextType, RequireFields<SubscriptionbalanceArgs, 'id' | 'subgraphError'>>;
+  balances?: SubscriptionResolver<Array<ResolversTypes['Balance']>, "balances", ParentType, ContextType, RequireFields<SubscriptionbalancesArgs, 'skip' | 'first' | 'subgraphError'>>;
+  realEstateAccount?: SubscriptionResolver<Maybe<ResolversTypes['RealEstateAccount']>, "realEstateAccount", ParentType, ContextType, RequireFields<SubscriptionrealEstateAccountArgs, 'id' | 'subgraphError'>>;
+  realEstateAccounts?: SubscriptionResolver<Array<ResolversTypes['RealEstateAccount']>, "realEstateAccounts", ParentType, ContextType, RequireFields<SubscriptionrealEstateAccountsArgs, 'skip' | 'first' | 'subgraphError'>>;
   _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_metaArgs>>;
 }>;
 
@@ -787,12 +997,14 @@ export type _Meta_Resolvers<ContextType = MeshContext, ParentType extends Resolv
 }>;
 
 export type Resolvers<ContextType = MeshContext> = ResolversObject<{
+  Balance?: BalanceResolvers<ContextType>;
   BigDecimal?: GraphQLScalarType;
   BigInt?: GraphQLScalarType;
   Bytes?: GraphQLScalarType;
   IRO?: IROResolvers<ContextType>;
   IROSet?: IROSetResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RealEstateAccount?: RealEstateAccountResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   UserShare?: UserShareResolvers<ContextType>;
   _Block_?: _Block_Resolvers<ContextType>;
@@ -805,7 +1017,7 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
   derivedFrom?: derivedFromDirectiveResolver<any, any, ContextType>;
 }>;
 
-export type MeshContext = HorizonIroTypes.Context & BaseMeshContext;
+export type MeshContext = HorizonRealEstateTestTypes.Context & BaseMeshContext;
 
 
 const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
@@ -813,8 +1025,8 @@ const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/',
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
-    case ".graphclient/sources/horizon-iro/introspectionSchema":
-      return import("./sources/horizon-iro/introspectionSchema") as T;
+    case ".graphclient/sources/horizon-real-estate-test/introspectionSchema":
+      return import("./sources/horizon-real-estate-test/introspectionSchema") as T;
     
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
@@ -846,22 +1058,22 @@ const cache = new (MeshCache as any)({
 const sources: MeshResolvedSource[] = [];
 const transforms: MeshTransform[] = [];
 const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
-const horizonIroTransforms = [];
+const horizonRealEstateTestTransforms = [];
 const additionalTypeDefs = [] as any[];
-const horizonIroHandler = new GraphqlHandler({
-              name: "horizon-iro",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/39814/horizon-iro-test/v0.0.18"},
+const horizonRealEstateTestHandler = new GraphqlHandler({
+              name: "horizon-real-estate-test",
+              config: {"endpoint":"https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.1"},
               baseDir,
               cache,
               pubsub,
-              store: sourcesStore.child("horizon-iro"),
-              logger: logger.child("horizon-iro"),
+              store: sourcesStore.child("horizon-real-estate-test"),
+              logger: logger.child("horizon-real-estate-test"),
               importFn,
             });
 sources[0] = {
-          name: 'horizon-iro',
-          handler: horizonIroHandler,
-          transforms: horizonIroTransforms
+          name: 'horizon-real-estate-test',
+          handler: horizonRealEstateTestHandler,
+          transforms: horizonRealEstateTestTransforms
         }
 const additionalResolvers = [] as any[]
 const merger = new(BareMerger as any)({
@@ -895,6 +1107,12 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetIrosDocument);
         },
         location: 'GetIrosDocument.graphql'
+      },{
+        document: GetRealEstateAccountDocument,
+        get rawSDL() {
+          return printWithCache(GetRealEstateAccountDocument);
+        },
+        location: 'GetRealEstateAccountDocument.graphql'
       },{
         document: GetUserSharesDocument,
         get rawSDL() {
@@ -956,6 +1174,16 @@ export type getIrosQueryVariables = Exact<{
 
 export type getIrosQuery = { iros: Array<Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'softCap' | 'hardCap' | 'start' | 'end' | 'totalFunding'>> };
 
+export type getRealEstateAccountQueryVariables = Exact<{
+  account: Scalars['Bytes'];
+}>;
+
+
+export type getRealEstateAccountQuery = { realEstateAccounts: Array<(
+    Pick<RealEstateAccount, 'address'>
+    & { balances?: Maybe<Array<Pick<Balance, 'tokenId' | 'amount'>>> }
+  )> };
+
 export type getUserSharesQueryVariables = Exact<{
   user: Scalars['Bytes'];
 }>;
@@ -1012,6 +1240,17 @@ export const getIrosDocument = gql`
   }
 }
     ` as unknown as DocumentNode<getIrosQuery, getIrosQueryVariables>;
+export const getRealEstateAccountDocument = gql`
+    query getRealEstateAccount($account: Bytes!) {
+  realEstateAccounts(where: {address: $account}) {
+    address
+    balances {
+      tokenId
+      amount
+    }
+  }
+}
+    ` as unknown as DocumentNode<getRealEstateAccountQuery, getRealEstateAccountQueryVariables>;
 export const getUserSharesDocument = gql`
     query getUserShares($user: Bytes!) {
   userShares(where: {address: $user}) {
@@ -1039,6 +1278,7 @@ export const getUserSharesDocument = gql`
 
 
 
+
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
@@ -1047,6 +1287,9 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     getIros(variables?: getIrosQueryVariables, options?: C): Promise<getIrosQuery> {
       return requester<getIrosQuery, getIrosQueryVariables>(getIrosDocument, variables, options) as Promise<getIrosQuery>;
+    },
+    getRealEstateAccount(variables: getRealEstateAccountQueryVariables, options?: C): Promise<getRealEstateAccountQuery> {
+      return requester<getRealEstateAccountQuery, getRealEstateAccountQueryVariables>(getRealEstateAccountDocument, variables, options) as Promise<getRealEstateAccountQuery>;
     },
     getUserShares(variables: getUserSharesQueryVariables, options?: C): Promise<getUserSharesQuery> {
       return requester<getUserSharesQuery, getUserSharesQueryVariables>(getUserSharesDocument, variables, options) as Promise<getUserSharesQuery>;
