@@ -65,6 +65,15 @@ class PropertyController {
     }
   };
 
+  public getUserProperties = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userProperties = await this.propertyService.getUserProperties(req.params.userAddress);
+      res.status(200).json({ data: userProperties });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getProperty = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const property = await this.propertyService.getPropertyById(req.params.propertyId);

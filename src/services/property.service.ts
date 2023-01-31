@@ -5,6 +5,7 @@ import { HttpException } from "@exceptions/HttpException";
 import propertyModel from "@models/property.model";
 import RealEstateNFTModel from "@models/realEstateNft.model";
 import iroModel from "@models/iro.model";
+import realEstateAccountModel from "@models/realEstateAccount.model";
 
 // Interfaces
 import { Property, PropertyExtended, GetPropertiesPaginatedResult, Attributes } from "@interfaces/property.interface";
@@ -27,6 +28,7 @@ BigNumber.config({ DECIMAL_PLACES: 2 });
 
 // instantiate models
 const iro = new iroModel();
+const realEstateAccount = new realEstateAccountModel();
 
 class PropertyService {
   // IRO constants
@@ -295,6 +297,29 @@ class PropertyService {
     });
 
     return realEstateNft;
+  }
+
+  public async getUserProperties(user: string) {
+    if (isEmpty(user)) throw new HttpException(404, "Invalid user");
+
+    const userBalances = await realEstateAccount.getAccountBalances(user);
+
+    const tokenIdToBalanceMap: any = {};
+    userBalances.forEach(balance => {
+      Object.assign(tokenIdToBalanceMap, { [balance.tokenId]: balance.amount });
+    });
+
+    const properties = await propertyModel.find({ realEstateNftId: { $in: Object.keys(tokenIdToBalanceMap) } });
+
+    const result: any = [];
+    for (const property of properties) {
+      result.push({
+        ...property,
+        balance: tokenIdToBalanceMap[property.realEstateNftId],
+      });
+    }
+
+    return result;
   }
 
   public async deletePropertyById(propertyId: string): Promise<Property> {
