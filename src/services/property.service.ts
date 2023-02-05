@@ -181,6 +181,7 @@ class PropertyService {
       const property = iroIdToPropertyMap[userShare.iro.iroId.toString()];
       const currencyDecimals = userShare.iro.currencyDecimals;
       results.push({
+        _id: property._id,
         name: property.name,
         type: property.type,
         status: userShare.iro.status === "ONGOING" ? "FUNDING" : userShare.iro.status,
@@ -190,13 +191,15 @@ class PropertyService {
         address: property.address,
         imageUrl: property.imageUrl,
         attributes: property.attributes,
+        iroId: property.iroId,
+        financials: property.financials,
         iro: {
           status: userShare.iro.status,
           userAmount: userShare.amount,
           userShare: userShare.share,
           userClaimed: userShare.claimed,
           currency: userShare.iro.currency,
-          unitPrice: this.adjustDecimals(userShare.iro.unitPrice, currencyDecimals),
+          tokenPrice: this.adjustDecimals(userShare.iro.unitPrice, currencyDecimals),
           softCap: this.adjustDecimals(userShare.iro.softCap, currencyDecimals),
           hardCap: this.adjustDecimals(userShare.iro.hardCap, currencyDecimals),
           start: userShare.iro.start,
