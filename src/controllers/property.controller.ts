@@ -56,10 +56,10 @@ class PropertyController {
     }
   };
 
-  public getUserIROProperties = async (req: Request, res: Response, next: NextFunction) => {
+  public getUserFundings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userIROProperties = await this.propertyService.getUserIROProperties(req.params.userAddress);
-      res.status(200).json({ data: userIROProperties });
+      const userFundings = await this.propertyService.getUserFundings(req.params.userAddress);
+      res.status(200).json({ data: userFundings });
     } catch (error) {
       next(error);
     }

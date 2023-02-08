@@ -161,11 +161,21 @@ class PropertyService {
     return result;
   }
 
-  public async getUserIROProperties(userAddress: string) {
+  public async getUserFundings(userAddress: string) {
     if (isEmpty(userAddress)) throw new HttpException(400, "userAddress is empty");
 
-    const iroProperties = await propertyModel.find({ iroId: { $exists: true } });
-    if (!iroProperties) throw new HttpException(409, "No properties found");
+    let userShares = <Array<any>>await iro.getUserShare(userAddress);
+    const iroIds: any[] = [];
+    userShares = userShares.filter(userShare => {
+      const isOngoing = userShare.iro.status === "ONGOING";
+      if (isOngoing) {
+        iroIds.push(userShare.iro.iroId);
+      }
+      return isOngoing;
+    });
+
+    const iroProperties = await propertyModel.find({ iroId: { $in: iroIds } });
+    if (!iroProperties) throw new HttpException(409, "No user funding found");
 
     const iroIdToPropertyMap = {};
     for (const iroProperty of iroProperties) {
@@ -173,17 +183,14 @@ class PropertyService {
       iroIdToPropertyMap[item.iroId.toString()] = item;
     }
 
-    const userShares = await iro.getUserShare(userAddress);
-
     const results = [];
     for (const userShare of userShares) {
-      if (!(userShare.iro.iroId.toString() in iroIdToPropertyMap)) continue;
       const property = iroIdToPropertyMap[userShare.iro.iroId.toString()];
       const currencyDecimals = userShare.iro.currencyDecimals;
       results.push({
         name: property.name,
         type: property.type,
-        status: userShare.iro.status === "ONGOING" ? "FUNDING" : userShare.iro.status,
+        status: "FUNDING",
         country: property.country,
         city: property.city,
         region: property.region,
