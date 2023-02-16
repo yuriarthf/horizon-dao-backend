@@ -32,21 +32,14 @@ class PropertyController {
         "type",
         "country",
         "city",
-        "tokenPriceMin",
-        "tokenPriceMax",
-        "assetValueMin",
-        "assetValueMax",
-        "totalSupplyMin",
-        "totalSupplyMax",
-        "aprMin",
-        "aprMax",
-        "sizeMin",
-        "sizeMax",
-        "bedroomMin",
-        "bedroomMax",
-        "bathroomMin",
-        "bathroomMax",
+        "tokenPrice",
+        "priceRange",
+        "totalSupply",
+        "apy",
+        "area",
+        "bedrooms",
       ]);
+      console.log(req.body);
       const options = pick(req.params, ["page"]);
       Object.assign(options, pick(req.query, ["sort", "limit", "offset"]));
       const getAllUsersResult = await this.propertyService.getPropertiesPaginated(filter, options);

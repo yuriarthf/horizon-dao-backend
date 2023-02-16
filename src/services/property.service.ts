@@ -67,7 +67,7 @@ class PropertyService {
     filter: FilterQuery<Property>,
     options: PaginateOptions,
   ): Promise<GetPropertiesPaginatedResult> {
-    const propertiesPagination = await propertyModel.paginate(filter, options);
+    const propertiesPagination = await propertyModel.paginate(this.formatQuery(filter), options);
 
     const results: GetPropertiesPaginatedResult = {
       paginationMetadata: {
@@ -164,15 +164,7 @@ class PropertyService {
   public async getUserFundings(userAddress: string) {
     if (isEmpty(userAddress)) throw new HttpException(400, "userAddress is empty");
 
-    let userShares = <Array<any>>await iro.getUserShare(userAddress);
-    const iroIds: any[] = [];
-    userShares = userShares.filter(userShare => {
-      const isOngoing = userShare.iro.status === "ONGOING";
-      if (isOngoing) {
-        iroIds.push(userShare.iro.iroId);
-      }
-      return isOngoing;
-    });
+    const [userShares, iroIds] = await this.getUserSharesAndIroIds(userAddress, "ONGOING");
 
     const iroProperties = await propertyModel.find({ iroId: { $in: iroIds } });
     if (!iroProperties) throw new HttpException(409, "No user funding found");
@@ -218,6 +210,29 @@ class PropertyService {
     }
 
     return results;
+  }
+
+  public async getUserProperties(user: string) {
+    if (isEmpty(user)) throw new HttpException(404, "Invalid user");
+
+    const userBalances = await realEstateAccount.getAccountBalances(user);
+
+    const tokenIdToBalanceMap: any = {};
+    userBalances.forEach(balance => {
+      Object.assign(tokenIdToBalanceMap, { [balance.tokenId]: balance.amount });
+    });
+
+    const properties = await propertyModel.find({ realEstateNftId: { $in: Object.keys(tokenIdToBalanceMap) } });
+
+    const result: any = [];
+    for (const property of properties) {
+      result.push({
+        ...property,
+        balance: tokenIdToBalanceMap[property.realEstateNftId],
+      });
+    }
+
+    return result;
   }
 
   public async getPropertyByName(name: string): Promise<Property> {
@@ -309,33 +324,77 @@ class PropertyService {
     return realEstateNft;
   }
 
-  public async getUserProperties(user: string) {
-    if (isEmpty(user)) throw new HttpException(404, "Invalid user");
-
-    const userBalances = await realEstateAccount.getAccountBalances(user);
-
-    const tokenIdToBalanceMap: any = {};
-    userBalances.forEach(balance => {
-      Object.assign(tokenIdToBalanceMap, { [balance.tokenId]: balance.amount });
-    });
-
-    const properties = await propertyModel.find({ realEstateNftId: { $in: Object.keys(tokenIdToBalanceMap) } });
-
-    const result: any = [];
-    for (const property of properties) {
-      result.push({
-        ...property,
-        balance: tokenIdToBalanceMap[property.realEstateNftId],
-      });
-    }
-
-    return result;
-  }
-
   public async deletePropertyById(propertyId: string): Promise<Property> {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     const removedProperty = <Property>(await propertyModel.findByIdAndRemove(propertyId)).toJSON();
     return removedProperty;
+  }
+
+  private async getUserSharesAndIroIds(userAddress: string, iroStatus: string) {
+    let userShares = <Array<any>>await iro.getUserShare(userAddress);
+    const iroIds: any[] = [];
+    userShares = userShares.filter(userShare => {
+      const isValid = <string>userShare.iro.status === iroStatus;
+      if (isValid) {
+        iroIds.push(userShare.iro.iroId);
+      }
+      return isValid;
+    });
+    return [userShares, iroIds];
+  }
+
+  private formatQuery(filter: any) {
+    const query: any[] = [];
+    filter.status &&
+      query.push(
+        (() => {
+          if (filter.status === "DUE_DILLIGENCE") return { iroId: { $exists: false } };
+          if (filter.status === "FUNDING") return { iroId: { $exists: true }, realEstateNftId: { $exists: false } };
+          if (filter.status === "TRADE") return { iroId: { $exists: true }, realEstateNftId: { $exists: true } };
+          throw new HttpException(500, "Invalid status filter value");
+        })(),
+      );
+    filter.type && query.push({ type: filter.type });
+    filter.country && query.push({ country: filter.country });
+    filter.city && query.push({ city: filter.city });
+    filter.tokenPrice &&
+      query.push({
+        tokenPrice: {
+          $and: [{ $gte: filter.tokenPrice.min }, { $lte: filter.tokenPrice.max }],
+        },
+      });
+    filter.priceRange &&
+      query.push({
+        priceRange: {
+          $and: [{ $gte: filter.priceRange.min }, { $lte: filter.priceRange.max }],
+        },
+      });
+    filter.totalSupply &&
+      query.push({
+        iroProposal: {
+          tokenSupply: { $and: [{ $gte: filter.totalSupply.min }, { $lte: filter.totalSupply.max }] },
+        },
+      });
+
+    filter.area &&
+      query.push({
+        attributes: {
+          area: {
+            $and: [{ $gte: filter.area.min }, { $lte: filter.area.max }],
+          },
+        },
+      });
+
+    filter.bedrooms &&
+      query.push({
+        attributes: {
+          bedrooms: {
+            $and: [{ $gte: filter.bedrooms.min }, { $lte: filter.bedrooms.max }],
+          },
+        },
+      });
+
+    return query.length > 0 ? { $and: query } : {};
   }
 
   private createPropertyBodyToPropertyStorage(createPropertyBody: CreatePropertyDto) {
