@@ -49,6 +49,8 @@ input Balance_filter {
   account_: RealEstateAccount_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [Balance_filter]
+  or: [Balance_filter]
 }
 
 enum Balance_orderBy {
@@ -127,6 +129,8 @@ input IROSet_filter {
   iroIds_not_contains_nocase: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [IROSet_filter]
+  or: [IROSet_filter]
 }
 
 enum IROSet_orderBy {
@@ -283,6 +287,8 @@ input IRO_filter {
   realEstateId_not_in: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [IRO_filter]
+  or: [IRO_filter]
 }
 
 enum IRO_orderBy {
@@ -484,6 +490,8 @@ input RealEstateAccount_filter {
   balances_: Balance_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [RealEstateAccount_filter]
+  or: [RealEstateAccount_filter]
 }
 
 enum RealEstateAccount_orderBy {
@@ -696,6 +704,8 @@ input UserShare_filter {
   iro_: IRO_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [UserShare_filter]
+  or: [UserShare_filter]
 }
 
 enum UserShare_orderBy {

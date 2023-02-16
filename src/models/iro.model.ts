@@ -1,4 +1,10 @@
-import { getIrosDocument, getIroDocument, getUserSharesDocument, execute } from "./subgraph/graphclient";
+import {
+  getIrosByStatusDocument,
+  getIrosByIdDocument,
+  getIroDocument,
+  getUserSharesDocument,
+  execute,
+} from "./subgraph/graphclient";
 
 interface GetIrosResult {
   iroId: string;
@@ -40,18 +46,25 @@ interface GetIroResult {
 }
 
 class IRO {
-  public getIrosQuery: typeof getIrosDocument;
+  public getIrosByIdQuery: typeof getIrosByIdDocument;
+  public getIrosByStatusQuery: typeof getIrosByStatusDocument;
   public getIroQuery: typeof getIroDocument;
   public getUserSharesQuery: typeof getUserSharesDocument;
 
   constructor() {
-    this.getIrosQuery = getIrosDocument;
+    this.getIrosByIdQuery = getIrosByIdDocument;
+    this.getIrosByStatusQuery = getIrosByStatusDocument;
     this.getIroQuery = getIroDocument;
     this.getUserSharesQuery = getUserSharesDocument;
   }
 
-  public async getIros(iroIds: string[]): Promise<GetIrosResult[]> {
-    const result = await execute(this.getIrosQuery, { iroIds });
+  public async getIrosById(iroIds: string[]): Promise<GetIrosResult[]> {
+    const result = await execute(this.getIrosByIdQuery, { iroIds });
+    return result?.data.iros;
+  }
+
+  public async getIrosByStatus(statuses: string[]): Promise<GetIrosResult[]> {
+    const result = await execute(this.getIrosByStatusQuery, { statuses });
     return result?.data.iros;
   }
 

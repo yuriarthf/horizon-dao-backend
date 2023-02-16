@@ -1,0 +1,14 @@
+query getIrosByStatus($statuses: [Status!]) {
+  iros(where: { status_in: $statuses }) {
+    iroId
+    status
+    unitPrice
+    currency
+    currencyDecimals
+    softCap
+    hardCap
+    start
+    end
+    totalFunding
+  }
+}

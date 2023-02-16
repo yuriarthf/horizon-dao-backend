@@ -58,6 +58,8 @@ export type Balance_filter = {
   account_?: InputMaybe<RealEstateAccount_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Balance_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Balance_filter>>>;
 };
 
 export type Balance_orderBy =
@@ -138,6 +140,8 @@ export type IROSet_filter = {
   iroIds_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<IROSet_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<IROSet_filter>>>;
 };
 
 export type IROSet_orderBy =
@@ -293,6 +297,8 @@ export type IRO_filter = {
   realEstateId_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<IRO_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<IRO_filter>>>;
 };
 
 export type IRO_orderBy =
@@ -476,6 +482,8 @@ export type RealEstateAccount_filter = {
   balances_?: InputMaybe<Balance_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RealEstateAccount_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<RealEstateAccount_filter>>>;
 };
 
 export type RealEstateAccount_orderBy =
@@ -661,6 +669,8 @@ export type UserShare_filter = {
   iro_?: InputMaybe<IRO_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<UserShare_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<UserShare_filter>>>;
 };
 
 export type UserShare_orderBy =

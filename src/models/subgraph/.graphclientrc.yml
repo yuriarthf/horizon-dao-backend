@@ -4,7 +4,8 @@ sources:
       graphql:
         endpoint: https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.1
 documents:
-  - ./src/get-iros.graphql
+  - ./src/get-iros-by-status.graphql
+  - ./src/get-iros-by-id.graphql
   - ./src/get-iro.graphql
   - ./src/get-user-shares.graphql
   - ./src/get-real-estate-account.graphql

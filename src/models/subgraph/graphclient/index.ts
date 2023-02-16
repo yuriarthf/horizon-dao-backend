@@ -79,6 +79,8 @@ export type Balance_filter = {
   account_?: InputMaybe<RealEstateAccount_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Balance_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Balance_filter>>>;
 };
 
 export type Balance_orderBy =
@@ -159,6 +161,8 @@ export type IROSet_filter = {
   iroIds_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<IROSet_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<IROSet_filter>>>;
 };
 
 export type IROSet_orderBy =
@@ -314,6 +318,8 @@ export type IRO_filter = {
   realEstateId_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<IRO_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<IRO_filter>>>;
 };
 
 export type IRO_orderBy =
@@ -497,6 +503,8 @@ export type RealEstateAccount_filter = {
   balances_?: InputMaybe<Balance_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RealEstateAccount_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<RealEstateAccount_filter>>>;
 };
 
 export type RealEstateAccount_orderBy =
@@ -682,6 +690,8 @@ export type UserShare_filter = {
   iro_?: InputMaybe<IRO_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<UserShare_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<UserShare_filter>>>;
 };
 
 export type UserShare_orderBy =
@@ -1102,11 +1112,17 @@ const merger = new(BareMerger as any)({
         },
         location: 'GetIroDocument.graphql'
       },{
-        document: GetIrosDocument,
+        document: GetIrosByIdDocument,
         get rawSDL() {
-          return printWithCache(GetIrosDocument);
+          return printWithCache(GetIrosByIdDocument);
         },
-        location: 'GetIrosDocument.graphql'
+        location: 'GetIrosByIdDocument.graphql'
+      },{
+        document: GetIrosByStatusDocument,
+        get rawSDL() {
+          return printWithCache(GetIrosByStatusDocument);
+        },
+        location: 'GetIrosByStatusDocument.graphql'
       },{
         document: GetRealEstateAccountDocument,
         get rawSDL() {
@@ -1167,12 +1183,19 @@ export type getIroQuery = { iros: Array<(
     & { shares?: Maybe<Array<Pick<UserShare, 'address' | 'committedFunds' | 'amount' | 'share' | 'claimed'>>> }
   )> };
 
-export type getIrosQueryVariables = Exact<{
+export type getIrosByIdQueryVariables = Exact<{
   iroIds?: InputMaybe<Array<Scalars['BigInt']> | Scalars['BigInt']>;
 }>;
 
 
-export type getIrosQuery = { iros: Array<Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'softCap' | 'hardCap' | 'start' | 'end' | 'totalFunding'>> };
+export type getIrosByIdQuery = { iros: Array<Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'softCap' | 'hardCap' | 'start' | 'end' | 'totalFunding'>> };
+
+export type getIrosByStatusQueryVariables = Exact<{
+  statuses?: InputMaybe<Array<Status> | Status>;
+}>;
+
+
+export type getIrosByStatusQuery = { iros: Array<Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'softCap' | 'hardCap' | 'start' | 'end' | 'totalFunding'>> };
 
 export type getRealEstateAccountQueryVariables = Exact<{
   account: Scalars['Bytes'];
@@ -1224,8 +1247,8 @@ export const getIroDocument = gql`
   }
 }
     ` as unknown as DocumentNode<getIroQuery, getIroQueryVariables>;
-export const getIrosDocument = gql`
-    query getIros($iroIds: [BigInt!]) {
+export const getIrosByIdDocument = gql`
+    query getIrosById($iroIds: [BigInt!]) {
   iros(where: {iroId_in: $iroIds}) {
     iroId
     status
@@ -1239,7 +1262,23 @@ export const getIrosDocument = gql`
     totalFunding
   }
 }
-    ` as unknown as DocumentNode<getIrosQuery, getIrosQueryVariables>;
+    ` as unknown as DocumentNode<getIrosByIdQuery, getIrosByIdQueryVariables>;
+export const getIrosByStatusDocument = gql`
+    query getIrosByStatus($statuses: [Status!]) {
+  iros(where: {status_in: $statuses}) {
+    iroId
+    status
+    unitPrice
+    currency
+    currencyDecimals
+    softCap
+    hardCap
+    start
+    end
+    totalFunding
+  }
+}
+    ` as unknown as DocumentNode<getIrosByStatusQuery, getIrosByStatusQueryVariables>;
 export const getRealEstateAccountDocument = gql`
     query getRealEstateAccount($account: Bytes!) {
   realEstateAccounts(where: {address: $account}) {
@@ -1279,14 +1318,18 @@ export const getUserSharesDocument = gql`
 
 
 
+
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
     getIro(variables: getIroQueryVariables, options?: C): Promise<getIroQuery> {
       return requester<getIroQuery, getIroQueryVariables>(getIroDocument, variables, options) as Promise<getIroQuery>;
     },
-    getIros(variables?: getIrosQueryVariables, options?: C): Promise<getIrosQuery> {
-      return requester<getIrosQuery, getIrosQueryVariables>(getIrosDocument, variables, options) as Promise<getIrosQuery>;
+    getIrosById(variables?: getIrosByIdQueryVariables, options?: C): Promise<getIrosByIdQuery> {
+      return requester<getIrosByIdQuery, getIrosByIdQueryVariables>(getIrosByIdDocument, variables, options) as Promise<getIrosByIdQuery>;
+    },
+    getIrosByStatus(variables?: getIrosByStatusQueryVariables, options?: C): Promise<getIrosByStatusQuery> {
+      return requester<getIrosByStatusQuery, getIrosByStatusQueryVariables>(getIrosByStatusDocument, variables, options) as Promise<getIrosByStatusQuery>;
     },
     getRealEstateAccount(variables: getRealEstateAccountQueryVariables, options?: C): Promise<getRealEstateAccountQuery> {
       return requester<getRealEstateAccountQuery, getRealEstateAccountQueryVariables>(getRealEstateAccountDocument, variables, options) as Promise<getRealEstateAccountQuery>;

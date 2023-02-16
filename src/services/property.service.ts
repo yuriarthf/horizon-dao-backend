@@ -67,7 +67,24 @@ class PropertyService {
     filter: FilterQuery<Property>,
     options: PaginateOptions,
   ): Promise<GetPropertiesPaginatedResult> {
+    const iros: { [iroId: string]: IROReduced } = {};
+    if (filter?.status && filter?.status !== "TRADE") {
+      const iroQueryResult = await iro.getIrosByStatus(this.getSubgraphIroStatusFilter(filter));
+      iroQueryResult.forEach((iro: any) => {
+        iros[iro.iroId] = iro;
+      });
+      filter.iroIds = Object.keys(iros).map(id => parseInt(id));
+    }
+
     const propertiesPagination = await propertyModel.paginate(this.formatQuery(filter), options);
+
+    if (!filter?.status) {
+      const iroIds: string[] = [];
+      const iroQueryResult = await iro.getIrosById(iroIds);
+      iroQueryResult.forEach(iro => {
+        iros[iro.iroId] = iro;
+      });
+    }
 
     const results: GetPropertiesPaginatedResult = {
       paginationMetadata: {
@@ -85,25 +102,12 @@ class PropertyService {
       docs: [],
     };
 
-    const iroIds: string[] = [];
-    propertiesPagination.docs.forEach((doc: Property) => {
-      doc.status = this.getPropertyStatus(doc);
-      if (doc.status === "FUNDING") {
-        iroIds.push(doc.iroId.toString());
-      }
-    });
-
-    if (iroIds.length) {
-      const iroQueryResult = await iro.getIros(iroIds);
-      const iros: { [iroId: string]: IROReduced } = {};
-      iroQueryResult.forEach(iro => {
-        iros[iro.iroId] = iro;
-      });
-
+    if (Object.keys(iros).length > 0) {
       propertiesPagination.docs.forEach((doc: any) => {
         const property: PropertyExtended = { ...doc.toJSON() };
+        property.status = this.getPropertyStatus(property);
         results.docs.push(property);
-        if (doc.status === "FUNDING") {
+        if (property.status === "FUNDING") {
           const propertyIro: any = {};
           const iro = iros[doc.iroId];
           propertyIro.status = iro.status;
@@ -343,13 +347,21 @@ class PropertyService {
     return [userShares, iroIds];
   }
 
+  private getSubgraphIroStatusFilter(filter: any) {
+    if (!filter.status) return ["ONGOING", /* "SUCCESS", */ "FAIL"];
+    if (filter.status === "FUNDING") return ["ONGOING"];
+    return [filter.status];
+  }
+
   private formatQuery(filter: any) {
     const query: any[] = [];
+    filter.iroIds && filter.iroIds.length > 0 && query.push({ iroId: { $in: filter.iroIds } });
     filter.status &&
       query.push(
         (() => {
           if (filter.status === "DUE_DILLIGENCE") return { iroId: { $exists: false } };
-          if (filter.status === "FUNDING") return { iroId: { $exists: true }, realEstateNftId: { $exists: false } };
+          if (filter.status === "FUNDING" || filter.status === "FAIL")
+            return { iroId: { $exists: true }, realEstateNftId: { $exists: false } };
           if (filter.status === "TRADE") return { iroId: { $exists: true }, realEstateNftId: { $exists: true } };
           throw new HttpException(500, "Invalid status filter value");
         })(),
