@@ -13,7 +13,7 @@ class PortfolioRoute implements Routes {
 
   private initializeRoutes() {
     this.router
-      .route(`${this.path}/iro/funding/:userAddress`)
+      .route(`${this.path}/iro/:userAddress`)
       .get(/*authMiddleware, */ this.propertyController.getUserFundings);
     this.router
       .route(`${this.path}/realEstate/:userAddress`)

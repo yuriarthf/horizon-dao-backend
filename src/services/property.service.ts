@@ -168,7 +168,7 @@ class PropertyService {
   public async getUserFundings(userAddress: string) {
     if (isEmpty(userAddress)) throw new HttpException(400, "userAddress is empty");
 
-    const [userShares, iroIds] = await this.getUserSharesAndIroIds(userAddress, "ONGOING");
+    const [userShares, iroIds] = await this.getUserSharesAndIroIds(userAddress);
 
     const iroProperties = await propertyModel.find({ iroId: { $in: iroIds } });
     if (!iroProperties) throw new HttpException(409, "No user funding found");
@@ -187,7 +187,7 @@ class PropertyService {
         _id: property._id,
         name: property.name,
         type: property.type,
-        status: "FUNDING",
+        status: userShare.iro.status,
         country: property.country,
         city: property.city,
         region: property.region,
@@ -334,11 +334,11 @@ class PropertyService {
     return removedProperty;
   }
 
-  private async getUserSharesAndIroIds(userAddress: string, iroStatus: string) {
+  private async getUserSharesAndIroIds(userAddress: string, iroStatuses: string[] = []) {
     let userShares = <Array<any>>await iro.getUserShare(userAddress);
     const iroIds: any[] = [];
     userShares = userShares.filter(userShare => {
-      const isValid = <string>userShare.iro.status === iroStatus;
+      const isValid = iroStatuses.length === 0 || iroStatuses.includes(<string>userShare.iro.status);
       if (isValid) {
         iroIds.push(userShare.iro.iroId);
       }
