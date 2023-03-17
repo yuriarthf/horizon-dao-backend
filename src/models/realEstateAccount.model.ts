@@ -1,11 +1,11 @@
 import { getRealEstateAccountDocument, execute } from "./subgraph/graphclient";
 
-interface Balance {
-  tokenId: string;
-  amount: string;
+interface RealEstteAccount {
+  address: string;
+  balances: any;
 }
 
-type GetAccountBalancesResult = Balance[];
+type GetRealEstateAccountsResult = RealEstteAccount[];
 
 class RealEstateAccount {
   public getRealEstateAccountQuery: typeof getRealEstateAccountDocument;
@@ -14,9 +14,9 @@ class RealEstateAccount {
     this.getRealEstateAccountQuery = getRealEstateAccountDocument;
   }
 
-  public async getAccountBalances(account: string): Promise<GetAccountBalancesResult> {
+  public async getRealEstateAccounts(account: string): Promise<GetRealEstateAccountsResult> {
     const result = await execute(this.getRealEstateAccountQuery, { account });
-    return result?.data.balances;
+    return result?.data.realEstateAccounts;
   }
 }
 

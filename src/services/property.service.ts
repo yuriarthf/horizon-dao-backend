@@ -219,10 +219,10 @@ class PropertyService {
   public async getUserProperties(user: string) {
     if (isEmpty(user)) throw new HttpException(404, "Invalid user");
 
-    const userBalances = await realEstateAccount.getAccountBalances(user);
+    const userAccounts = await realEstateAccount.getRealEstateAccounts(user);
 
     const tokenIdToBalanceMap: any = {};
-    userBalances.forEach(balance => {
+    userAccounts[0].balances.forEach(balance => {
       Object.assign(tokenIdToBalanceMap, { [balance.tokenId]: balance.amount });
     });
 
@@ -231,7 +231,7 @@ class PropertyService {
     const result: any = [];
     for (const property of properties) {
       result.push({
-        ...property,
+        ...property.toJSON(),
         balance: tokenIdToBalanceMap[property.realEstateNftId],
       });
     }

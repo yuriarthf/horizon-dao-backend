@@ -39,7 +39,6 @@ class PropertyController {
         "area",
         "bedrooms",
       ]);
-      console.log(req.body);
       const options = pick(req.params, ["page"]);
       Object.assign(options, pick(req.query, ["sort", "limit", "offset"]));
       const getAllUsersResult = await this.propertyService.getPropertiesPaginated(filter, options);
