@@ -123,8 +123,8 @@ class PropertyService {
         }
       });
     } else {
-      results.docs = propertiesPagination.docs.map(property => {
-        const propertyExtended: PropertyExtended = { ...property };
+      results.docs = propertiesPagination.docs.map((property: any) => {
+        const propertyExtended: PropertyExtended = { ...property.toJSON() };
         propertyExtended.status = this.getPropertyStatus(property);
         return propertyExtended;
       });
