@@ -64,7 +64,6 @@ export interface Financials {
 export interface Property {
   iroId?: number;
   realEstateNftId?: number;
-  status?: string;
   name: string;
   type: string;
   creator: string;
@@ -87,6 +86,7 @@ export interface Property {
 }
 
 export interface PropertyExtended extends Property {
+  status?: string;
   iro?: {
     status: string;
     tokenPrice: string;

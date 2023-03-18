@@ -123,7 +123,11 @@ class PropertyService {
         }
       });
     } else {
-      results.docs = propertiesPagination.docs;
+      results.docs = propertiesPagination.docs.map(property => {
+        const propertyExtended: PropertyExtended = { ...property };
+        propertyExtended.status = this.getPropertyStatus(property);
+        return propertyExtended;
+      });
     }
 
     return results;
@@ -348,8 +352,7 @@ class PropertyService {
   }
 
   private getSubgraphIroStatusFilter(filter: any) {
-    if (!filter.status) return ["ONGOING", /* "SUCCESS", */ "FAIL"];
-    if (filter.status === "FUNDING") return ["ONGOING"];
+    if (!filter.status || filter.status === "IRO") return ["ONGOING", /* "SUCCESS", */ "FAIL"];
     return [filter.status];
   }
 
@@ -360,8 +363,7 @@ class PropertyService {
       query.push(
         (() => {
           if (filter.status === "DUE_DILLIGENCE") return { iroId: { $exists: false } };
-          if (filter.status === "FUNDING" || filter.status === "FAIL")
-            return { iroId: { $exists: true }, realEstateNftId: { $exists: false } };
+          if (filter.status === "IRO") return { iroId: { $exists: true }, realEstateNftId: { $exists: false } };
           if (filter.status === "TRADE") return { iroId: { $exists: true }, realEstateNftId: { $exists: true } };
           throw new HttpException(500, "Invalid status filter value");
         })(),
