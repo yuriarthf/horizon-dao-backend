@@ -1,11 +1,11 @@
 import { getRealEstateAccountDocument, execute } from "./subgraph/graphclient";
 
-interface RealEstteAccount {
+interface IRealEstateAccount {
   address: string;
   balances: any;
 }
 
-type GetRealEstateAccountsResult = RealEstteAccount[];
+type GetRealEstateAccountsResult = IRealEstateAccount[];
 
 class RealEstateAccount {
   public getRealEstateAccountQuery: typeof getRealEstateAccountDocument;
