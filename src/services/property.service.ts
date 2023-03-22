@@ -73,7 +73,7 @@ class PropertyService {
       iroQueryResult.forEach((iro: any) => {
         iros[iro.iroId] = iro;
       });
-      if (filter?.status && filter?.status !== "TRADE") filter.iroIds = Object.keys(iros).map(id => parseInt(id));
+      if (filter?.status) filter.iroIds = Object.keys(iros).map(id => parseInt(id));
     }
 
     const propertiesPagination = await propertyModel.paginate(this.formatQuery(filter), options);
