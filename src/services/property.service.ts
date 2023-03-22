@@ -68,12 +68,12 @@ class PropertyService {
     options: PaginateOptions,
   ): Promise<GetPropertiesPaginatedResult> {
     const iros: { [iroId: string]: IROReduced } = {};
-    if (filter?.status && filter?.status !== "TRADE") {
+    if (!filter?.status || filter?.status !== "TRADE") {
       const iroQueryResult = await iro.getIrosByStatus(this.getSubgraphIroStatusFilter(filter));
       iroQueryResult.forEach((iro: any) => {
         iros[iro.iroId] = iro;
       });
-      filter.iroIds = Object.keys(iros).map(id => parseInt(id));
+      if (filter?.status && filter?.status !== "TRADE") filter.iroIds = Object.keys(iros).map(id => parseInt(id));
     }
 
     const propertiesPagination = await propertyModel.paginate(this.formatQuery(filter), options);
