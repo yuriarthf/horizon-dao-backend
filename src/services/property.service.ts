@@ -78,14 +78,6 @@ class PropertyService {
 
     const propertiesPagination = await propertyModel.paginate(this.formatQuery(filter), options);
 
-    if (!filter?.status) {
-      const iroIds: string[] = [];
-      const iroQueryResult = await iro.getIrosById(iroIds);
-      iroQueryResult.forEach(iro => {
-        iros[iro.iroId] = iro;
-      });
-    }
-
     const results: GetPropertiesPaginatedResult = {
       paginationMetadata: {
         totalDocs: propertiesPagination.totalDocs,
