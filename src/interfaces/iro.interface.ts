@@ -4,8 +4,7 @@ export interface IROReduced {
   unitPrice: string;
   currency: string;
   currencyDecimals: string;
-  softCap: string;
-  hardCap: string;
+  targetFunding: string;
   start: string;
   end: string;
   totalFunding: string;
@@ -25,14 +24,12 @@ export interface IRO {
   unitPrice: string;
   currency: string;
   currencyDecimals: string;
-  softCap: string;
-  hardCap: string;
+  targetFunding: string;
   start: string;
   end: string;
   totalFunding: string;
   fundsWithdrawn: boolean;
-  ownerClaimed: boolean;
-  reservesFee: string;
+  operationFee: string;
   treasuryFee: string;
   listingOwnerShare: string;
   shares: UserShare[];

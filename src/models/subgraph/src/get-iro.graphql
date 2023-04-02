@@ -5,17 +5,14 @@ query getIro($iroId: BigInt!) {
     unitPrice
     currency
     currencyDecimals
-    softCap
-    hardCap
+    targetFunding
     start
     end
     totalFunding
     fundsWithdrawn
-    ownerClaimed
-    reservesFee
+    operationFee
     treasuryFee
     listingOwner
-    listingOwnerShare
     shares {
       address
       committedFunds

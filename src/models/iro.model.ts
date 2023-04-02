@@ -12,8 +12,7 @@ interface GetIrosResult {
   unitPrice: string;
   currency: string;
   currencyDecimals: string;
-  softCap: string;
-  hardCap: string;
+  targetFunding: string;
   start: string;
   end: string;
   totalFunding: string;
@@ -25,17 +24,14 @@ interface GetIroResult {
   unitPrice: string;
   currency: string;
   currencyDecimals: string;
-  softCap: string;
-  hardCap: string;
+  targetFunding: string;
   start: string;
   end: string;
   totalFunding: string;
   fundsWithdrawn: boolean;
-  ownerClaimed: boolean;
-  reservesFee: string;
+  operationFee: string;
   treasuryFee: string;
   listingOwner: string;
-  listingOwnerShare: string;
   shares: {
     address: string;
     committedFunds: string;

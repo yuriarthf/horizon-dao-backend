@@ -11,8 +11,7 @@ query getUserShares($user: Bytes!) {
       unitPrice
       currency
       currencyDecimals
-      softCap
-      hardCap
+      targetFunding
       start
       end
       totalFunding

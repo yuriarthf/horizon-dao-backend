@@ -58,6 +58,8 @@ enum Balance_orderBy {
   tokenId
   amount
   account
+  account__id
+  account__address
 }
 
 scalar BigDecimal
@@ -81,20 +83,17 @@ type IRO {
   iroId: BigInt!
   status: Status!
   listingOwner: Bytes!
-  unitPrice: BigInt!
-  listingOwnerShare: BigDecimal!
-  treasuryFee: BigDecimal!
-  reservesFee: BigDecimal!
-  currency: Bytes!
   currencyDecimals: BigInt!
-  softCap: BigInt!
-  hardCap: BigInt!
   start: BigInt!
   end: BigInt!
+  currency: Bytes!
+  treasuryFee: BigInt!
+  operationFee: BigInt!
+  targetFunding: BigInt!
+  unitPrice: BigInt!
   totalFunding: BigInt!
   shares(skip: Int = 0, first: Int = 100, orderBy: UserShare_orderBy, orderDirection: OrderDirection, where: UserShare_filter): [UserShare!]
   fundsWithdrawn: Boolean!
-  ownerClaimed: Boolean!
   realEstateId: BigInt
 }
 
@@ -172,48 +171,6 @@ input IRO_filter {
   listingOwner_not_in: [Bytes!]
   listingOwner_contains: Bytes
   listingOwner_not_contains: Bytes
-  unitPrice: BigInt
-  unitPrice_not: BigInt
-  unitPrice_gt: BigInt
-  unitPrice_lt: BigInt
-  unitPrice_gte: BigInt
-  unitPrice_lte: BigInt
-  unitPrice_in: [BigInt!]
-  unitPrice_not_in: [BigInt!]
-  listingOwnerShare: BigDecimal
-  listingOwnerShare_not: BigDecimal
-  listingOwnerShare_gt: BigDecimal
-  listingOwnerShare_lt: BigDecimal
-  listingOwnerShare_gte: BigDecimal
-  listingOwnerShare_lte: BigDecimal
-  listingOwnerShare_in: [BigDecimal!]
-  listingOwnerShare_not_in: [BigDecimal!]
-  treasuryFee: BigDecimal
-  treasuryFee_not: BigDecimal
-  treasuryFee_gt: BigDecimal
-  treasuryFee_lt: BigDecimal
-  treasuryFee_gte: BigDecimal
-  treasuryFee_lte: BigDecimal
-  treasuryFee_in: [BigDecimal!]
-  treasuryFee_not_in: [BigDecimal!]
-  reservesFee: BigDecimal
-  reservesFee_not: BigDecimal
-  reservesFee_gt: BigDecimal
-  reservesFee_lt: BigDecimal
-  reservesFee_gte: BigDecimal
-  reservesFee_lte: BigDecimal
-  reservesFee_in: [BigDecimal!]
-  reservesFee_not_in: [BigDecimal!]
-  currency: Bytes
-  currency_not: Bytes
-  currency_gt: Bytes
-  currency_lt: Bytes
-  currency_gte: Bytes
-  currency_lte: Bytes
-  currency_in: [Bytes!]
-  currency_not_in: [Bytes!]
-  currency_contains: Bytes
-  currency_not_contains: Bytes
   currencyDecimals: BigInt
   currencyDecimals_not: BigInt
   currencyDecimals_gt: BigInt
@@ -222,22 +179,6 @@ input IRO_filter {
   currencyDecimals_lte: BigInt
   currencyDecimals_in: [BigInt!]
   currencyDecimals_not_in: [BigInt!]
-  softCap: BigInt
-  softCap_not: BigInt
-  softCap_gt: BigInt
-  softCap_lt: BigInt
-  softCap_gte: BigInt
-  softCap_lte: BigInt
-  softCap_in: [BigInt!]
-  softCap_not_in: [BigInt!]
-  hardCap: BigInt
-  hardCap_not: BigInt
-  hardCap_gt: BigInt
-  hardCap_lt: BigInt
-  hardCap_gte: BigInt
-  hardCap_lte: BigInt
-  hardCap_in: [BigInt!]
-  hardCap_not_in: [BigInt!]
   start: BigInt
   start_not: BigInt
   start_gt: BigInt
@@ -254,6 +195,48 @@ input IRO_filter {
   end_lte: BigInt
   end_in: [BigInt!]
   end_not_in: [BigInt!]
+  currency: Bytes
+  currency_not: Bytes
+  currency_gt: Bytes
+  currency_lt: Bytes
+  currency_gte: Bytes
+  currency_lte: Bytes
+  currency_in: [Bytes!]
+  currency_not_in: [Bytes!]
+  currency_contains: Bytes
+  currency_not_contains: Bytes
+  treasuryFee: BigInt
+  treasuryFee_not: BigInt
+  treasuryFee_gt: BigInt
+  treasuryFee_lt: BigInt
+  treasuryFee_gte: BigInt
+  treasuryFee_lte: BigInt
+  treasuryFee_in: [BigInt!]
+  treasuryFee_not_in: [BigInt!]
+  operationFee: BigInt
+  operationFee_not: BigInt
+  operationFee_gt: BigInt
+  operationFee_lt: BigInt
+  operationFee_gte: BigInt
+  operationFee_lte: BigInt
+  operationFee_in: [BigInt!]
+  operationFee_not_in: [BigInt!]
+  targetFunding: BigInt
+  targetFunding_not: BigInt
+  targetFunding_gt: BigInt
+  targetFunding_lt: BigInt
+  targetFunding_gte: BigInt
+  targetFunding_lte: BigInt
+  targetFunding_in: [BigInt!]
+  targetFunding_not_in: [BigInt!]
+  unitPrice: BigInt
+  unitPrice_not: BigInt
+  unitPrice_gt: BigInt
+  unitPrice_lt: BigInt
+  unitPrice_gte: BigInt
+  unitPrice_lte: BigInt
+  unitPrice_in: [BigInt!]
+  unitPrice_not_in: [BigInt!]
   totalFunding: BigInt
   totalFunding_not: BigInt
   totalFunding_gt: BigInt
@@ -273,10 +256,6 @@ input IRO_filter {
   fundsWithdrawn_not: Boolean
   fundsWithdrawn_in: [Boolean!]
   fundsWithdrawn_not_in: [Boolean!]
-  ownerClaimed: Boolean
-  ownerClaimed_not: Boolean
-  ownerClaimed_in: [Boolean!]
-  ownerClaimed_not_in: [Boolean!]
   realEstateId: BigInt
   realEstateId_not: BigInt
   realEstateId_gt: BigInt
@@ -296,20 +275,17 @@ enum IRO_orderBy {
   iroId
   status
   listingOwner
-  unitPrice
-  listingOwnerShare
-  treasuryFee
-  reservesFee
-  currency
   currencyDecimals
-  softCap
-  hardCap
   start
   end
+  currency
+  treasuryFee
+  operationFee
+  targetFunding
+  unitPrice
   totalFunding
   shares
   fundsWithdrawn
-  ownerClaimed
   realEstateId
 }
 
@@ -716,6 +692,21 @@ enum UserShare_orderBy {
   share
   claimed
   iro
+  iro__id
+  iro__iroId
+  iro__status
+  iro__listingOwner
+  iro__currencyDecimals
+  iro__start
+  iro__end
+  iro__currency
+  iro__treasuryFee
+  iro__operationFee
+  iro__targetFunding
+  iro__unitPrice
+  iro__totalFunding
+  iro__fundsWithdrawn
+  iro__realEstateId
 }
 
 type _Block_ {

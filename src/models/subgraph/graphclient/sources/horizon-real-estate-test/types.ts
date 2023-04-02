@@ -66,7 +66,9 @@ export type Balance_orderBy =
   | 'id'
   | 'tokenId'
   | 'amount'
-  | 'account';
+  | 'account'
+  | 'account__id'
+  | 'account__address';
 
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
@@ -83,20 +85,17 @@ export type IRO = {
   iroId: Scalars['BigInt'];
   status: Status;
   listingOwner: Scalars['Bytes'];
-  unitPrice: Scalars['BigInt'];
-  listingOwnerShare: Scalars['BigDecimal'];
-  treasuryFee: Scalars['BigDecimal'];
-  reservesFee: Scalars['BigDecimal'];
-  currency: Scalars['Bytes'];
   currencyDecimals: Scalars['BigInt'];
-  softCap: Scalars['BigInt'];
-  hardCap: Scalars['BigInt'];
   start: Scalars['BigInt'];
   end: Scalars['BigInt'];
+  currency: Scalars['Bytes'];
+  treasuryFee: Scalars['BigInt'];
+  operationFee: Scalars['BigInt'];
+  targetFunding: Scalars['BigInt'];
+  unitPrice: Scalars['BigInt'];
   totalFunding: Scalars['BigInt'];
   shares?: Maybe<Array<UserShare>>;
   fundsWithdrawn: Scalars['Boolean'];
-  ownerClaimed: Scalars['Boolean'];
   realEstateId?: Maybe<Scalars['BigInt']>;
 };
 
@@ -182,48 +181,6 @@ export type IRO_filter = {
   listingOwner_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   listingOwner_contains?: InputMaybe<Scalars['Bytes']>;
   listingOwner_not_contains?: InputMaybe<Scalars['Bytes']>;
-  unitPrice?: InputMaybe<Scalars['BigInt']>;
-  unitPrice_not?: InputMaybe<Scalars['BigInt']>;
-  unitPrice_gt?: InputMaybe<Scalars['BigInt']>;
-  unitPrice_lt?: InputMaybe<Scalars['BigInt']>;
-  unitPrice_gte?: InputMaybe<Scalars['BigInt']>;
-  unitPrice_lte?: InputMaybe<Scalars['BigInt']>;
-  unitPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  unitPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  listingOwnerShare?: InputMaybe<Scalars['BigDecimal']>;
-  listingOwnerShare_not?: InputMaybe<Scalars['BigDecimal']>;
-  listingOwnerShare_gt?: InputMaybe<Scalars['BigDecimal']>;
-  listingOwnerShare_lt?: InputMaybe<Scalars['BigDecimal']>;
-  listingOwnerShare_gte?: InputMaybe<Scalars['BigDecimal']>;
-  listingOwnerShare_lte?: InputMaybe<Scalars['BigDecimal']>;
-  listingOwnerShare_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  listingOwnerShare_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  treasuryFee?: InputMaybe<Scalars['BigDecimal']>;
-  treasuryFee_not?: InputMaybe<Scalars['BigDecimal']>;
-  treasuryFee_gt?: InputMaybe<Scalars['BigDecimal']>;
-  treasuryFee_lt?: InputMaybe<Scalars['BigDecimal']>;
-  treasuryFee_gte?: InputMaybe<Scalars['BigDecimal']>;
-  treasuryFee_lte?: InputMaybe<Scalars['BigDecimal']>;
-  treasuryFee_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  treasuryFee_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  reservesFee?: InputMaybe<Scalars['BigDecimal']>;
-  reservesFee_not?: InputMaybe<Scalars['BigDecimal']>;
-  reservesFee_gt?: InputMaybe<Scalars['BigDecimal']>;
-  reservesFee_lt?: InputMaybe<Scalars['BigDecimal']>;
-  reservesFee_gte?: InputMaybe<Scalars['BigDecimal']>;
-  reservesFee_lte?: InputMaybe<Scalars['BigDecimal']>;
-  reservesFee_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  reservesFee_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  currency?: InputMaybe<Scalars['Bytes']>;
-  currency_not?: InputMaybe<Scalars['Bytes']>;
-  currency_gt?: InputMaybe<Scalars['Bytes']>;
-  currency_lt?: InputMaybe<Scalars['Bytes']>;
-  currency_gte?: InputMaybe<Scalars['Bytes']>;
-  currency_lte?: InputMaybe<Scalars['Bytes']>;
-  currency_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  currency_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  currency_contains?: InputMaybe<Scalars['Bytes']>;
-  currency_not_contains?: InputMaybe<Scalars['Bytes']>;
   currencyDecimals?: InputMaybe<Scalars['BigInt']>;
   currencyDecimals_not?: InputMaybe<Scalars['BigInt']>;
   currencyDecimals_gt?: InputMaybe<Scalars['BigInt']>;
@@ -232,22 +189,6 @@ export type IRO_filter = {
   currencyDecimals_lte?: InputMaybe<Scalars['BigInt']>;
   currencyDecimals_in?: InputMaybe<Array<Scalars['BigInt']>>;
   currencyDecimals_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  softCap?: InputMaybe<Scalars['BigInt']>;
-  softCap_not?: InputMaybe<Scalars['BigInt']>;
-  softCap_gt?: InputMaybe<Scalars['BigInt']>;
-  softCap_lt?: InputMaybe<Scalars['BigInt']>;
-  softCap_gte?: InputMaybe<Scalars['BigInt']>;
-  softCap_lte?: InputMaybe<Scalars['BigInt']>;
-  softCap_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  softCap_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  hardCap?: InputMaybe<Scalars['BigInt']>;
-  hardCap_not?: InputMaybe<Scalars['BigInt']>;
-  hardCap_gt?: InputMaybe<Scalars['BigInt']>;
-  hardCap_lt?: InputMaybe<Scalars['BigInt']>;
-  hardCap_gte?: InputMaybe<Scalars['BigInt']>;
-  hardCap_lte?: InputMaybe<Scalars['BigInt']>;
-  hardCap_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  hardCap_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   start?: InputMaybe<Scalars['BigInt']>;
   start_not?: InputMaybe<Scalars['BigInt']>;
   start_gt?: InputMaybe<Scalars['BigInt']>;
@@ -264,6 +205,48 @@ export type IRO_filter = {
   end_lte?: InputMaybe<Scalars['BigInt']>;
   end_in?: InputMaybe<Array<Scalars['BigInt']>>;
   end_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  currency?: InputMaybe<Scalars['Bytes']>;
+  currency_not?: InputMaybe<Scalars['Bytes']>;
+  currency_gt?: InputMaybe<Scalars['Bytes']>;
+  currency_lt?: InputMaybe<Scalars['Bytes']>;
+  currency_gte?: InputMaybe<Scalars['Bytes']>;
+  currency_lte?: InputMaybe<Scalars['Bytes']>;
+  currency_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  currency_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  currency_contains?: InputMaybe<Scalars['Bytes']>;
+  currency_not_contains?: InputMaybe<Scalars['Bytes']>;
+  treasuryFee?: InputMaybe<Scalars['BigInt']>;
+  treasuryFee_not?: InputMaybe<Scalars['BigInt']>;
+  treasuryFee_gt?: InputMaybe<Scalars['BigInt']>;
+  treasuryFee_lt?: InputMaybe<Scalars['BigInt']>;
+  treasuryFee_gte?: InputMaybe<Scalars['BigInt']>;
+  treasuryFee_lte?: InputMaybe<Scalars['BigInt']>;
+  treasuryFee_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  treasuryFee_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  operationFee?: InputMaybe<Scalars['BigInt']>;
+  operationFee_not?: InputMaybe<Scalars['BigInt']>;
+  operationFee_gt?: InputMaybe<Scalars['BigInt']>;
+  operationFee_lt?: InputMaybe<Scalars['BigInt']>;
+  operationFee_gte?: InputMaybe<Scalars['BigInt']>;
+  operationFee_lte?: InputMaybe<Scalars['BigInt']>;
+  operationFee_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  operationFee_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  targetFunding?: InputMaybe<Scalars['BigInt']>;
+  targetFunding_not?: InputMaybe<Scalars['BigInt']>;
+  targetFunding_gt?: InputMaybe<Scalars['BigInt']>;
+  targetFunding_lt?: InputMaybe<Scalars['BigInt']>;
+  targetFunding_gte?: InputMaybe<Scalars['BigInt']>;
+  targetFunding_lte?: InputMaybe<Scalars['BigInt']>;
+  targetFunding_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  targetFunding_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  unitPrice?: InputMaybe<Scalars['BigInt']>;
+  unitPrice_not?: InputMaybe<Scalars['BigInt']>;
+  unitPrice_gt?: InputMaybe<Scalars['BigInt']>;
+  unitPrice_lt?: InputMaybe<Scalars['BigInt']>;
+  unitPrice_gte?: InputMaybe<Scalars['BigInt']>;
+  unitPrice_lte?: InputMaybe<Scalars['BigInt']>;
+  unitPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  unitPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   totalFunding?: InputMaybe<Scalars['BigInt']>;
   totalFunding_not?: InputMaybe<Scalars['BigInt']>;
   totalFunding_gt?: InputMaybe<Scalars['BigInt']>;
@@ -283,10 +266,6 @@ export type IRO_filter = {
   fundsWithdrawn_not?: InputMaybe<Scalars['Boolean']>;
   fundsWithdrawn_in?: InputMaybe<Array<Scalars['Boolean']>>;
   fundsWithdrawn_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  ownerClaimed?: InputMaybe<Scalars['Boolean']>;
-  ownerClaimed_not?: InputMaybe<Scalars['Boolean']>;
-  ownerClaimed_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  ownerClaimed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   realEstateId?: InputMaybe<Scalars['BigInt']>;
   realEstateId_not?: InputMaybe<Scalars['BigInt']>;
   realEstateId_gt?: InputMaybe<Scalars['BigInt']>;
@@ -306,20 +285,17 @@ export type IRO_orderBy =
   | 'iroId'
   | 'status'
   | 'listingOwner'
-  | 'unitPrice'
-  | 'listingOwnerShare'
-  | 'treasuryFee'
-  | 'reservesFee'
-  | 'currency'
   | 'currencyDecimals'
-  | 'softCap'
-  | 'hardCap'
   | 'start'
   | 'end'
+  | 'currency'
+  | 'treasuryFee'
+  | 'operationFee'
+  | 'targetFunding'
+  | 'unitPrice'
   | 'totalFunding'
   | 'shares'
   | 'fundsWithdrawn'
-  | 'ownerClaimed'
   | 'realEstateId';
 
 /** Defines the order direction, either ascending or descending */
@@ -680,7 +656,22 @@ export type UserShare_orderBy =
   | 'amount'
   | 'share'
   | 'claimed'
-  | 'iro';
+  | 'iro'
+  | 'iro__id'
+  | 'iro__iroId'
+  | 'iro__status'
+  | 'iro__listingOwner'
+  | 'iro__currencyDecimals'
+  | 'iro__start'
+  | 'iro__end'
+  | 'iro__currency'
+  | 'iro__treasuryFee'
+  | 'iro__operationFee'
+  | 'iro__targetFunding'
+  | 'iro__unitPrice'
+  | 'iro__totalFunding'
+  | 'iro__fundsWithdrawn'
+  | 'iro__realEstateId';
 
 export type _Block_ = {
   /** The hash of the block */

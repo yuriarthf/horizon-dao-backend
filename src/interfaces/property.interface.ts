@@ -91,17 +91,14 @@ export interface PropertyExtended extends Property {
     status: string;
     tokenPrice: string;
     currency: string;
-    softCap: string;
-    hardCap: string;
+    targetFunding: string;
     start: string;
     end: string;
     totalFunding: string;
     listingOwner: string;
-    listingOwnerShare: string;
     treasuryFee: string;
-    reservesFee: string;
+    operationFee: string;
     fundsWithdrawn: boolean;
-    ownerClaimed: boolean;
     shares: {
       address: string;
       committedFunds: string;

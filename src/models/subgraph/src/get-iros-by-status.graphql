@@ -5,8 +5,7 @@ query getIrosByStatus($statuses: [Status!]) {
     unitPrice
     currency
     currencyDecimals
-    softCap
-    hardCap
+    targetFunding
     start
     end
     totalFunding

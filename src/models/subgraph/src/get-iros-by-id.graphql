@@ -5,8 +5,7 @@ query getIrosById($iroIds: [BigInt!]) {
     unitPrice
     currency
     currencyDecimals
-    softCap
-    hardCap
+    targetFunding
     start
     end
     totalFunding

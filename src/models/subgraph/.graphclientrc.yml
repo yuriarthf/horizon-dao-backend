@@ -2,7 +2,7 @@ sources:
   - name: horizon-real-estate-test
     handler:
       graphql:
-        endpoint: https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.1
+        endpoint: https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.3
 documents:
   - ./src/get-iros-by-status.graphql
   - ./src/get-iros-by-id.graphql

@@ -104,13 +104,12 @@ class PropertyService {
           const iro = iros[doc.iroId];
           propertyIro.status = iro.status;
           iro.status !== "ONGOING" && (property.status = iro.status);
-          propertyIro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toString();
+          propertyIro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toFixed(2);
           propertyIro.currency = iro.currency;
-          propertyIro.softCap = this.adjustDecimals(iro.softCap, iro.currencyDecimals).toString();
-          propertyIro.hardCap = this.adjustDecimals(iro.hardCap, iro.currencyDecimals).toString();
+          propertyIro.targetFunding = this.adjustDecimals(iro.targetFunding, iro.currencyDecimals).toFixed(2);
           propertyIro.start = iro.start;
           propertyIro.end = iro.end;
-          propertyIro.totalFunding = this.adjustDecimals(iro.totalFunding, iro.currencyDecimals).toString();
+          propertyIro.totalFunding = this.adjustDecimals(iro.totalFunding, iro.currencyDecimals).toFixed(2);
           property.iro = propertyIro;
         }
       });
@@ -140,8 +139,10 @@ class PropertyService {
       iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
       resultIro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
       resultIro.currency = iroQueryResult.currency;
-      resultIro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toFixed(2);
-      resultIro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toFixed(2);
+      resultIro.targetFunding = this.adjustDecimals(
+        iroQueryResult.targetFunding,
+        iroQueryResult.currencyDecimals,
+      ).toFixed(2);
       resultIro.start = iroQueryResult.start;
       resultIro.end = iroQueryResult.end;
       resultIro.totalFunding = this.adjustDecimals(
@@ -149,11 +150,9 @@ class PropertyService {
         iroQueryResult.currencyDecimals,
       ).toFixed(2);
       resultIro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
-      resultIro.ownerClaimed = iroQueryResult.ownerClaimed;
-      resultIro.reservesFee = iroQueryResult.reservesFee;
+      resultIro.operationFee = iroQueryResult.operationFee;
       resultIro.treasuryFee = iroQueryResult.treasuryFee;
       resultIro.listingOwner = iroQueryResult.listingOwner;
-      resultIro.listingOwnerShare = iroQueryResult.listingOwnerShare;
       resultIro.shares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
       result.iro = resultIro;
     }
@@ -247,10 +246,12 @@ class PropertyService {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
       iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
-      result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toString();
+      result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
       result.iro.currency = iroQueryResult.currency;
-      result.iro.softCap = this.adjustDecimals(iroQueryResult.softCap, iroQueryResult.currencyDecimals).toString();
-      result.iro.hardCap = this.adjustDecimals(iroQueryResult.hardCap, iroQueryResult.currencyDecimals).toString();
+      result.iro.targetFunding = this.adjustDecimals(
+        iroQueryResult.targetFunding,
+        iroQueryResult.currencyDecimals,
+      ).toFixed(2);
       result.iro.start = iroQueryResult.start;
       result.iro.end = iroQueryResult.end;
       result.iro.totalFunding = this.adjustDecimals(
@@ -258,11 +259,9 @@ class PropertyService {
         iroQueryResult.currencyDecimals,
       ).toString();
       result.iro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
-      result.iro.ownerClaimed = iroQueryResult.ownerClaimed;
-      result.iro.reservesFee = iroQueryResult.reservesFee;
+      result.iro.operationFee = iroQueryResult.operationFee;
       result.iro.treasuryFee = iroQueryResult.treasuryFee;
       result.iro.listingOwner = iroQueryResult.listingOwner;
-      result.iro.listingOwnerShare = iroQueryResult.listingOwnerShare;
       result.iro.shares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
     }
 
