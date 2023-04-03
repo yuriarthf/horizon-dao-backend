@@ -80,6 +80,7 @@ scalar Bytes
 
 type IRO {
   id: Bytes!
+  iroContractAddress: Bytes!
   iroId: BigInt!
   status: Status!
   listingOwner: Bytes!
@@ -149,6 +150,16 @@ input IRO_filter {
   id_not_in: [Bytes!]
   id_contains: Bytes
   id_not_contains: Bytes
+  iroContractAddress: Bytes
+  iroContractAddress_not: Bytes
+  iroContractAddress_gt: Bytes
+  iroContractAddress_lt: Bytes
+  iroContractAddress_gte: Bytes
+  iroContractAddress_lte: Bytes
+  iroContractAddress_in: [Bytes!]
+  iroContractAddress_not_in: [Bytes!]
+  iroContractAddress_contains: Bytes
+  iroContractAddress_not_contains: Bytes
   iroId: BigInt
   iroId_not: BigInt
   iroId_gt: BigInt
@@ -272,6 +283,7 @@ input IRO_filter {
 
 enum IRO_orderBy {
   id
+  iroContractAddress
   iroId
   status
   listingOwner
@@ -693,6 +705,7 @@ enum UserShare_orderBy {
   claimed
   iro
   iro__id
+  iro__iroContractAddress
   iro__iroId
   iro__status
   iro__listingOwner

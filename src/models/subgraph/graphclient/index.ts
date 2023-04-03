@@ -103,6 +103,7 @@ export type Block_height = {
 
 export type IRO = {
   id: Scalars['Bytes'];
+  iroContractAddress: Scalars['Bytes'];
   iroId: Scalars['BigInt'];
   status: Status;
   listingOwner: Scalars['Bytes'];
@@ -180,6 +181,16 @@ export type IRO_filter = {
   id_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   id_contains?: InputMaybe<Scalars['Bytes']>;
   id_not_contains?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress_not?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress_gt?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress_lt?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress_gte?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress_lte?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  iroContractAddress_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  iroContractAddress_contains?: InputMaybe<Scalars['Bytes']>;
+  iroContractAddress_not_contains?: InputMaybe<Scalars['Bytes']>;
   iroId?: InputMaybe<Scalars['BigInt']>;
   iroId_not?: InputMaybe<Scalars['BigInt']>;
   iroId_gt?: InputMaybe<Scalars['BigInt']>;
@@ -303,6 +314,7 @@ export type IRO_filter = {
 
 export type IRO_orderBy =
   | 'id'
+  | 'iroContractAddress'
   | 'iroId'
   | 'status'
   | 'listingOwner'
@@ -679,6 +691,7 @@ export type UserShare_orderBy =
   | 'claimed'
   | 'iro'
   | 'iro__id'
+  | 'iro__iroContractAddress'
   | 'iro__iroId'
   | 'iro__status'
   | 'iro__listingOwner'
@@ -909,6 +922,7 @@ export interface BytesScalarConfig extends GraphQLScalarTypeConfig<ResolversType
 
 export type IROResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['IRO'] = ResolversParentTypes['IRO']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  iroContractAddress?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   iroId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Status'], ParentType, ContextType>;
   listingOwner?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -1060,7 +1074,7 @@ const horizonRealEstateTestTransforms = [];
 const additionalTypeDefs = [] as any[];
 const horizonRealEstateTestHandler = new GraphqlHandler({
               name: "horizon-real-estate-test",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.4"},
+              config: {"endpoint":"https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.6"},
               baseDir,
               cache,
               pubsub,

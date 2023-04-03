@@ -88,6 +88,7 @@ export interface Property {
 export interface PropertyExtended extends Property {
   status?: string;
   iro?: {
+    iroContractAddress: string;
     status: string;
     tokenPrice: string;
     currency: string;

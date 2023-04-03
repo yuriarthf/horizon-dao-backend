@@ -102,15 +102,22 @@ class PropertyService {
         if (property.status === "FUNDING") {
           const propertyIro: any = {};
           const iro = iros[doc.iroId];
+          const totalFunding = this.adjustDecimals(iro.totalFunding, iro.currencyDecimals);
+          const targetFunding = this.adjustDecimals(iro.targetFunding, iro.currencyDecimals);
           propertyIro.status = iro.status;
           iro.status !== "FUNDING" && (property.status = iro.status);
           propertyIro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toFixed(2);
           propertyIro.currency = iro.currency;
-          propertyIro.targetFunding = this.adjustDecimals(iro.targetFunding, iro.currencyDecimals).toFixed(2);
+          propertyIro.targetFunding = targetFunding.toFixed(2);
           propertyIro.start = iro.start;
           propertyIro.end = iro.end;
-          propertyIro.totalFunding = this.adjustDecimals(iro.totalFunding, iro.currencyDecimals).toFixed(2);
+          propertyIro.totalFunding = totalFunding.toFixed(2);
           property.iro = propertyIro;
+          property.iro.participants = property.iro.shares.length.toString();
+          property.iro.fundingPercentage = totalFunding
+            .multipliedBy(new BigNumber(100))
+            .dividedBy(targetFunding)
+            .toFixed(2);
         }
       });
     } else {
