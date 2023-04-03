@@ -6176,7 +6176,7 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "ONGOING"
+            "value": "FUNDING"
           },
           "directives": []
         },

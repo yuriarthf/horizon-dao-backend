@@ -478,7 +478,7 @@ enum RealEstateAccount_orderBy {
 
 enum Status {
   PENDING
-  ONGOING
+  FUNDING
   SUCCESS
   FAIL
 }

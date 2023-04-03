@@ -490,7 +490,7 @@ export type RealEstateAccount_orderBy =
 
 export type Status =
   | 'PENDING'
-  | 'ONGOING'
+  | 'FUNDING'
   | 'SUCCESS'
   | 'FAIL';
 
@@ -1060,7 +1060,7 @@ const horizonRealEstateTestTransforms = [];
 const additionalTypeDefs = [] as any[];
 const horizonRealEstateTestHandler = new GraphqlHandler({
               name: "horizon-real-estate-test",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.3"},
+              config: {"endpoint":"https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.4"},
               baseDir,
               cache,
               pubsub,

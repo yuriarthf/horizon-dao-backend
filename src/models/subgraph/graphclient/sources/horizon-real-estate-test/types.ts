@@ -469,7 +469,7 @@ export type RealEstateAccount_orderBy =
 
 export type Status =
   | 'PENDING'
-  | 'ONGOING'
+  | 'FUNDING'
   | 'SUCCESS'
   | 'FAIL';
 

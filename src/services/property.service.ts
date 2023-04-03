@@ -103,7 +103,7 @@ class PropertyService {
           const propertyIro: any = {};
           const iro = iros[doc.iroId];
           propertyIro.status = iro.status;
-          iro.status !== "ONGOING" && (property.status = iro.status);
+          iro.status !== "FUNDING" && (property.status = iro.status);
           propertyIro.tokenPrice = this.adjustDecimals(iro.unitPrice, iro.currencyDecimals).toFixed(2);
           propertyIro.currency = iro.currency;
           propertyIro.targetFunding = this.adjustDecimals(iro.targetFunding, iro.currencyDecimals).toFixed(2);
@@ -136,7 +136,7 @@ class PropertyService {
       const resultIro: any = {};
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       resultIro.status = iroQueryResult.status;
-      iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
+      iroQueryResult.status !== "FUNDING" && (result.status = iroQueryResult.status);
       resultIro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
       resultIro.currency = iroQueryResult.currency;
       resultIro.targetFunding = this.adjustDecimals(
@@ -245,7 +245,7 @@ class PropertyService {
     if (result.status === "FUNDING") {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       result.iro.status = iroQueryResult.status;
-      iroQueryResult.status !== "ONGOING" && (result.status = iroQueryResult.status);
+      iroQueryResult.status !== "FUNDING" && (result.status = iroQueryResult.status);
       result.iro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
       result.iro.currency = iroQueryResult.currency;
       result.iro.targetFunding = this.adjustDecimals(
@@ -343,7 +343,7 @@ class PropertyService {
   }
 
   private getSubgraphIroStatusFilter(filter: any) {
-    if (!filter.status || filter.status === "IRO") return ["ONGOING", /* "SUCCESS", */ "FAIL"];
+    if (!filter.status || filter.status === "IRO") return ["FUNDING", /* "SUCCESS", */ "FAIL"];
     return [filter.status];
   }
 
