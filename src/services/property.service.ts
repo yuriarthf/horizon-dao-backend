@@ -114,7 +114,6 @@ class PropertyService {
           propertyIro.totalFunding = totalFunding.toFixed(2);
           propertyIro.iroContractAddress = iro.iroContractAddress;
           property.iro = propertyIro;
-          property.iro.participants = property.iro.shares.length.toString();
           property.iro.fundingPercentage = totalFunding
             .multipliedBy(new BigNumber(100))
             .dividedBy(targetFunding)
