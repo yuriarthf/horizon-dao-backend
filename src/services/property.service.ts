@@ -135,26 +135,24 @@ class PropertyService {
     if (result.status === "FUNDING") {
       const resultIro: any = {};
       const iroQueryResult = await iro.getIro(property.iroId.toString());
+      const totalFunding = this.adjustDecimals(iroQueryResult.totalFunding, iroQueryResult.currencyDecimals);
+      const targetFunding = this.adjustDecimals(iroQueryResult.targetFunding, iroQueryResult.currencyDecimals);
       resultIro.status = iroQueryResult.status;
       iroQueryResult.status !== "FUNDING" && (result.status = iroQueryResult.status);
       resultIro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);
       resultIro.currency = iroQueryResult.currency;
-      resultIro.targetFunding = this.adjustDecimals(
-        iroQueryResult.targetFunding,
-        iroQueryResult.currencyDecimals,
-      ).toFixed(2);
+      resultIro.targetFunding = targetFunding.toFixed(2);
       resultIro.start = iroQueryResult.start;
       resultIro.end = iroQueryResult.end;
-      resultIro.totalFunding = this.adjustDecimals(
-        iroQueryResult.totalFunding,
-        iroQueryResult.currencyDecimals,
-      ).toFixed(2);
+      resultIro.totalFunding = totalFunding.toFixed(2);
       resultIro.fundsWithdrawn = iroQueryResult.fundsWithdrawn;
       resultIro.operationFee = iroQueryResult.operationFee;
       resultIro.treasuryFee = iroQueryResult.treasuryFee;
       resultIro.listingOwner = iroQueryResult.listingOwner;
       resultIro.shares = this.populateSharesArray(iroQueryResult.shares, iroQueryResult.currencyDecimals);
       result.iro = resultIro;
+      result.iro.participants = result.iro.shares.length.toString();
+      result.iro.fundingPercentage = totalFunding.multipliedBy(new BigNumber(100)).dividedBy(targetFunding).toFixed(2);
     }
 
     return result;

@@ -99,6 +99,8 @@ export interface PropertyExtended extends Property {
     treasuryFee: string;
     operationFee: string;
     fundsWithdrawn: boolean;
+    participants: string;
+    fundingPercentage: string;
     shares: {
       address: string;
       committedFunds: string;
