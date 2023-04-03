@@ -8,6 +8,7 @@ import {
 
 interface GetIrosResult {
   iroId: string;
+  iroContractAddress: string;
   status: string;
   unitPrice: string;
   currency: string;
@@ -20,6 +21,7 @@ interface GetIrosResult {
 
 interface GetIroResult {
   iroId: string;
+  iroContractAddress: string;
   status: string;
   unitPrice: string;
   currency: string;

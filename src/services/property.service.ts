@@ -112,6 +112,7 @@ class PropertyService {
           propertyIro.start = iro.start;
           propertyIro.end = iro.end;
           propertyIro.totalFunding = totalFunding.toFixed(2);
+          propertyIro.iroContractAddress = iro.iroContractAddress;
           property.iro = propertyIro;
           property.iro.participants = property.iro.shares.length.toString();
           property.iro.fundingPercentage = totalFunding
@@ -144,6 +145,7 @@ class PropertyService {
       const iroQueryResult = await iro.getIro(property.iroId.toString());
       const totalFunding = this.adjustDecimals(iroQueryResult.totalFunding, iroQueryResult.currencyDecimals);
       const targetFunding = this.adjustDecimals(iroQueryResult.targetFunding, iroQueryResult.currencyDecimals);
+      resultIro.iroContractAddress = iroQueryResult.iroContractAddress;
       resultIro.status = iroQueryResult.status;
       iroQueryResult.status !== "FUNDING" && (result.status = iroQueryResult.status);
       resultIro.tokenPrice = this.adjustDecimals(iroQueryResult.unitPrice, iroQueryResult.currencyDecimals).toFixed(2);

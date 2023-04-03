@@ -1,6 +1,7 @@
 query getIrosByStatus($statuses: [Status!]) {
   iros(where: { status_in: $statuses }) {
     iroId
+    iroContractAddress
     status
     unitPrice
     currency

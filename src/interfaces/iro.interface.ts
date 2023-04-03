@@ -1,5 +1,6 @@
 export interface IROReduced {
   iroId: string;
+  iroContractAddress: string;
   status: string;
   unitPrice: string;
   currency: string;

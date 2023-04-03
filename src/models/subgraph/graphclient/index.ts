@@ -1181,7 +1181,7 @@ export type getIroQueryVariables = Exact<{
 
 
 export type getIroQuery = { iros: Array<(
-    Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'targetFunding' | 'start' | 'end' | 'totalFunding' | 'fundsWithdrawn' | 'operationFee' | 'treasuryFee' | 'listingOwner'>
+    Pick<IRO, 'iroId' | 'iroContractAddress' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'targetFunding' | 'start' | 'end' | 'totalFunding' | 'fundsWithdrawn' | 'operationFee' | 'treasuryFee' | 'listingOwner'>
     & { shares?: Maybe<Array<Pick<UserShare, 'address' | 'committedFunds' | 'amount' | 'share' | 'claimed'>>> }
   )> };
 
@@ -1190,14 +1190,14 @@ export type getIrosByIdQueryVariables = Exact<{
 }>;
 
 
-export type getIrosByIdQuery = { iros: Array<Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'targetFunding' | 'start' | 'end' | 'totalFunding'>> };
+export type getIrosByIdQuery = { iros: Array<Pick<IRO, 'iroId' | 'iroContractAddress' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'targetFunding' | 'start' | 'end' | 'totalFunding'>> };
 
 export type getIrosByStatusQueryVariables = Exact<{
   statuses?: InputMaybe<Array<Status> | Status>;
 }>;
 
 
-export type getIrosByStatusQuery = { iros: Array<Pick<IRO, 'iroId' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'targetFunding' | 'start' | 'end' | 'totalFunding'>> };
+export type getIrosByStatusQuery = { iros: Array<Pick<IRO, 'iroId' | 'iroContractAddress' | 'status' | 'unitPrice' | 'currency' | 'currencyDecimals' | 'targetFunding' | 'start' | 'end' | 'totalFunding'>> };
 
 export type getRealEstateAccountQueryVariables = Exact<{
   account: Scalars['Bytes'];
@@ -1224,6 +1224,7 @@ export const getIroDocument = gql`
     query getIro($iroId: BigInt!) {
   iros(where: {iroId: $iroId}) {
     iroId
+    iroContractAddress
     status
     unitPrice
     currency
@@ -1250,6 +1251,7 @@ export const getIrosByIdDocument = gql`
     query getIrosById($iroIds: [BigInt!]) {
   iros(where: {iroId_in: $iroIds}) {
     iroId
+    iroContractAddress
     status
     unitPrice
     currency
@@ -1265,6 +1267,7 @@ export const getIrosByStatusDocument = gql`
     query getIrosByStatus($statuses: [Status!]) {
   iros(where: {status_in: $statuses}) {
     iroId
+    iroContractAddress
     status
     unitPrice
     currency

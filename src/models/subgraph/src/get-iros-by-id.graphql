@@ -1,6 +1,7 @@
 query getIrosById($iroIds: [BigInt!]) {
   iros(where: { iroId_in: $iroIds }) {
     iroId
+    iroContractAddress
     status
     unitPrice
     currency
