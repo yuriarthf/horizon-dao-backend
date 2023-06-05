@@ -13,10 +13,10 @@ class IROProposal {
   public tokenSupply!: number;
 
   @prop({ type: Number })
-  public reservesFeePercentage?: number;
+  public operationFee?: number;
 
   @prop({ type: Number })
-  public treasuryFeePercentage?: number;
+  public treasuryFee?: number;
 }
 
 @modelOptions({ schemaOptions: { timestamps: false, _id: false } })
@@ -214,6 +214,6 @@ class Property {
   static paginate: PaginateMethod<Property>;
 }
 
-const PropertyModel = getModelForClass(Property);
+const propertyModel = getModelForClass(Property);
 
-export default PropertyModel;
+export default propertyModel;

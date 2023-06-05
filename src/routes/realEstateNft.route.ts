@@ -15,7 +15,7 @@ class RealEstateNftRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.route(`${this.path}/:realEstateNftId`).get(this.realEstateNftController.getRealEstateNFt);
+    this.router.route(`${this.path}/:realEstateNftId`).get(this.realEstateNftController.getRealEstateNft);
   }
 }
 

@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsUrl,
   IsNumber,
-  IsEthereumAddress,
   IsLatitude,
   IsLongitude,
   IsOptional,
@@ -11,6 +10,7 @@ import {
   ValidateNested,
   ValidateIf,
   IsInt,
+  IsEthereumAddress,
 } from "class-validator";
 
 import { IsMultipleOf } from "./custom";
@@ -67,6 +67,11 @@ export class FinancialsInputDto {
 }
 
 export class CreatePropertyDto {
+  @IsNotEmpty()
+  @IsString()
+  public signature: string;
+
+  @IsNotEmpty()
   @IsEthereumAddress()
   public creator: string;
 
@@ -77,8 +82,8 @@ export class CreatePropertyDto {
   @IsUrl()
   public imageUrl: string;
 
-  @IsUrl()
   @IsOptional()
+  @IsUrl()
   public documentsUrl: string;
 
   @IsOptional()

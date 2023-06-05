@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 //import { CreateUserDto } from "@dtos/users.dto";
 //import { Property } from "@interfaces/property.interface";
+import { RequestWithUser } from "@interfaces/auth.interface";
 import propertyService from "@services/property.service";
 import { pick } from "@utils/util";
 
 class PropertyController {
   public propertyService = new propertyService();
 
-  public addProperty = async (req: Request, res: Response, next: NextFunction) => {
+  public addProperty = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const newProperty = await this.propertyService.createProperty(req.body);
+      const newProperty = await this.propertyService.createProperty(req.body, req.user);
       res.status(201).json({ data: newProperty, message: "Property created" });
     } catch (error) {
       next(error);

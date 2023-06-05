@@ -1,3 +1,3 @@
-import { DB_HOST, DB_PORT, DB_DATABASE } from "@config";
+import { DB_USER, DB_PASSWORD, DB_HOST, DB_DATABASE } from "@config";
 
-export const dbConnection = `mongodb+srv://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
+export const dbConnection = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_DATABASE ?? ""}`;

@@ -15,7 +15,8 @@
     "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only prod",
     "deploy:dev": "pm2 start ecosystem.config.js --only dev",
     "prettier": "prettier --check **/*.ts",
-    "prettier:fix": "prettier --write **/*.ts"
+    "prettier:fix": "prettier --write **/*.ts",
+    "deploy:local": "docker-compose up -d"
   },
   "dependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.20.11",
@@ -31,6 +32,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "envalid": "^7.3.1",
+    "ethers": "^6.3.0",
     "express": "^4.18.1",
     "graphql": "^16.6.0",
     "helmet": "^5.1.1",

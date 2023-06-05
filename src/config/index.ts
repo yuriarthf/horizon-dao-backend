@@ -1,7 +1,20 @@
 import { config } from "dotenv";
 import process from "process";
 
-config({ path: `.env.${process.env.NODE_ENV || "development"}.local` });
+config();
 
 export const CREDENTIALS = process.env.CREDENTIALS === "true";
-export const { NODE_ENV, PORT, DB_HOST, DB_PORT, DB_DATABASE, SECRET_KEY, LOG_FORMAT, LOG_DIR, ORIGIN } = process.env;
+export const {
+    PORT,
+    DB_USER,
+    DB_PASSWORD,
+    DB_HOST,
+    DB_DATABASE,
+    SECRET_KEY,
+    LOG_FORMAT,
+    LOG_DIR,
+    ORIGIN,
+    ALCHEMY_KEY,
+    FAUCET_MANAGER_PK,
+    FAUCET_CONTRACT_ADDRESS,
+} = process.env;

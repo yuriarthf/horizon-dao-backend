@@ -1,24 +1,15 @@
 import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose";
 
-@modelOptions({ schemaOptions: { collection: "users", timestamps: true, versionKey: false } })
-class User {
-  @prop({ type: String, required: false, unique: true })
-  public email: string;
+@modelOptions({ schemaOptions: { collection: "Users", timestamps: true, versionKey: false } })
+class Users {
+  @prop({ required: true, type: String })
+  public address!: string;
 
-  @prop({ type: String, required: false })
-  public password: string;
+  @prop({ required: true, type: Number })
+  public nonce!: number;
 
-  @prop({ type: Number, required: false })
-  public nonce: number; // wallet nonce
-
-  @prop({ type: String, required: false, unique: true })
-  public address: string;
-
-  @prop({ type: String, required: false })
-  public type: string; // wallet, email
-
-  @prop({ type: String, required: false })
-  public role: string; // admin, user
+  @prop({ required: true, type: String, default: "0" })
+  public testTokensRequested!: string;
 
   @prop({ required: true, default: () => Date.now() })
   public createdAt: number;
@@ -27,6 +18,6 @@ class User {
   public updatedAt: number;
 }
 
-const UserModel = getModelForClass(User);
+const usersModel = getModelForClass(Users);
 
-export default UserModel;
+export default usersModel;

@@ -1,8 +1,8 @@
 sources:
-  - name: horizon-real-estate-test
+  - name: horizon-polygon-mumbai
     handler:
       graphql:
-        endpoint: https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.6
+        endpoint: https://api.thegraph.com/subgraphs/name/yuriarthf/horizon-testnet-mumbai
 documents:
   - ./src/get-iros-by-status.graphql
   - ./src/get-iros-by-id.graphql

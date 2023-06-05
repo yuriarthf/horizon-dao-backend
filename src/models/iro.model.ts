@@ -58,16 +58,31 @@ class IRO {
 
   public async getIrosById(iroIds: string[]): Promise<GetIrosResult[]> {
     const result = await execute(this.getIrosByIdQuery, { iroIds });
+    // TODO: Remove after fixing IRO subgraph
+    if (result?.data.iros) {
+      const brokenIro = result.data.iros.filter(iro => iro.iroId === 0 && iro.status === "SUCCESS");
+      brokenIro.iroId = 4;
+    }
     return result?.data.iros;
   }
 
   public async getIrosByStatus(statuses: string[]): Promise<GetIrosResult[]> {
     const result = await execute(this.getIrosByStatusQuery, { statuses });
+    // TODO: Remove after fixing IRO subgraph
+    if (result?.data.iros) {
+      const brokenIro = result.data.iros.filter(iro => iro.iroId === 0 && iro.status === "SUCCESS");
+      brokenIro.iroId = 4;
+    }
     return result?.data.iros;
   }
 
   public async getIro(iroId: string): Promise<GetIroResult> {
     const result = await execute(this.getIroQuery, { iroId });
+    // TODO: Remove after fixing IRO subgraph
+    if (result?.data.iros) {
+      const brokenIro = result.data.iros.filter(iro => iro.iroId === 0 && iro.status === "SUCCESS");
+      brokenIro.iroId = 4;
+    }
     return result?.data.iros[0];
   }
 

@@ -1,11 +1,8 @@
 export interface User {
   _id: string;
-  email: string;
-  password: string;
-  nonce: string;
+  nonce: number;
   address: string;
-  type: string;
-  role: string;
+  testTokensRequested: string;
   createdAt: number;
   updatedAt: number;
 }

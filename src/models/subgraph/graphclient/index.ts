@@ -20,7 +20,7 @@ import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
-import type { HorizonRealEstateTestTypes } from './sources/horizon-real-estate-test/types';
+import type { HorizonPolygonMumbaiTypes } from './sources/horizon-polygon-mumbai/types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1029,7 +1029,7 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
   derivedFrom?: derivedFromDirectiveResolver<any, any, ContextType>;
 }>;
 
-export type MeshContext = HorizonRealEstateTestTypes.Context & BaseMeshContext;
+export type MeshContext = HorizonPolygonMumbaiTypes.Context & BaseMeshContext;
 
 
 const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
@@ -1037,8 +1037,8 @@ const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/',
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
-    case ".graphclient/sources/horizon-real-estate-test/introspectionSchema":
-      return import("./sources/horizon-real-estate-test/introspectionSchema") as T;
+    case ".graphclient/sources/horizon-polygon-mumbai/introspectionSchema":
+      return import("./sources/horizon-polygon-mumbai/introspectionSchema") as T;
     
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
@@ -1070,22 +1070,22 @@ const cache = new (MeshCache as any)({
 const sources: MeshResolvedSource[] = [];
 const transforms: MeshTransform[] = [];
 const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
-const horizonRealEstateTestTransforms = [];
+const horizonPolygonMumbaiTransforms = [];
 const additionalTypeDefs = [] as any[];
-const horizonRealEstateTestHandler = new GraphqlHandler({
-              name: "horizon-real-estate-test",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/39814/horizon-real-estate-test/v0.0.6"},
+const horizonPolygonMumbaiHandler = new GraphqlHandler({
+              name: "horizon-polygon-mumbai",
+              config: {"endpoint":"https://api.thegraph.com/subgraphs/name/yuriarthf/horizon-testnet-mumbai"},
               baseDir,
               cache,
               pubsub,
-              store: sourcesStore.child("horizon-real-estate-test"),
-              logger: logger.child("horizon-real-estate-test"),
+              store: sourcesStore.child("horizon-polygon-mumbai"),
+              logger: logger.child("horizon-polygon-mumbai"),
               importFn,
             });
 sources[0] = {
-          name: 'horizon-real-estate-test',
-          handler: horizonRealEstateTestHandler,
-          transforms: horizonRealEstateTestTransforms
+          name: 'horizon-polygon-mumbai',
+          handler: horizonPolygonMumbaiHandler,
+          transforms: horizonPolygonMumbaiTransforms
         }
 const additionalResolvers = [] as any[]
 const merger = new(BareMerger as any)({

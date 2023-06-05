@@ -1,117 +1,173 @@
-import { hash, compare } from "bcrypt";
-import { sign } from "jsonwebtoken";
-import { SECRET_KEY } from "@config";
-import { CreateUserDto } from "@dtos/users.dto";
+// Exceptions
 import { HttpException } from "@exceptions/HttpException";
+
+// Interfaces
 import { DataStoredInToken, TokenData } from "@interfaces/auth.interface";
 import { User } from "@interfaces/users.interface";
-import userModel from "@models/users.model";
+
+// DTO
+import { LogInDto, SignUpDto } from "@dtos/auth.dto";
+
+// Utils
 import { isEmpty } from "@utils/util";
-import { recoverPersonalSignature } from "@metamask/eth-sig-util";
-class AuthService {
-  public async signup(userData: CreateUserDto): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
+import { ethers } from "ethers";
+import { sign } from "jsonwebtoken";
 
-    const findUser: User = await userModel.findOne({ email: userData.email });
-    if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
+// Models
+import userModel from "@models/users.model";
 
-    const hashedPassword = await hash(userData.password, 10);
-    const createUserData: User = await userModel.create({ ...userData, password: hashedPassword });
+// Config
+import { SECRET_KEY } from "@config";
 
-    return createUserData;
+class AuthenticationService {
+  static NONCE_RANGE = 10000;
+  static JWT_EXPIRATION_TIME = 60 * 60;
+
+  // messages
+  static SIGNUP_MESSAGE =
+    "Please sign this message to confirm you're the owner of the wallet and signup to our service";
+  static AUTHENTICATION_MESSAGE =
+    "Please sign this message to confirm and verify your wallet address for future editing access.";
+
+  public async signUp(signUpBody: SignUpDto) {
+    if (isEmpty(signUpBody)) throw new HttpException(400, "signUpBody is empty");
+
+    const { signingAddress, user } = await AuthenticationService.authenticate(
+      signUpBody.signature,
+      undefined,
+      AuthenticationService.SIGNUP_MESSAGE,
+      false,
+    );
+
+    if (user) {
+      throw new HttpException(409, "User already exists");
+    }
+
+    const nonce = AuthenticationService.generateNonce();
+
+    const newUser = await userModel.create({ address: signingAddress, nonce });
+
+    const tokenData = AuthenticationService.createToken(newUser);
+
+    return { tokenData, user: newUser };
   }
 
-  public async login(userData: CreateUserDto): Promise<{ cookie: string; findUser: User }> {
-    if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
+  public async walletNonce(address: any) {
+    if (isEmpty(address)) throw new HttpException(400, "address is empty");
 
-    const findUser: User = (await userModel.findOne({ email: userData.email })).toJSON();
-    if (!findUser?._id) throw new HttpException(409, `This email ${userData.email} was not found`);
+    const findOne = await userModel.findOne({ address });
+    if (!findOne) throw new HttpException(409, "User doesn't exist");
 
-    const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
-    if (!isPasswordMatching) throw new HttpException(409, "Password is not matching");
+    return findOne.nonce;
+  }
 
-    const tokenData = this.createToken(findUser);
-    const cookie = this.createCookie(tokenData);
+  public async login(logInData: LogInDto) {
+    const { user } = await AuthenticationService.authenticate(
+      logInData.signature,
+      logInData.nonce,
+      AuthenticationService.AUTHENTICATION_MESSAGE,
+      true,
+    );
 
-    return { cookie, findUser };
+    const tokenData = AuthenticationService.createToken(user);
+    return { tokenData, user };
   }
 
   public async logout(userData: User): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
-    const findUser: User = await userModel.findOne({ email: userData.email, password: userData.password });
-    if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+    const findUser: User = await userModel.findById(userData._id);
+    delete findUser.nonce;
+
+    if (!findUser) throw new HttpException(409, `This address ${userData.address} was not found`);
 
     return findUser;
   }
 
-  public createToken(user: User): TokenData {
+  static createToken(user: User): TokenData {
     const dataStoredInToken: DataStoredInToken = { _id: user._id };
     const secretKey: string = SECRET_KEY;
-    const expiresIn: number = 60 * 60;
+    const expiresIn: number = AuthenticationService.JWT_EXPIRATION_TIME;
 
     return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
   }
 
-  public createCookie(tokenData: TokenData): string {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn};`;
+  static async authenticate(
+    signature: string,
+    nonce?: number,
+    message: string = AuthenticationService.AUTHENTICATION_MESSAGE,
+    updateNonce: boolean = true,
+  ) {
+    const { valid, signingAddress, user } = await AuthenticationService.verifySignature(
+      message,
+      signature,
+      nonce
+    );
+
+    if (!valid && nonce) {
+      throw new HttpException(401, "Invalid signature");
+    }
+
+    if (updateNonce) {
+      AuthenticationService.generateNonce();
+      await AuthenticationService.updateNonce(signingAddress, nonce);
+    }
+
+    return {
+      signingAddress,
+      user,
+    };
   }
 
-  public generateNonce = () => {
-    return Math.floor(Math.random() * 1000000).toString();
-  };
-
-  public toHex = (stringToConvert: string) => {
-    return stringToConvert
-      .split("")
-      .map(c => c.charCodeAt(0).toString(16).padStart(2, "0"))
-      .join("");
-  };
-
-  public async walletNonce(address?: string | any) {
-    const nonce = this.generateNonce();
-
-    if (address) {
-      const findUser: User = await userModel.findOne({ address });
-
-      if (!findUser || !findUser._id) {
-        const user = await userModel.create({
-          address: address,
-          nonce: nonce,
-          type: "wallet",
-          role: "user",
-          email: "",
-          password: "",
-        });
-        return user;
-      } else {
-        const updateUserById: User = await userModel.findByIdAndUpdate(findUser._id, { nonce });
-        return updateUserById;
-      }
-    } else throw new HttpException(400, "address is empty");
+  static async retrieveAddress(hashedMessage: string, signature: string): Promise<string> {
+    return ethers.verifyMessage(hashedMessage, signature);
   }
 
-  public async verifyWallet(address: string, signature: string) {
-    if (address) {
-      const findUser: User = await userModel.findOne({ address }).to;
-      const nonce = findUser.nonce;
+  static retrieveAddressFromSignature(message: string, signature: string, nonce?: number) {
+    const hashedMessage = AuthenticationService.hashEip191(message, nonce);
 
-      const recovered_address = recoverPersonalSignature({
-        data: `0x${this.toHex(nonce)}`,
-        signature: signature,
-      }).toLowerCase();
+    return ethers.verifyMessage(hashedMessage, signature);
+  }
 
-      if (recovered_address === address.toLowerCase()) {
-        const userUpdated: User = await userModel
-          .findByIdAndUpdate(findUser._id, { nonce: this.generateNonce() })
-          .toJSON();
-        const tokenData = this.createToken(userUpdated);
-        const cookie = this.createCookie(tokenData);
+  static async verifySignature(
+    message: string,
+    signature: string,
+    nonce?: number,
+  ): Promise<{ valid: boolean; signingAddress: string; user?: User; }> {
+    const signingAddress = AuthenticationService.retrieveAddressFromSignature(message, signature, nonce);
 
-        return { cookie, userUpdated };
-      }
-    } else throw new HttpException(400, "address is empty");
+    const user = await userModel.findOne({ address: signingAddress });
+    if (nonce) {
+      if (!user) throw new HttpException(409, "User not registered");
+      if (user.nonce !== nonce) throw new HttpException(401, "Nonce doesn't match");
+    }
+
+    return {
+      valid: true,
+      signingAddress,
+      user,
+    };
+  }
+
+  static hashEip191(message: string, nonce?: number) {
+    nonce ?? (message += `+${nonce}`);
+    return ethers.toUtf8Bytes(message);
+  }
+
+  static async updateNonce(address: string, nonce: number): Promise<number> {
+    await userModel.findOneAndUpdate(
+      { address },
+      {
+        nonce,
+      },
+      { new: true },
+    );
+    return nonce;
+  }
+
+  static generateNonce(): number {
+    return Math.round(Math.random() * AuthenticationService.NONCE_RANGE);
   }
 }
 
-export default AuthService;
+export default AuthenticationService;
