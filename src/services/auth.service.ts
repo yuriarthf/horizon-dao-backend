@@ -52,7 +52,7 @@ class AuthenticationService {
     return { tokenData, user: newUser };
   }
 
-  public async walletNonce(address: any) {
+  public async walletNonce(address: string) {
     if (isEmpty(address)) throw new HttpException(400, "address is empty");
 
     const findOne = await userModel.findOne({ address });

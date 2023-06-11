@@ -9,8 +9,8 @@ class AuthController {
 
   public walletNonce = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const nonce = await this.authService.walletNonce(req.query.address);
-      res.status(201).json({ data: { nonce }, message: "Wallet nonce created successfully" });
+      const nonce = await this.authService.walletNonce(req.query.address as string);
+      res.status(201).json({ data: { nonce }, message: "Current wallet nonce" });
     } catch (error) {
       next(error);
     }
