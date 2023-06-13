@@ -564,8 +564,7 @@ class PropertyService {
 
   private populateSharesArray(shares: UserShare[], currencyDecimals: number | string) {
     const sharesArray = [];
-    for (let i = 0; i < shares.length; i++) {
-      const share = shares[i];
+    for (const share of shares) {
       sharesArray.push({
         address: share.address,
         committedFunds: this.adjustDecimals(share.committedFunds, currencyDecimals).toFixed(2),
