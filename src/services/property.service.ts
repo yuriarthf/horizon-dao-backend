@@ -188,7 +188,6 @@ class PropertyService {
     const results = [];
     for (const userShare of userShares) {
       const property = iroIdToPropertyMap[userShare.iro.iroId.toString()];
-      const currencyDecimals = userShare.iro.currencyDecimals;
 
       if (property) {
         results.push({
@@ -210,12 +209,11 @@ class PropertyService {
             userShare: userShare.share,
             userClaimed: userShare.claimed,
             currency: userShare.iro.currency,
-            tokenPrice: this.adjustDecimals(userShare.iro.unitPrice, currencyDecimals),
-            softCap: this.adjustDecimals(userShare.iro.softCap, currencyDecimals),
-            hardCap: this.adjustDecimals(userShare.iro.hardCap, currencyDecimals),
+            tokenPrice: this.adjustDecimals(userShare.iro.unitPrice, userShare.iro.currencyDecimals),
+            targetFunding: this.adjustDecimals(userShare.targetFunding, userShare.iro.currencyDecimals),
             start: userShare.iro.start,
             end: userShare.iro.end,
-            totalFunding: this.adjustDecimals(userShare.iro.totalFunding, currencyDecimals),
+            totalFunding: this.adjustDecimals(userShare.iro.totalFunding, userShare.iro.currencyDecimals),
             currentSupply: new BigNumber(userShare.iro.totalFunding).div(new BigNumber(userShare.iro.unitPrice)),
           },
         });
