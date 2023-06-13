@@ -189,34 +189,37 @@ class PropertyService {
     for (const userShare of userShares) {
       const property = iroIdToPropertyMap[userShare.iro.iroId.toString()];
       const currencyDecimals = userShare.iro.currencyDecimals;
-      results.push({
-        _id: property._id,
-        name: property.name,
-        type: property.type,
-        status: userShare.iro.status,
-        country: property.country,
-        city: property.city,
-        region: property.region,
-        address: property.address,
-        imageUrl: property.imageUrl,
-        attributes: property.attributes,
-        iroId: property.iroId,
-        financials: property.financials,
-        iro: {
+
+      if (property) {
+        results.push({
+          _id: property._id.toString(),
+          name: property.name,
+          type: property.type,
           status: userShare.iro.status,
-          userAmount: userShare.amount,
-          userShare: userShare.share,
-          userClaimed: userShare.claimed,
-          currency: userShare.iro.currency,
-          tokenPrice: this.adjustDecimals(userShare.iro.unitPrice, currencyDecimals),
-          softCap: this.adjustDecimals(userShare.iro.softCap, currencyDecimals),
-          hardCap: this.adjustDecimals(userShare.iro.hardCap, currencyDecimals),
-          start: userShare.iro.start,
-          end: userShare.iro.end,
-          totalFunding: this.adjustDecimals(userShare.iro.totalFunding, currencyDecimals),
-          currentSupply: new BigNumber(userShare.iro.totalFunding).div(new BigNumber(userShare.iro.unitPrice)),
-        },
-      });
+          country: property.country,
+          city: property.city,
+          region: property.region,
+          address: property.address,
+          imageUrl: property.imageUrl,
+          attributes: property.attributes,
+          iroId: property.iroId,
+          financials: property.financials,
+          iro: {
+            status: userShare.iro.status,
+            userAmount: userShare.amount,
+            userShare: userShare.share,
+            userClaimed: userShare.claimed,
+            currency: userShare.iro.currency,
+            tokenPrice: this.adjustDecimals(userShare.iro.unitPrice, currencyDecimals),
+            softCap: this.adjustDecimals(userShare.iro.softCap, currencyDecimals),
+            hardCap: this.adjustDecimals(userShare.iro.hardCap, currencyDecimals),
+            start: userShare.iro.start,
+            end: userShare.iro.end,
+            totalFunding: this.adjustDecimals(userShare.iro.totalFunding, currencyDecimals),
+            currentSupply: new BigNumber(userShare.iro.totalFunding).div(new BigNumber(userShare.iro.unitPrice)),
+          },
+        });
+      }
     }
 
     return results;
