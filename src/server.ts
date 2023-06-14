@@ -12,7 +12,7 @@ validateEnv();
 
 const app = new App([
   new IndexRoute(),
-  //new AuthRoute(),
+  new AuthRoute(),
   new PropertyRoute(),
   new PropertyDraftRoute(),
   new RealEstateNftRoute(),

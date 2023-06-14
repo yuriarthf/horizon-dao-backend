@@ -26,7 +26,6 @@ class AuthenticationService {
   // messages
   static SIGNUP_MESSAGE =
     "Please sign this message to confirm you're the owner of the wallet and signup to our service";
-  static LOGIN_TYPEHASH = ethers.keccak256("LoginMessage(string message, uint256 nonce)");
   static LOGIN_DOMAIN = { name: "LoginMessage", chainId: 80001 };
   static LoginMessage = [
     { name: "message", type: "string" },
