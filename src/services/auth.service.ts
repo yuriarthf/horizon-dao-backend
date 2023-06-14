@@ -26,7 +26,13 @@ class AuthenticationService {
   // messages
   static SIGNUP_MESSAGE =
     "Please sign this message to confirm you're the owner of the wallet and signup to our service";
-  static AUTHENTICATION_MESSAGE =
+  static LOGIN_TYPEHASH = ethers.keccak256("LoginMessage(string message, uint256 nonce)");
+  static LOGIN_DOMAIN = { name: "LoginMessage", chainId: 80001 };
+  static LoginMessage = [
+    { name: "message", type: "string" },
+    { name: "nonce", type: "uint256" }
+  ];
+  static LOGIN_MESSAGE =
     "Please sign this message to confirm and verify your wallet address to login into our service.";
 
   public async signUp(signUpBody: SignUpDto) {
@@ -65,7 +71,7 @@ class AuthenticationService {
     const { user } = await AuthenticationService.authenticate(
       logInData.signature,
       logInData.nonce,
-      AuthenticationService.AUTHENTICATION_MESSAGE,
+      AuthenticationService.LOGIN_MESSAGE,
       true,
     );
 
@@ -95,7 +101,7 @@ class AuthenticationService {
   static async authenticate(
     signature: string,
     nonce?: number,
-    message: string = AuthenticationService.AUTHENTICATION_MESSAGE,
+    message: string = AuthenticationService.LOGIN_MESSAGE,
     updateNonce: boolean = true,
   ) {
     const { valid, signingAddress, user } = await AuthenticationService.verifySignature(
@@ -119,14 +125,19 @@ class AuthenticationService {
     };
   }
 
-  static async retrieveAddress(hashedMessage: string, signature: string): Promise<string> {
-    return ethers.verifyMessage(hashedMessage, signature);
-  }
-
   static retrieveAddressFromSignature(message: string, signature: string, nonce?: number) {
-    const hashedMessage = AuthenticationService.hashEip191(message, nonce);
+    if (typeof nonce === "number") {
+      return ethers.verifyTypedData(
+        AuthenticationService.LOGIN_DOMAIN,
+        {
+          LoginMessage: AuthenticationService.LoginMessage
+        },
+        { message, nonce },
+        signature
+      );
+    }
 
-    return ethers.verifyMessage(hashedMessage, signature);
+    return ethers.verifyMessage(AuthenticationService.hashEip191(message), signature);
   }
 
   static async verifySignature(
@@ -149,8 +160,7 @@ class AuthenticationService {
     };
   }
 
-  static hashEip191(message: string, nonce?: number) {
-    typeof nonce === "number" && (message += `+${nonce}`);
+  static hashEip191(message: string) {
     return ethers.toUtf8Bytes(message);
   }
 
