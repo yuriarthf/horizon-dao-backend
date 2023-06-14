@@ -27,7 +27,7 @@ class AuthenticationService {
   static SIGNUP_MESSAGE =
     "Please sign this message to confirm you're the owner of the wallet and signup to our service";
   static AUTHENTICATION_MESSAGE =
-    "Please sign this message to confirm and verify your wallet address for future editing access.";
+    "Please sign this message to confirm and verify your wallet address to login into our service.";
 
   public async signUp(signUpBody: SignUpDto) {
     if (isEmpty(signUpBody)) throw new HttpException(400, "signUpBody is empty");
