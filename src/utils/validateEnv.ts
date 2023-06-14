@@ -1,9 +1,8 @@
-import { cleanEnv, port, str } from "envalid";
+import { cleanEnv, port } from "envalid";
 import process from "process";
 
 const validateEnv = () => {
   cleanEnv(process.env, {
-    NODE_ENV: str(),
     PORT: port(),
   });
 };

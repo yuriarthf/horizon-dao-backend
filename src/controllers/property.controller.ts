@@ -1,12 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-//import { CreateUserDto } from "@dtos/users.dto";
-//import { Property } from "@interfaces/property.interface";
 import { RequestWithUser } from "@interfaces/auth.interface";
-import propertyService from "@services/property.service";
+import PropertyService from "@services/property.service";
 import { pick } from "@utils/util";
 
 class PropertyController {
-  public propertyService = new propertyService();
+  public propertyService = new PropertyService();
 
   public addProperty = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {

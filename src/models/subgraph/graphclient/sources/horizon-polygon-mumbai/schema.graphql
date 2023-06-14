@@ -301,6 +301,12 @@ enum IRO_orderBy {
   realEstateId
 }
 
+"""
+8 bytes signed integer
+
+"""
+scalar Int8
+
 """Defines the order direction, either ascending or descending"""
 enum OrderDirection {
   asc

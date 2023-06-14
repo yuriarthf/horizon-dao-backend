@@ -22,7 +22,6 @@ module.exports = {
       env: {
         // environment variable
         PORT: 80,
-        NODE_ENV: "production",
       },
     },
     {
@@ -42,7 +41,6 @@ module.exports = {
       env: {
         // environment variable
         PORT: 3000,
-        NODE_ENV: "development",
       },
     },
   ],

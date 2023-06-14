@@ -44,17 +44,20 @@ interface GetIroResult {
 }
 
 class IRO {
+
   public getIrosByIdQuery: typeof getIrosByIdDocument;
   public getIrosByStatusQuery: typeof getIrosByStatusDocument;
   public getIroQuery: typeof getIroDocument;
   public getUserSharesQuery: typeof getUserSharesDocument;
 
+  /*
   constructor() {
     this.getIrosByIdQuery = getIrosByIdDocument;
     this.getIrosByStatusQuery = getIrosByStatusDocument;
     this.getIroQuery = getIroDocument;
     this.getUserSharesQuery = getUserSharesDocument;
   }
+  */
 
   public async getIrosById(iroIds: string[]): Promise<GetIrosResult[]> {
     const result = await execute(this.getIrosByIdQuery, { iroIds });
