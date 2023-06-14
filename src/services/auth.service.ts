@@ -150,7 +150,7 @@ class AuthenticationService {
   }
 
   static hashEip191(message: string, nonce?: number) {
-    nonce ?? (message += `+${nonce}`);
+    typeof nonce === "number" && (message += `+${nonce}`);
     return ethers.toUtf8Bytes(message);
   }
 
