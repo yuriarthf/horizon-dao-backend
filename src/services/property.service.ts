@@ -29,7 +29,7 @@ BigNumber.config({ DECIMAL_PLACES: 2 });
 
 // instantiate models
 const iro = new IroModel();
-//const realEstateAccount = new RealEstateAccountModel();
+const realEstateAccount = new RealEstateAccountModel();
 
 class PropertyService {
   // IRO constants
