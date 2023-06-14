@@ -32,7 +32,7 @@ class AuthenticationService {
     { name: "message", type: "string" },
     { name: "nonce", type: "uint256" }
   ];
-  static LOGIN_MESSAGE =
+  static LOGIN_MESSAGE_TEXT =
     "Please sign this message to confirm and verify your wallet address to login into our service.";
 
   public async signUp(signUpBody: SignUpDto) {
@@ -51,7 +51,7 @@ class AuthenticationService {
 
     const nonce = AuthenticationService.generateNonce();
 
-    const newUser = await userModel.create({ address: signingAddress, nonce });
+    const newUser = await userModel.create({ address: signingAddress, nonce }) as any;
 
     const tokenData = AuthenticationService.createToken(newUser);
 
@@ -71,7 +71,7 @@ class AuthenticationService {
     const { user } = await AuthenticationService.authenticate(
       logInData.signature,
       logInData.nonce,
-      AuthenticationService.LOGIN_MESSAGE,
+      AuthenticationService.LOGIN_MESSAGE_TEXT,
       true,
     );
 
@@ -101,7 +101,7 @@ class AuthenticationService {
   static async authenticate(
     signature: string,
     nonce?: number,
-    message: string = AuthenticationService.LOGIN_MESSAGE,
+    message: string = AuthenticationService.LOGIN_MESSAGE_TEXT,
     updateNonce: boolean = true,
   ) {
     const { valid, signingAddress, user } = await AuthenticationService.verifySignature(
@@ -147,7 +147,7 @@ class AuthenticationService {
   ): Promise<{ valid: boolean; signingAddress: string; user?: User; }> {
     const signingAddress = AuthenticationService.retrieveAddressFromSignature(message, signature, nonce);
 
-    const user = await userModel.findOne({ address: signingAddress });
+    const user = await userModel.findOne({ address: signingAddress }) as User;
     if (nonce) {
       if (!user) throw new HttpException(409, "User not registered");
       if (user.nonce !== nonce) throw new HttpException(401, "Nonce doesn't match");

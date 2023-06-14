@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
+
 export interface User {
-  _id: string;
+  _id: Types.ObjectId;
   nonce: number;
   address: string;
   testTokensRequested: string;
