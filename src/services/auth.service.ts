@@ -109,7 +109,7 @@ class AuthenticationService {
       nonce
     );
 
-    if (!valid && nonce) {
+    if (!valid && typeof nonce === "number") {
       throw new HttpException(401, "Invalid signature");
     }
 
@@ -143,17 +143,16 @@ class AuthenticationService {
     message: string,
     signature: string,
     nonce?: number,
-  ): Promise<{ valid: boolean; signingAddress: string; user?: User; }> {
+  ): Promise<{ signingAddress: string; user?: User; }> {
     const signingAddress = AuthenticationService.retrieveAddressFromSignature(message, signature, nonce);
 
     const user = await userModel.findOne({ address: signingAddress }) as User;
-    if (nonce) {
+    if (typeof nonce === "number") {
       if (!user) throw new HttpException(409, "User not registered");
       if (user.nonce !== nonce) throw new HttpException(401, "Nonce doesn't match");
     }
 
     return {
-      valid: true,
       signingAddress,
       user,
     };
