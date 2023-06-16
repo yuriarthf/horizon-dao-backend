@@ -103,19 +103,17 @@ class AuthenticationService {
     message: string = AuthenticationService.LOGIN_MESSAGE_TEXT,
     updateNonce: boolean = true,
   ) {
-    const { valid, signingAddress, user } = await AuthenticationService.verifySignature(
+    const { signingAddress, user } = await AuthenticationService.verifySignature(
       message,
       signature,
       nonce
     );
 
-    if (!valid && typeof nonce === "number") {
-      throw new HttpException(401, "Invalid signature");
-    }
-
     if (updateNonce) {
-      AuthenticationService.generateNonce();
-      await AuthenticationService.updateNonce(signingAddress, nonce);
+      await AuthenticationService.updateNonce(
+        signingAddress,
+        AuthenticationService.generateNonce()
+      );
     }
 
     return {
