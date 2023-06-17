@@ -418,6 +418,9 @@ class PropertyService {
         case "TRADE":
           if (!query["iroId"]) query["iroId"] = { iroId: { $exists: true } };
           query["realEstateNftId"] = { $exists: true };
+          return;
+        default:
+          throw new HttpException(500, "Invalid status filter value");
       }
     });
 
