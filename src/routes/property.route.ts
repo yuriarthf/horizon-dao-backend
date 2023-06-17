@@ -21,7 +21,7 @@ class PropertyRoute implements Routes {
     //  .route(`${this.path}/update/:propertyId`)
     //  .patch(authMiddleware, this.propertyController.updateProperty);
     // TODO: Restrict to only admin user role
-    this.router.route(`${this.path}/startIro/:propertyId`).patch(/*authMiddleware, */ this.propertyController.startIRO);
+    //this.router.route(`${this.path}/startIro/:propertyId`).patch(/*authMiddleware, */ this.propertyController.startIRO);
     /*
     this.router
     .route(`${this.path}/reportRealEstateNft`)
