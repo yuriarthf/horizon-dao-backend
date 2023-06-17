@@ -3,6 +3,22 @@ import { RequestWithUser } from "@interfaces/auth.interface";
 import PropertyService from "@services/property.service";
 import { pick } from "@utils/util";
 
+const FILTER_KEYS = [
+  "status",
+  "type",
+  "country",
+  "city",
+  "region",
+  "tokenSupply",
+  "area",
+  "bedrooms",
+  "bathrooms",
+  "yearBuilt",
+  "parking",
+  "latitude",
+  "longitude"
+];
+
 class PropertyController {
   public propertyService = new PropertyService();
 
@@ -24,20 +40,18 @@ class PropertyController {
     }
   };
 
+  public getPropertyFilters = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const propertyFilters = await this.propertyService.getPropertyFieldValues(FILTER_KEYS);
+      res.status(200).json({ data: propertyFilters });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const filter = pick(req.body, [
-        "status",
-        "type",
-        "country",
-        "city",
-        "tokenPrice",
-        "priceRange",
-        "totalSupply",
-        "apy",
-        "area",
-        "bedrooms",
-      ]);
+      const filter = pick(req.body, FILTER_KEYS);
       const options = pick(req.params, ["page"]);
       Object.assign(options, pick(req.query, ["sort", "limit", "offset"]));
       const getAllUsersResult = await this.propertyService.getPropertiesPaginated(filter, options);

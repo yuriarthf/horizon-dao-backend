@@ -17,6 +17,7 @@ class PropertyRoute implements Routes {
     //this.router.route(`${this.path}/delete/:propertyId`).delete(this.propertyController.deleteProperty);
     this.router.route(`${this.path}/paginated/:page`).get(this.propertyController.getProperties);
     this.router.route(`${this.path}/:propertyId`).get(this.propertyController.getProperty);
+    this.router.route(`${this.path}/filters/options`).get(this.propertyController.getPropertyFilters);
     //this.router
     //  .route(`${this.path}/update/:propertyId`)
     //  .patch(authMiddleware, this.propertyController.updateProperty);

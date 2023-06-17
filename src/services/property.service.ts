@@ -31,6 +31,20 @@ BigNumber.config({ DECIMAL_PLACES: 2 });
 const iro = new IroModel();
 const realEstateAccount = new RealEstateAccountModel();
 
+const IRO_PROPOSAL_FIELDS = [
+  "tokenSupply",
+];
+
+const ATTRIBUTES_FIELDS = [
+  "area",
+  "bedrooms",
+  "bathrooms",
+  "parking",
+  "yearBuilt",
+  "latitude",
+  "longitude"
+];
+
 class PropertyService {
   // IRO constants
   static VACANCY_FEE_PERCENT = 2;
@@ -66,6 +80,32 @@ class PropertyService {
     const deletedData = await propertyModel.findByIdAndRemove(propertyId);
 
     return deletedData;
+  }
+
+  public async getPropertyFieldValues(fields: string[]) {
+    const fieldToValues = {};
+    for (const field of fields) {
+      if (field === "status") {
+        fieldToValues[field] = [
+          "DUE_DILLIGENCE",
+          "IRO",
+          "TRADE"
+        ];
+        continue;
+      }
+      let searchField = field;
+      if (IRO_PROPOSAL_FIELDS.includes(field)) searchField = "iroProposal." + searchField;
+      else if (ATTRIBUTES_FIELDS.includes(field)) searchField = "attributes." + searchField;
+      fieldToValues[field] = await propertyModel.distinct(searchField);
+      fieldToValues[field].length > 0
+        && typeof fieldToValues[field][0] === "number"
+        && (
+          fieldToValues[field] = {
+            min: Math.min(...fieldToValues[field]),
+            max: Math.max(...fieldToValues[field])
+          });
+    }
+    return fieldToValues;
   }
 
   public async getPropertiesPaginated(
@@ -361,58 +401,59 @@ class PropertyService {
   }
 
   private formatQuery(filter: any) {
-    const query: any[] = [];
-    filter.iroIds && filter.iroIds.length > 0 && query.push({ iroId: { $in: filter.iroIds } });
-    filter.status &&
-      query.push(
-        (() => {
-          if (filter.status === "DUE_DILLIGENCE") return { iroId: { $exists: false } };
-          if (filter.status === "IRO") return { iroId: { $exists: true }, realEstateNftId: { $exists: false } };
-          if (filter.status === "TRADE") return { iroId: { $exists: true }, realEstateNftId: { $exists: true } };
-          throw new HttpException(500, "Invalid status filter value");
-        })(),
-      );
-    filter.type && query.push({ type: filter.type });
-    filter.country && query.push({ country: filter.country });
-    filter.city && query.push({ city: filter.city });
-    filter.tokenPrice &&
-      query.push({
-        tokenPrice: {
-          $and: [{ $gte: filter.tokenPrice.min }, { $lte: filter.tokenPrice.max }],
-        },
-      });
-    filter.priceRange &&
-      query.push({
-        priceRange: {
-          $and: [{ $gte: filter.priceRange.min }, { $lte: filter.priceRange.max }],
-        },
-      });
-    filter.totalSupply &&
-      query.push({
-        iroProposal: {
-          tokenSupply: { $and: [{ $gte: filter.totalSupply.min }, { $lte: filter.totalSupply.max }] },
-        },
-      });
+    const query = {};
+    filter.status !== "DUE_DILLIGENCE"
+      && filter.iroIds
+      && filter.iroIds.length > 0
+      && (query["iroId"] = { $in: filter.iroIds });
+    filter.status && (() => {
+      switch (filter.status) {
+        case "DUE_DILLIGENCE":
+          query["iroId"] = { $exists: false };
+          return;
+        case "IRO":
+          if (!query["iroId"]) query["iroId"] = { iroId: { $exists: true } };
+          query["realEstateNftId"] = { $exists: false };
+          return;
+        case "TRADE":
+          if (!query["iroId"]) query["iroId"] = { iroId: { $exists: true } };
+          query["realEstateNftId"] = { $exists: true };
+      }
+    });
 
-    filter.area &&
-      query.push({
-        attributes: {
-          area: {
-            $and: [{ $gte: filter.area.min }, { $lte: filter.area.max }],
-          },
-        },
-      });
+    filter.type && (query["type"] = filter.type);
 
-    filter.bedrooms &&
-      query.push({
-        attributes: {
-          bedrooms: {
-            $and: [{ $gte: filter.bedrooms.min }, { $lte: filter.bedrooms.max }],
-          },
-        },
-      });
+    filter.country && (query["country"] = filter.country);
 
-    return query.length > 0 ? { $and: query } : {};
+    filter.tokenSupply && (
+      query["iroProposal.tokenSupply"] = { $gte: filter.tokenSupply.min, $lte: filter.tokenSupply.max }
+    );
+
+    filter.area && (
+      query["attributes.area"] = { $gte: filter.area.min, $lte: filter.area.max }
+    );
+
+    filter.bedrooms && (
+      query["attributes.bedrooms"] = { $gte: filter.bedrooms.min, $lte: filter.bedrooms.max }
+    );
+
+    filter.bathrooms && (
+      query["attributes.bathrooms"] = { $gte: filter.bathrooms.min, $lte: filter.bathrooms.max }
+    );
+
+    filter.parking && (
+      query["attributes.parking"] = { $gte: filter.parking.min, $lte: filter.parking.max }
+    );
+
+    filter.latitude && (
+      query["attributes.latitude"] = { $gte: filter.latitude.min, $lte: filter.latitude.max }
+    );
+
+    filter.longitude && (
+      query["attributes.longitude"] = { $gte: filter.longitude.min, $lte: filter.longitude.max }
+    );
+
+    return query;
   }
 
   private createPropertyBodyToPropertyStorage(createPropertyBody: CreatePropertyDto) {
