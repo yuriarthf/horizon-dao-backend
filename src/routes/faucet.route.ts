@@ -13,6 +13,7 @@ class FaucetRoute implements Routes {
     }
 
     private initializeRoutes() {
+        this.router.get(`${this.path}/hasRequestedTokens`, this.faucetController.hasRequestedTokens);
         this.router.post(`${this.path}/requestTestTokens`, authMiddleware, this.faucetController.requestTestTokens);
     }
 }
