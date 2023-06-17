@@ -15,7 +15,10 @@ import faucetContractABI from "@/abis/usdtMockABI.json";
 import { FAUCET_MANAGER_PK, ALCHEMY_KEY, FAUCET_CONTRACT_ADDRESS } from "@/config";
 
 // Interfaces
-import { User } from "@interfaces/users.interface";
+import { User } from "@/interfaces/users.interface";
+
+// Utils
+import { isEmpty } from "@utils/util";
 
 class FaucetService {
   static AMOUNT_OF_TOKENS_PER_USER = new BigNumber(10).pow(10).multipliedBy(5); // 50k Test USDT
@@ -23,6 +26,17 @@ class FaucetService {
   static rpcProvider = new ethers.AlchemyProvider("matic-mumbai", ALCHEMY_KEY);
   static faucetManager = new ethers.Wallet(FAUCET_MANAGER_PK, this.rpcProvider);
   static faucetContract = new ethers.Contract(FAUCET_CONTRACT_ADDRESS, faucetContractABI, this.faucetManager);
+
+  public async hasRequestedTokens(address: string) {
+    if (isEmpty(address)) throw new HttpException(400, "Address is empty");
+
+    const findOne = await usersModel.findOne({ address });
+    if (!findOne) throw new HttpException(400, "User doesn't exist");
+
+    return {
+      hasRequestedTokens: FaucetService.AMOUNT_OF_TOKENS_PER_USER.gt(findOne.testTokensRequested)
+    }
+  }
 
   public async requestTestTokens(user: User) {
     if (BigNumber(user.testTokensRequested) >= FaucetService.AMOUNT_OF_TOKENS_PER_USER)
