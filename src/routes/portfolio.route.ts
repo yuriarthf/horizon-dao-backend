@@ -18,6 +18,9 @@ class PortfolioRoute implements Routes {
     this.router
       .route(`${this.path}/realEstate/:userAddress`)
       .get(this.propertyController.getUserProperties);
+    this.router
+      .route(`${this.path}/history/:userAddress`)
+      .get(this.propertyController.getUserHistory);
   }
 }
 

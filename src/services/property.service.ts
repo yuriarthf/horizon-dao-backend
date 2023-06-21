@@ -16,6 +16,22 @@ import { User } from "@interfaces/users.interface";
 // DTO
 import { CreatePropertyDto, FinancialsInputDto } from "@dtos/property.dto";
 
+// Blockchain interaction
+import { ethers } from "ethers";
+
+// SECRETS
+import {
+  ALCHEMY_KEY,
+  IRO_CONTRACT_ADDRESS,
+  RENFT_CONTRACT_ADDRESS,
+  IRO_CREATION_BLOCK,
+  RENFT_CREATION_BLOCK
+} from "@/config";
+
+// Get ABIs
+import iroContractABI from "@/abis/iroABI.json";
+import reNftContractABI from "@/abis/renftABI.json";
+
 // Utils
 import { isEmpty } from "@utils/util";
 import BigNumber from "bignumber.js";
@@ -58,6 +74,10 @@ class PropertyService {
   static INSURANCE_PERCENT = 0.5;
   static PROPERTY_MANAGEMENT_FEE_PERCENT = 8;
   static SPV_FEELING_FEES = 2000; // 2000 USD
+
+  static rpcProvider = new ethers.AlchemyProvider("matic-mumbai", ALCHEMY_KEY);
+  static iroContract = new ethers.Contract(IRO_CONTRACT_ADDRESS, iroContractABI, this.rpcProvider);
+  static reNFtContract = new ethers.Contract(RENFT_CONTRACT_ADDRESS, reNftContractABI, this.rpcProvider);
 
   public async createProperty(createPropertyBody: CreatePropertyDto, user: User) {
     if (user.address !== createPropertyBody.creator)
@@ -380,6 +400,95 @@ class PropertyService {
     if (isEmpty(propertyId)) throw new HttpException(400, "propertyId is empty");
     const removedProperty = <Property>(await propertyModel.findByIdAndRemove(propertyId)).toJSON();
     return removedProperty;
+  }
+
+  public async getUserHistory(userAddress: string) {
+    if (isEmpty(userAddress)) throw new HttpException(400, "userAddress is empty");
+    const userCommits = (await PropertyService.iroContract.queryFilter(
+      PropertyService.iroContract.filters.Commit(null, userAddress, null),
+      parseInt(IRO_CREATION_BLOCK)
+    )).map((commitEvent: ethers.EventLog) => ({
+      iroId: Number(commitEvent.args[0]),
+      userAddress: commitEvent.args[1],
+      value: commitEvent.args[3].toString(),
+      purchasedAmount: commitEvent.args[4].toString(),
+      blockNumber: commitEvent.blockNumber,
+      type: "Commit",
+      block: PropertyService.rpcProvider.getBlock(commitEvent.blockNumber),
+      timestamp: undefined
+    }));
+
+    const userTransfersFrom = (await PropertyService.reNFtContract.queryFilter(
+      PropertyService.reNFtContract.filters.TransferSingle(null, userAddress, null),
+      parseInt(RENFT_CREATION_BLOCK)
+    )).map((commitEvent: ethers.EventLog) => ({
+      reNftId: Number(commitEvent.args[3]),
+      operator: commitEvent.args[0],
+      from: commitEvent.args[1],
+      to: commitEvent.args[2],
+      value: commitEvent.args[4].toString(),
+      blockNumber: commitEvent.blockNumber,
+      type: "Send",
+      block: PropertyService.rpcProvider.getBlock(commitEvent.blockNumber),
+      timestamp: undefined
+    }));
+
+    const userTransfersTo = (await PropertyService.reNFtContract.queryFilter(
+      PropertyService.reNFtContract.filters.TransferSingle(null, null, userAddress),
+      parseInt(RENFT_CREATION_BLOCK)
+    )).map((commitEvent: ethers.EventLog) => ({
+      reNftId: Number(commitEvent.args[3]),
+      operator: commitEvent.args[0],
+      from: commitEvent.args[1],
+      to: commitEvent.args[2],
+      value: commitEvent.args[4].toString(),
+      blockNumber: commitEvent.blockNumber,
+      type: "Receive",
+      block: PropertyService.rpcProvider.getBlock(commitEvent.blockNumber),
+      timestamp: undefined
+    }));
+
+    const reNFtIds = new Set();
+    const iroIds = new Set();
+    const result = [
+      ...userCommits,
+      ...userTransfersFrom,
+      ...userTransfersTo
+    ].sort((left, right) => {
+      if (typeof left["iroId"] !== "undefined") iroIds.add(left["iroId"])
+      else reNFtIds.add(left["reNftId"]);
+      return right.blockNumber - left.blockNumber;
+    });
+
+    const idToProperty = {
+      iroId: {},
+      realEstateNftId: {}
+    };
+    (await propertyModel.find({
+      $or: [
+        { iroId: { $in: [...iroIds] } },
+        { realEstateNftId: { $in: [...reNFtIds] } }
+      ]
+    })).forEach(property => {
+      delete property._id;
+      if (property.iroId) {
+        idToProperty["iroId"][property.iroId] = property.toJSON();
+      }
+      if (property.realEstateNftId) {
+        idToProperty["realEstateNftId"][property.iroId] = property.toJSON();
+      }
+    });
+    for (const item of result) {
+      item.timestamp = (await item.block).timestamp;
+      if (item["iroId"]) {
+        Object.assign(item, idToProperty["iroId"][item["iroId"]]);
+      } else {
+        Object.assign(item, idToProperty["realEstateNftId"][item["iroId"]]);
+      }
+      delete item.block;
+    }
+
+    return result;
   }
 
   private async getUserSharesAndIroIds(userAddress: string, iroStatuses: string[] = []) {

@@ -114,6 +114,15 @@ class PropertyController {
       next(error);
     }
   };
+
+  public getUserHistory = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userHistory = await this.propertyService.getUserHistory(req.params.userAddress);
+      res.status(200).json({ data: userHistory });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default PropertyController;
