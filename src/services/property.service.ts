@@ -415,7 +415,8 @@ class PropertyService {
       blockNumber: commitEvent.blockNumber,
       type: "Commit",
       block: PropertyService.rpcProvider.getBlock(commitEvent.blockNumber),
-      timestamp: undefined
+      timestamp: undefined,
+      property: undefined
     }));
 
     const userTransfersFrom = (await PropertyService.reNFtContract.queryFilter(
@@ -430,7 +431,8 @@ class PropertyService {
       blockNumber: commitEvent.blockNumber,
       type: "Send",
       block: PropertyService.rpcProvider.getBlock(commitEvent.blockNumber),
-      timestamp: undefined
+      timestamp: undefined,
+      property: undefined
     }));
 
     const userTransfersTo = (await PropertyService.reNFtContract.queryFilter(
@@ -445,7 +447,8 @@ class PropertyService {
       blockNumber: commitEvent.blockNumber,
       type: "Receive",
       block: PropertyService.rpcProvider.getBlock(commitEvent.blockNumber),
-      timestamp: undefined
+      timestamp: undefined,
+      property: undefined
     }));
 
     const reNFtIds = new Set();
@@ -471,19 +474,19 @@ class PropertyService {
       ]
     })).forEach(property => {
       delete property._id;
-      if (property.iroId) {
+      if (typeof property.iroId !== "undefined") {
         idToProperty["iroId"][property.iroId] = property.toJSON();
       }
-      if (property.realEstateNftId) {
-        idToProperty["realEstateNftId"][property.iroId] = property.toJSON();
+      if (typeof property.realEstateNftId !== "undefined") {
+        idToProperty["realEstateNftId"][property.realEstateNftId] = property.toJSON();
       }
     });
     for (const item of result) {
       item.timestamp = (await item.block).timestamp;
-      if (item["iroId"]) {
-        Object.assign(item, idToProperty["iroId"][item["iroId"]]);
+      if (typeof item["iroId"] !== "undefined") {
+        item.property = idToProperty["iroId"][item["iroId"]];
       } else {
-        Object.assign(item, idToProperty["realEstateNftId"][item["iroId"]]);
+        item.property = idToProperty["realEstateNftId"][item["reNftId"]]
       }
       delete item.block;
     }
