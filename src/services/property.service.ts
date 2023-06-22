@@ -287,6 +287,7 @@ class PropertyService {
     if (isEmpty(user)) throw new HttpException(404, "Invalid user");
 
     const userAccounts = await realEstateAccount.getRealEstateAccounts(user);
+    if (!userAccounts.length) throw new HttpException(409, "No real estate found for user");
 
     const tokenIdToBalanceMap: any = {};
     userAccounts[0].balances.forEach(balance => {
